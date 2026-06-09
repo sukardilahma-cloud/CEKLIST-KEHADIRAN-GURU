@@ -498,12 +498,14 @@ function initGuruView() {
   select.innerHTML = '<option value="">-- Pilih Kelas --</option>' + kelas.map(k => `<option value="${k.nama}" ${k.nama === selectedKelas ? 'selected' : ''}>${k.nama}</option>`).join('');
 }
 
-// Data Handler Bridge
+// Data Handler Bridge (SINKRONISASI DIPERBAIKI)
 const dataHandler = {
   onDataChanged(data) {
     allRecords = data;
+    // Pilihan dropdown di halaman guru HARUS selalu sinkron kapan pun data berubah
+    initGuruView(); 
+    
     if (!isAdminLoggedIn) {
-      initGuruView();
       renderGuruTable();
     } else {
       if (!document.getElementById('kelas-tab').classList.contains('hidden')) renderKelasList();
