@@ -531,4 +531,197 @@ function renderGuruList() {
   }
 
   list.innerHTML = guru.map(g => `
-    <tr class
+    <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+      <td class="px-4 py-3 font-medium text-slate-500 w-24">[ ${g.kode || '-'} ]</td>
+      <td class="px-4 py-3 text-slate-800 font-semibold">${g.nama}</td>
+      <td class="px-4 py-3 text-right">
+        <button onclick="deleteGuru('${g.id}')" class="text-red-600 hover:text-red-800 text-sm font-medium"><i data-lucide="trash-2" class="w-4 h-4 inline"></i></button>
+      </td>
+    </tr>
+  `).join('');
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+function deleteGuru(id) {
+  if (confirm("Hapus guru ini dari daftar?")) {
+    allRecords = allRecords.filter(r => r.id !== id);
+    saveData();
+    renderGuruList();
+  }
+}
+
+// MANAGEMENT JADWAL GLOBAL
+function renderJadwalList() {
+  const tbody = document.getElementById('jadwal-list');
+  const filteredJadwal = allRecords.filter(r => r.type === 'jadwal');
+  
+  filteredJadwal.sort((a,b) => {
+    if (a.kelas !== b.kelas) return a.kelas.localeCompare(b.kelas, undefined, {numeric:true});
+    if (urutanHari[a.hari] !== urutanHari[b.hari]) return urutanHari[a.hari] - urutanHari[b.hari];
+    return parseInt(a.jamKe) - parseInt(b.jamKe);
+  });
+
+  if (filteredJadwal.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400">Belum ada data jadwal mengajar.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filteredJadwal.map(j => `
+    <tr class="border-b border-slate-100 hover:bg-slate-50">
+      <td class="px-4 py-2.5 font-medium text-slate-700">${j.hari}</td>
+      <td class="px-4 py-2.5 text-blue-600 font-semibold">${j.kelas}</td>
+      <td class="px-4 py-2.5 text-slate-500">Jam ${j.jamKe}</td>
+      <td class="px-4 py-2.5 text-slate-800 font-medium">${j.mapel}</td>
+      <td class="px-4 py-2.5 text-slate-600">${j.guru}</td>
+      <td class="px-4 py-2.5 text-center">
+        <button onclick="deleteJadwalRecord('${j.id}')" class="text-red-500 hover:text-red-700"><i data-lucide="trash-2" class="w-4 h-4 inline"></i></button>
+      </td>
+    </tr>
+  `).join('');
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+// EVENTS & LISTENERS
+document.getElementById('kelas-select').addEventListener('change', (e) => {
+  selectedKelas = e.target.value;
+  renderGuruTable();
+});
+
+document.getElementById('date-picker').addEventListener('change', (e) => {
+  selectedDate = e.target.value;
+  renderGuruTable();
+});
+
+// Auth admin toggle
+document.getElementById('login-btn').addEventListener('click', () => {
+  if (isAdminLoggedIn) {
+    isAdminLoggedIn = false;
+    adminName = "";
+    document.getElementById('login-btn').innerHTML = `<i data-lucide="log-in" class="w-4 h-4 inline mr-1"></i> Login Admin`;
+    document.getElementById('admin-status').textContent = "📌 Belum login";
+    document.getElementById('admin-view').classList.add('hidden');
+    document.getElementById('guru-view').classList.remove('block');
+    document.getElementById('guru-view').classList.add('block');
+    renderGuruTable();
+  } else {
+    document.getElementById('login-modal').classList.remove('hidden');
+  }
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+});
+
+document.getElementById('login-cancel').addEventListener('click', () => {
+  document.getElementById('login-modal').classList.add('hidden');
+});
+
+document.getElementById('login-confirm').addEventListener('click', () => {
+  const nameInput = document.getElementById('admin-name').value.trim();
+  if (nameInput) {
+    isAdminLoggedIn = true;
+    adminName = nameInput;
+    document.getElementById('login-modal').classList.add('hidden');
+    document.getElementById('login-btn').innerHTML = `<i data-lucide="log-out" class="w-4 h-4 inline mr-1"></i> Logout (${adminName})`;
+    document.getElementById('admin-status').textContent = `⚡ Mode Admin: ${adminName}`;
+    document.getElementById('guru-view').classList.remove('block');
+    document.getElementById('admin-view').classList.remove('hidden');
+    renderAdminView();
+  } else {
+    alert("Masukkan nama admin valid.");
+  }
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+});
+
+function renderAdminView() {
+  document.getElementById('kelas-tab').classList.remove('hidden');
+  document.getElementById('guru-tab').classList.add('hidden');
+  document.getElementById('jadwal-tab').classList.add('hidden');
+  refreshKelasDropdowns();
+}
+
+document.getElementById('btn-kelas').addEventListener('click', () => {
+  document.getElementById('kelas-tab').classList.remove('hidden');
+  document.getElementById('guru-tab').classList.add('hidden');
+  document.getElementById('jadwal-tab').classList.add('hidden');
+  refreshKelasDropdowns();
+});
+
+document.getElementById('btn-guru').addEventListener('click', () => {
+  document.getElementById('kelas-tab').classList.add('hidden');
+  document.getElementById('guru-tab').classList.remove('hidden');
+  document.getElementById('jadwal-tab').classList.add('hidden');
+  renderGuruList();
+});
+
+document.getElementById('btn-jadwal').addEventListener('click', () => {
+  document.getElementById('kelas-tab').classList.add('hidden');
+  document.getElementById('guru-tab').classList.add('hidden');
+  document.getElementById('jadwal-tab').classList.remove('hidden');
+  renderJadwalList();
+});
+
+// Tambah Guru Baru
+document.getElementById('btn-add-guru').addEventListener('click', () => {
+  const val = document.getElementById('guru-input').value.trim();
+  if (!val) return;
+  let kode = "";
+  let nama = val;
+  if (val.includes('/')) {
+    const p = val.split('/');
+    nama = p[0].trim();
+    kode = p[1].trim();
+  }
+  allRecords.push({ id: 'guru-' + Date.now(), type: 'guru', kode: kode, nama: nama });
+  document.getElementById('guru-input').value = "";
+  saveData();
+  renderGuruList();
+});
+
+// Tambah Jadwal Baru Manual
+document.getElementById('btn-add-jadwal').addEventListener('click', () => {
+  const hari = document.getElementById('jadwal-hari').value;
+  const kelas = document.getElementById('jadwal-kelas').value;
+  const mapel = document.getElementById('jadwal-mapel').value.trim();
+  const guru = document.getElementById('jadwal-guru').value.trim();
+  const jam = document.getElementById('jadwal-jam').value.trim();
+
+  if (!kelas || !mapel || !guru || !jam) {
+    alert("Mohon lengkapi semua isian formulir jadwal!");
+    return;
+  }
+
+  allRecords.push({
+    id: 'jadwal-' + Date.now(),
+    type: 'jadwal',
+    kelas: kelas,
+    hari: hari,
+    jamKe: parseInt(jam),
+    mapel: mapel,
+    guru: guru
+  });
+
+  document.getElementById('jadwal-mapel').value = "";
+  document.getElementById('jadwal-guru').value = "";
+  document.getElementById('jadwal-jam').value = "";
+  
+  saveData();
+  refreshKelasDropdowns();
+  renderJadwalList();
+});
+
+// Re-sinkronisasi CSV
+document.getElementById('btn-sync-csv').addEventListener('click', () => {
+  if (confirm("Apakah Anda yakin ingin memuat ulang jadwal KBM resmi? Tindakan ini akan menyetel kembali semua jadwal ke versi bawaan CSV.")) {
+    parseRawCsvData();
+    refreshKelasDropdowns();
+    if (adminSelectedDetailKelas) lihatDetailJadwalKelas(adminSelectedDetailKelas);
+    alert("Berhasil menyinkronkan data dengan Jadwal KBM Resmi!");
+  }
+});
+
+// INITIALIZATION ON LOAD
+window.addEventListener('DOMContentLoaded', () => {
+  initData();
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+});
+  </script>
+ </body>
+</html>
