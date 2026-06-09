@@ -16,7 +16,6 @@
   <div id="app" class="h-full w-full bg-slate-50 overflow-auto" style="--primary:#2563eb; --surface:#ffffff; --text:#1e293b;">
    <div class="max-w-6xl mx-auto p-4 sm:p-6">
     
-    <!-- Header with Login -->
     <div class="flex justify-between items-start mb-6">
      <div>
       <h1 id="page-title" class="text-2xl font-bold text-slate-800">Cek Kehadiran Guru</h1>
@@ -27,7 +26,6 @@
      </button>
     </div>
 
-    <!-- GURU VIEW -->
     <div id="guru-view" class="block">
      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
       <div>
@@ -73,7 +71,6 @@
      </div>
     </div>
 
-    <!-- ADMIN VIEW -->
     <div id="admin-view" class="hidden">
      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
       <button id="btn-kelas" class="p-4 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl font-medium hover:shadow-lg transition"><i data-lucide="book" class="w-5 h-5 inline mr-2"></i>Kelola Kelas</button> 
@@ -81,27 +78,57 @@
       <button id="btn-jadwal" class="p-4 bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl font-medium hover:shadow-lg transition"><i data-lucide="calendar" class="w-5 h-5 inline mr-2"></i>Kelola Jadwal</button>
      </div>
 
-     <!-- KELAS TAB -->
      <div id="kelas-tab" class="hidden mb-6">
       <h2 class="text-xl font-bold text-slate-800 mb-4">📚 Daftar Kelas</h2>
-      <div class="flex gap-2 mb-4">
-       <input type="text" id="kelas-input" placeholder="Nama kelas (contoh: XII IPA 1)" class="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"> 
-       <button id="btn-add-kelas" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700"><i data-lucide="plus" class="w-4 h-4 inline mr-1"></i>Tambah</button>
-      </div>
-      <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
-       <table class="w-full text-sm">
-        <thead class="bg-slate-50 border-b border-slate-200">
-         <tr>
-          <th class="px-4 py-3 text-left font-semibold">Nama Kelas</th>
-          <th class="px-4 py-3 text-center font-semibold">Aksi</th>
-         </tr>
-        </thead>
-        <tbody id="kelas-list"></tbody>
-       </table>
+      <p class="text-xs text-slate-500 mb-3">💡 Tip: Klik pada nama kelas untuk melihat dan mengedit seluruh jadwal mengajar kelas tersebut.</p>
+      
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-1">
+          <div class="flex gap-2 mb-4">
+           <input type="text" id="kelas-input" placeholder="Nama kelas (contoh: XII IPA 1)" class="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"> 
+           <button id="btn-add-kelas" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 flex items-center"><i data-lucide="plus" class="w-4 h-4 mr-1"></i>Tambah</button>
+          </div>
+          <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+           <table class="w-full text-sm">
+            <thead class="bg-slate-50 border-b border-slate-200">
+             <tr>
+              <th class="px-4 py-3 text-left font-semibold">Nama Kelas</th>
+              <th class="px-4 py-3 text-center font-semibold">Aksi</th>
+             </tr>
+            </thead>
+            <tbody id="kelas-list"></tbody>
+           </table>
+          </div>
+        </div>
+
+        <div class="lg:col-span-2">
+          <div id="kelas-detail-panel" class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hidden">
+            <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
+              <h3 class="text-lg font-bold text-slate-800">📅 Jadwal Kelas: <span id="detail-nama-kelas" class="text-blue-600"></span></h3>
+              <button onclick="tutupDetailKelas()" class="text-slate-400 hover:text-slate-600 text-sm font-medium">Tutup ✕</button>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead class="bg-slate-50 border-b border-slate-200">
+                  <tr>
+                    <th class="px-3 py-2 text-left font-semibold">Hari</th>
+                    <th class="px-3 py-2 text-left font-semibold">Jam Ke</th>
+                    <th class="px-3 py-2 text-left font-semibold">Mata Pelajaran</th>
+                    <th class="px-3 py-2 text-left font-semibold">Guru Pengajar</th>
+                    <th class="px-3 py-2 text-center font-semibold">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="detail-jadwal-list"></tbody>
+              </table>
+            </div>
+          </div>
+          <div id="kelas-blank-panel" class="bg-slate-100 border border-dashed border-slate-300 rounded-xl p-12 text-center text-slate-400 text-sm">
+            Silahkan pilih salah satu kelas di sebelah kiri untuk mengelola dan mengedit jadwal kelas.
+          </div>
+        </div>
       </div>
      </div>
 
-     <!-- GURU TAB -->
      <div id="guru-tab" class="hidden mb-6">
       <h2 class="text-xl font-bold text-slate-800 mb-4">👨‍🏫 Daftar Guru</h2>
       <div class="flex gap-2 mb-4">
@@ -121,9 +148,8 @@
       </div>
      </div>
 
-     <!-- JADWAL TAB -->
      <div id="jadwal-tab" class="hidden mb-6">
-      <h2 class="text-xl font-bold text-slate-800 mb-4">📅 Daftar Jadwal Mengajar</h2>
+      <h2 class="text-xl font-bold text-slate-800 mb-4">📅 Daftar Jadwal Mengajar (Semua Kelas)</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-2 mb-4">
        <select id="jadwal-hari" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold text-blue-600 bg-blue-50">
         <option value="Senin">Senin</option>
@@ -156,7 +182,6 @@
      </div>
     </div>
 
-    <!-- Login Modal -->
     <div id="login-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
      <div class="bg-white rounded-xl p-6 w-96 shadow-lg">
       <h2 class="text-lg font-bold text-slate-800 mb-4">Login Admin</h2>
@@ -168,7 +193,6 @@
      </div>
     </div>
 
-    <!-- Save indicator -->
     <div id="save-indicator" class="fixed bottom-4 right-4 bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-lg opacity-0 transition-opacity duration-300 z-50">
      <i data-lucide="check" class="w-4 h-4 inline mr-1"></i> Tersimpan
     </div>
@@ -182,9 +206,10 @@ let isAdminLoggedIn = false;
 let adminName = "";
 let selectedDate = new Date().toISOString().split('T')[0];
 let selectedKelas = "";
+let adminSelectedDetailKelas = ""; // Menyimpan kelas yang sedang aktif dilihat detailnya
 const namaHariIndo = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+const urutanHari = {"Senin":1, "Selasa":2, "Rabu":3, "Kamis":4, "Jumat":5};
 
-// Set date picker default value
 document.getElementById('date-picker').value = selectedDate;
 
 // LOCALSTORAGE DATA SDK EMULATION
@@ -220,7 +245,6 @@ const customDataSdk = {
   }
 };
 
-// HELPER: Ambil nama hari string dari format tanggal YYYY-MM-DD
 function getNamaHariDariTanggal(dateString) {
   const d = new Date(dateString);
   return namaHariIndo[d.getDay()];
@@ -254,12 +278,6 @@ document.getElementById('login-cancel').addEventListener('click', () => {
   document.getElementById('admin-name').value = '';
 });
 
-document.getElementById('admin-name').addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') {
-    document.getElementById('login-confirm').click();
-  }
-});
-
 function updateAdminStatus() {
   const statusEl = document.getElementById('admin-status');
   const loginBtn = document.getElementById('login-btn');
@@ -281,6 +299,7 @@ function updateAdminStatus() {
     loginBtn.className = 'px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition';
     adminView.classList.add('hidden');
     guruView.classList.replace('hidden', 'block');
+    tutupDetailKelas();
     initGuruView();
     renderGuruTable();
   }
@@ -326,16 +345,124 @@ function renderKelasList() {
   const list = document.getElementById('kelas-list');
   const kelas = allRecords.filter(r => r.type === 'kelas');
   list.innerHTML = kelas.map(k => `
-    <tr class="border-b border-slate-100">
-      <td class="px-4 py-3">${k.nama}</td>
+    <tr class="border-b border-slate-100 hover:bg-blue-50/50 transition duration-150">
+      <td class="px-4 py-3 font-medium text-slate-700 cursor-pointer hover:text-blue-600" onclick="lihatDetailJadwalKelas('${k.nama}')">
+        📁 ${k.nama}
+      </td>
       <td class="px-4 py-3 text-center">
-        <button class="px-3 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600" onclick="deleteRecord('${k.__backendId}')">
-          <i data-lucide="trash-2" class="w-3 h-3 inline"></i> Hapus
+        <button class="px-3 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600" onclick="deleteRecord('${k.__backendId}'); event.stopPropagation();">
+          Hapus
         </button>
       </td>
     </tr>
   `).join('') || '<tr><td colspan="2" class="p-4 text-center text-slate-400">Tidak ada kelas</td></tr>';
   lucide.createIcons();
+}
+
+// PANEL LIHAT DETAIL JADWAL KELAS & EDIT INLINE
+function lihatDetailJadwalKelas(namaKelas) {
+  adminSelectedDetailKelas = namaKelas;
+  document.getElementById('kelas-blank-panel').classList.add('hidden');
+  const panel = document.getElementById('kelas-detail-panel');
+  panel.classList.remove('hidden');
+  document.getElementById('detail-nama-kelas').textContent = namaKelas;
+  renderDetailJadwalList();
+}
+
+function tutupDetailKelas() {
+  adminSelectedDetailKelas = "";
+  document.getElementById('kelas-detail-panel').classList.add('hidden');
+  document.getElementById('kelas-blank-panel').classList.remove('hidden');
+}
+
+function renderDetailJadwalList() {
+  const tbody = document.getElementById('detail-jadwal-list');
+  if (!adminSelectedDetailKelas) return;
+
+  const listJadwal = allRecords.filter(r => r.type === 'jadwal' && r.kelas === adminSelectedDetailKelas).sort((a, b) => {
+    if(urutanHari[a.hari] !== urutanHari[b.hari]) return urutanHari[a.hari] - urutanHari[b.hari];
+    return a.jam_ke - b.jam_ke;
+  });
+
+  const listGuru = allRecords.filter(r => r.type === 'guru');
+
+  tbody.innerHTML = listJadwal.map(j => `
+    <tr id="row-${j.__backendId}" class="border-b border-slate-100">
+      <td class="px-3 py-2 font-medium text-blue-600">${j.hari}</td>
+      <td class="px-3 py-2">${j.jam_ke}</td>
+      <td class="px-3 py-2">${j.mapel}</td>
+      <td class="px-3 py-2">${j.guru}</td>
+      <td class="px-3 py-2 text-center whitespace-nowrap">
+        <button class="px-2 py-1 bg-amber-500 text-white rounded text-xs hover:bg-amber-600 mr-1" onclick="aktifkanModeEditJadwal('${j.__backendId}')">
+          Edit
+        </button>
+        <button class="px-2 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600" onclick="deleteRecord('${j.__backendId}')">
+          Hapus
+        </button>
+      </td>
+    </tr>
+  `).join('') || '<tr><td colspan="5" class="p-4 text-center text-slate-400">Kelas ini belum memiliki jadwal pelajaran.</td></tr>';
+}
+
+function aktifkanModeEditJadwal(id) {
+  const j = allRecords.find(r => r.__backendId === id);
+  if (!j) return;
+
+  const row = document.getElementById(`row-${id}`);
+  const listGuru = allRecords.filter(r => r.type === 'guru');
+
+  row.innerHTML = `
+    <td class="px-3 py-1">
+      <select id="edit-hari-${id}" class="border border-slate-300 rounded px-1 py-1 text-xs w-full">
+        <option value="Senin" ${j.hari==='Senin'?'selected':''}>Senin</option>
+        <option value="Selasa" ${j.hari==='Selasa'?'selected':''}>Selasa</option>
+        <option value="Rabu" ${j.hari==='Rabu'?'selected':''}>Rabu</option>
+        <option value="Kamis" ${j.hari==='Kamis'?'selected':''}>Kamis</option>
+        <option value="Jumat" ${j.hari==='Jumat'?'selected':''}>Jumat</option>
+      </select>
+    </td>
+    <td class="px-3 py-1">
+      <input type="number" id="edit-jam-${id}" value="${j.jam_ke}" min="1" max="10" class="border border-slate-300 rounded px-1 py-1 text-xs w-14">
+    </td>
+    <td class="px-3 py-1">
+      <input type="text" id="edit-mapel-${id}" value="${j.mapel}" class="border border-slate-300 rounded px-1 py-1 text-xs w-full">
+    </td>
+    <td class="px-3 py-1">
+      <select id="edit-guru-${id}" class="border border-slate-300 rounded px-1 py-1 text-xs w-full">
+        ${listGuru.map(g => `<option value="${g.nama}" ${g.nama===j.guru?'selected':''}>${g.nama}</option>`).join('')}
+      </select>
+    </td>
+    <td class="px-3 py-1 text-center whitespace-nowrap">
+      <button class="px-2 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700 mr-1" onclick="simpanPerubahanJadwal('${id}')">
+        Simpan
+      </button>
+      <button class="px-2 py-1 bg-slate-400 text-white rounded text-xs hover:bg-slate-500" onclick="renderDetailJadwalList()">
+        Batal
+      </button>
+    </td>
+  `;
+}
+
+async function simpanPerubahanJadwal(id) {
+  const existing = allRecords.find(r => r.__backendId === id);
+  if (!existing) return;
+
+  const hari = document.getElementById(`edit-hari-${id}`).value;
+  const jam_ke = parseInt(document.getElementById(`edit-jam-${id}`).value);
+  const mapel = document.getElementById(`edit-mapel-${id}`).value.trim();
+  const guru = document.getElementById(`edit-guru-${id}`).value;
+
+  if (!mapel || !jam_ke) return alert('Semua data edit harus terisi!');
+
+  await customDataSdk.update({
+    ...existing,
+    hari,
+    jam_ke,
+    mapel,
+    guru
+  });
+
+  showSave("Jadwal Diperbarui");
 }
 
 // GURU FUNCTIONS
@@ -358,15 +485,14 @@ function renderGuruList() {
       <td class="px-4 py-3">${g.nama}</td>
       <td class="px-4 py-3 text-center">
         <button class="px-3 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600" onclick="deleteRecord('${g.__backendId}')">
-          <i data-lucide="trash-2" class="w-3 h-3 inline"></i> Hapus
+          Hapus
         </button>
       </td>
     </tr>
   `).join('') || '<tr><td colspan="2" class="p-4 text-center text-slate-400">Tidak ada guru</td></tr>';
-  lucide.createIcons();
 }
 
-// JADWAL FUNCTIONS WITH HARI
+// JADWAL FUNCTIONS GLOBAL
 function updateJadwalSelects() {
   const kelasSel = document.getElementById('jadwal-kelas');
   const guruSel = document.getElementById('jadwal-guru');
@@ -387,26 +513,19 @@ document.getElementById('btn-add-jadwal').addEventListener('click', async () => 
   if (!hari || !kelas || !guru || !mapel || !jam_ke) return alert('Semua field harus diisi');
   
   const result = await customDataSdk.create({ 
-    type: 'jadwal', 
-    hari,
-    kelas, 
-    guru, 
-    mapel, 
-    jam_ke,
+    type: 'jadwal', hari, kelas, guru, mapel, jam_ke,
     nama: '', hadir: false, keterangan: '', tanggal: ''
   });
   
   if (result.isOk) {
     document.getElementById('jadwal-mapel').value = '';
     document.getElementById('jadwal-jam').value = '';
-    showSave(`Jadwal hari ${hari} disimpan`);
+    showSave("Jadwal global disimpan");
   }
 });
 
 function renderJadwalList() {
   const list = document.getElementById('jadwal-list');
-  // Urutkan berdasarkan Nama Hari (urutan sekolah Senin-Jumat) dan Jam Mengajar
-  const urutanHari = {"Senin":1, "Selasa":2, "Rabu":3, "Kamis":4, "Jumat":5};
   const jadwal = allRecords.filter(r => r.type === 'jadwal').sort((a, b) => {
     if(urutanHari[a.hari] !== urutanHari[b.hari]) return urutanHari[a.hari] - urutanHari[b.hari];
     return a.jam_ke - b.jam_ke;
@@ -421,15 +540,14 @@ function renderJadwalList() {
       <td class="px-4 py-3">${j.guru}</td>
       <td class="px-4 py-3 text-center">
         <button class="px-3 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600" onclick="deleteRecord('${j.__backendId}')">
-          <i data-lucide="trash-2" class="w-3 h-3 inline"></i> Hapus
+          Hapus
         </button>
       </td>
     </tr>
   `).join('') || '<tr><td colspan="6" class="p-4 text-center text-slate-400">Tidak ada jadwal</td></tr>';
-  lucide.createIcons();
 }
 
-// DELETE FUNCTION
+// DELETE FUNCTION GENERAL
 async function deleteRecord(id) {
   const record = allRecords.find(r => r.__backendId === id);
   if (!record) return;
@@ -437,13 +555,19 @@ async function deleteRecord(id) {
   const result = await customDataSdk.delete(record);
   if (result.isOk) {
     showSave("Data dihapus");
-    if (type === 'kelas') renderKelasList();
+    if (type === 'kelas') {
+      if (adminSelectedDetailKelas === record.nama) tutupDetailKelas();
+      renderKelasList();
+    }
     if (type === 'guru') renderGuruList();
-    if (type === 'jadwal') renderJadwalList();
+    if (type === 'jadwal') {
+      renderJadwalList();
+      if (adminSelectedDetailKelas) renderDetailJadwalList();
+    }
   }
 }
 
-// GURU VIEW - ABSENSI LOGIC (FILTER HARI OTOMATIS)
+// GURU VIEW - ABSENSI LOGIC
 document.getElementById('kelas-select').addEventListener('change', (e) => {
   selectedKelas = e.target.value;
   renderGuruTable();
@@ -465,7 +589,6 @@ function renderGuruTable() {
     return;
   }
 
-  // Ambil Hari dari Kalender yang dipasang pengguna
   const namaHariIni = getNamaHariDariTanggal(selectedDate);
   namaHariAktif.textContent = namaHariIni;
   infoHariBox.classList.remove('hidden');
@@ -475,11 +598,9 @@ function renderGuruTable() {
     return;
   }
 
-  // Saring Jadwal Berdasarkan: KELAS + HARI YANG COCOK
   const jadwal = allRecords.filter(r => r.type === 'jadwal' && r.kelas === selectedKelas && r.hari === namaHariIni).sort((a, b) => a.jam_ke - b.jam_ke);
   
   tbody.innerHTML = jadwal.map(j => {
-    // Record absensi terikat ke kombinasi Guru, Kelas, Jam Mengajar, dan Tanggal spesifik
     const record = allRecords.find(r => r.type === 'absensi' && r.guru === j.guru && r.kelas === j.kelas && r.tanggal === selectedDate && r.jam_ke === j.jam_ke);
     const hadir = record ? record.hadir : false;
     const keterangan = record ? record.keterangan : "Masuk";
@@ -504,7 +625,6 @@ function renderGuruTable() {
       </tr>
     `;
   }).join('') || `<tr><td colspan="5" class="p-8 text-center text-slate-400">Tidak ada jadwal pelajaran untuk kelas ini di hari ${namaHariIni}.</td></tr>`;
-  lucide.createIcons();
 }
 
 async function saveAbsensi(el) {
@@ -521,16 +641,7 @@ async function saveAbsensi(el) {
     await customDataSdk.update({ ...existing, hadir, keterangan });
   } else {
     await customDataSdk.create({
-      type: 'absensi',
-      kelas,
-      guru,
-      jam_ke: jam,
-      mapel: row.cells[1].textContent,
-      hadir,
-      keterangan,
-      tanggal: selectedDate,
-      nama: '',
-      hari: ''
+      type: 'absensi', kelas, guru, jam_ke: jam, mapel: row.cells[1].textContent, hadir, keterangan, tanggal: selectedDate, nama: '', hari: ''
     });
   }
   showSave("Absensi Disimpan");
@@ -540,7 +651,6 @@ function showSave(text) {
   const el = document.getElementById('save-indicator');
   el.innerHTML = `<i data-lucide="check" class="w-4 h-4 inline mr-1"></i> ${text}`;
   el.style.opacity = '1';
-  lucide.createIcons();
   setTimeout(() => el.style.opacity = '0', 1500);
 }
 
@@ -566,7 +676,10 @@ const dataHandler = {
     if (!isAdminLoggedIn) {
       renderGuruTable();
     } else {
-      if (!document.getElementById('kelas-tab').classList.contains('hidden')) renderKelasList();
+      if (!document.getElementById('kelas-tab').classList.contains('hidden')) {
+        renderKelasList();
+        if (adminSelectedDetailKelas) renderDetailJadwalList(); // Refresh data detail jadwal jika sedang dibuka
+      }
       if (!document.getElementById('guru-tab').classList.contains('hidden')) renderGuruList();
       if (!document.getElementById('jadwal-tab').classList.contains('hidden')) { renderJadwalList(); updateJadwalSelects(); }
     }
