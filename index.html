@@ -3,7 +3,7 @@
  <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cek Kehadiran Guru</title>
+  <title>Cek Kehadiran Guru - E-Absensi SMK N 1 Kotamobagu</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
@@ -79,7 +79,12 @@
      </div>
 
      <div id="kelas-tab" class="hidden mb-6">
-      <h2 class="text-xl font-bold text-slate-800 mb-4">📚 Daftar Kelas</h2>
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold text-slate-800">📚 Daftar Kelas</h2>
+        <button id="btn-sync-csv" class="px-3 py-1.5 bg-amber-600 text-white rounded-lg text-xs font-semibold hover:bg-amber-700 transition flex items-center gap-1 shadow">
+          <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Sinkronkan Jadwal Resmi KBM (CSV)
+        </button>
+      </div>
       <p class="text-xs text-slate-500 mb-3">💡 Tip: Klik pada nama kelas untuk melihat dan mengedit seluruh jadwal mengajar kelas tersebut.</p>
       
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -90,12 +95,6 @@
           </div>
           <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm max-h-[500px] overflow-y-auto">
            <table class="w-full text-sm">
-            <thead class="bg-slate-50 border-b border-slate-200 sticky top-0 z-10">
-             <tr>
-              <th class="px-4 py-3 text-left font-semibold bg-slate-50">Nama Kelas</th>
-              <th class="px-4 py-3 text-center font-semibold bg-slate-50">Aksi</th>
-             </tr>
-            </thead>
             <tbody id="kelas-list"></tbody>
            </table>
           </div>
@@ -132,17 +131,11 @@
      <div id="guru-tab" class="hidden mb-6">
       <h2 class="text-xl font-bold text-slate-800 mb-4">👨‍🏫 Daftar Guru</h2>
       <div class="flex gap-2 mb-4">
-       <input type="text" id="guru-input" placeholder="Nama guru" class="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"> 
+       <input type="text" id="guru-input" placeholder="Nama guru / Kode guru" class="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"> 
        <button id="btn-add-guru" class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700"><i data-lucide="plus" class="w-4 h-4 inline mr-1"></i>Tambah</button>
       </div>
       <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
        <table class="w-full text-sm">
-        <thead class="bg-slate-50 border-b border-slate-200">
-         <tr>
-          <th class="px-4 py-3 text-left font-semibold">Nama Guru</th>
-          <th class="px-4 py-3 text-center font-semibold">Aksi</th>
-         </tr>
-        </thead>
         <tbody id="guru-list"></tbody>
        </table>
       </div>
@@ -158,15 +151,15 @@
         <option value="Kamis">Kamis</option>
         <option value="Jumat">Jumat</option>
        </select>
-       <select id="jadwal-kelas" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"> <option value="">-- Pilih Kelas --</option> </select> 
-       <select id="jadwal-guru" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"> <option value="">-- Pilih Guru --</option> </select> 
+       <select id="jadwal-kelas" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"></select> 
        <input type="text" id="jadwal-mapel" placeholder="Mapel" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"> 
-       <input type="number" id="jadwal-jam" placeholder="Jam ke-" min="1" max="10" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"> 
+       <input type="text" id="jadwal-guru" placeholder="Nama/Kode Guru" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"> 
+       <input type="number" id="jadwal-jam" placeholder="Jam ke-" min="1" max="12" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"> 
        <button id="btn-add-jadwal" class="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700"><i data-lucide="plus" class="w-4 h-4 inline mr-1"></i>Tambah</button>
       </div>
-      <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div class="bg-white rounded-xl border border-slate-200 overflow-hidden max-h-[600px] overflow-y-auto">
        <table class="w-full text-sm">
-        <thead class="bg-slate-50 border-b border-slate-200">
+        <thead class="bg-slate-50 border-b border-slate-200 sticky top-0">
          <tr>
           <th class="px-4 py-3 text-left font-semibold">Hari</th>
           <th class="px-4 py-3 text-left font-semibold">Kelas</th>
@@ -210,40 +203,69 @@ let adminSelectedDetailKelas = "";
 const namaHariIndo = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
 const urutanHari = {"Senin":1, "Selasa":2, "Rabu":3, "Kamis":4, "Jumat":5};
 
-// DAFTAR KELAS BARU YANG DIINPUT OTOMATIS
-const daftarKelasBaru = [
-  "X MP 1", "X MP 2", "X MP 3", "X AKL 1", "X AKL 2", "X AKL 3", "X AKL 4", "X LP", "X LPKC 1", "X LPKC 2", "X LPKC 3", "X DKV 1", "X DKV 2", "X RPL", "X TKJ 1", "X TKJ 2", "X TKJ 3", "X TEB",
-  "XI MP 1", "XI MP 2", "XI MP 3", "XI AKL 1", "XI AKL 2", "XI AKL 3", "XI AKL 4", "XI LP", "XI LPKC 1", "XI LPKC 2", "XI LPKC 3", "XI DKV 1", "XI DKV 2", "XI RPL 1", "XI RPL 2", "XI TKJ 1", "XI TKJ 2", "XI TKJ 3", "XI TEB",
-  "XII MP 1", "XII MP 2", "XII MP 3", "XII AKL 1", "XII AKL 2", "XII LP", "XII LPKC 1", "XII LPKC 2", "XII LPKC 3", "XII DKV 1", "XII DKV 2", "XII RPL", "XII TKJ 1", "XII TKJ 2", "XII TKJ 3", "XII TKJ 4", "XII TEB"
-];
-
 document.getElementById('date-picker').value = selectedDate;
+
+// DATA STRUKTUR RAW DARI FILE CSV YANG ANDA SERAHKAN
+const rawCsvData = `X MP 1,UPACARA BENDERA,DDMP 81,DDMP 81,DDMP 81,DDMP 81,MLK 113,MLK 113,BIND 42,BIND 42,BIND 42,BIND 42,,KKA 119,KKA 119,KKA 119,MAT 16,MAT 16,MAT 16,MAT 16,IPAS 6,IPAS 6,IPAS 6,,DDMP 81,DDMP 81,DDMP 81,DDMP 81,PENJ101,PENJ101,PENJ101,SEJ 83,SEJ 83,SNB 46,SNB 46,,BING 28,BING 28,BING 28,IPAS 6,IPAS 6,IPAS 6,INFOR 45,INFOR 45,INFOR 45,INFOR 45,,,DDMP 81,DDMP 81,DDMP 81,PKN102,PKN102,PAG 71,PAG 71,PAG 71
+X MP 2,UPACARA BENDERA,DDMP 46,DDMP 46,DDMP 46,DDMP 46,MAT 16,MAT 16,MAT 16,MAT 16,IPAS 6,IPAS 6,,BIND 42,BIND 42,BIND 42,BIND 42,KKA 119,KKA 119,KKA 119,DDMP 46,DDMP 46,DDMP 46,,IPAS 6,IPAS 6,IPAS 6,IPAS 6,SEJ 83,SEJ 83,INFOR 45,INFOR 45,INFOR 45,INFOR 45,MLK 113,,MLK 113,PAG 71,PAG 71,PAG 71,PKN102,PKN102,BING 28,BING 28,BING 28,PENJ101,PENJ101,,,PENJ101,SNB 46,SNB 46,DDMP 46,DDMP 46,DDMP 46,DDMP 46
+X MP 3,UPACARA BENDERA,KKA 119,KKA 119,KKA 119,MAT 16,MAT 16,MAT 16,MAT 16,DDMP 81,DDMP 81,DDMP 81,,IPAS 6,IPAS 6,IPAS 6,BIND 42,BIND 42,BIND 42,BIND 42,MLK 113,MLK 113,DDMP 81,,DDMP 81,DDMP 81,DDMP 81,DDMP 81,BING 28,BING 28,BING 28,SNB 46,SNB 46,SEJ 83,SEJ 83,,INFOR 45,INFOR 45,INFOR 45,INFOR 45,PENJ101,PENJ101,PENJ101,IPAS 6,IPAS 6,IPAS 6,PKN102,,,PKN102,PAG 71,PAG 71,PAG 71,DDMP 81,DDMP 81,DDMP 81,DDMP 81
+X AKL 1,UPACARA BENDERA,EKO 32,EKO 32,EKO 32,BIND 97,BIND 97,DDAK 118,DDAK 118,DDAK 118,DDAK 118,,MAT 77,MAT 77,MAT 77,MAT 77,DDAK 118,DDAK 118,DDAK 118,DDAK 118,IPAS 111,IPAS 111,IPAS 111,,BIND 97,BIND 97,IPAS 111,IPAS 111,IPAS 111,INFOR 45,INFOR 45,INFOR 45,INFOR 45,KKA 119,KKA 119,,KKA 119,BING 5,BING 5,BING 5,SEJ 83,SEJ 83,SNB 74,SNB 74,PAG 82,PAG 82,PAG 82,,,PKN32,PKN32,MLK 113,MLK 113,PENJ101,PENJ101,PENJ101
+X AKL 2,UPACARA BENDERA,BIND 97,BIND 97,BIND 97,BIND 97,EKO 32,EKO 32,EKO 32,MAT 77,MAT 77,MAT 77,,MAT 77,DDAK 118,DDAK 118,DDAK 118,DDAK 118,IPAS 111,IPAS 111,IPAS 111,KKA 119,KKA 119,KKA 119,,INFOR 45,INFOR 45,INFOR 45,INFOR 45,DDAK 118,DDAK 118,DDAK 118,DDAK 118,IPAS 111,IPAS 111,IPAS 111,,SEJ 83,SEJ 83,BING 5,BING 5,BING 5,PKN32,PKN32,SNB 74,SNB 74,MLK 113,MLK 113,,,PAG 82,PAG 82,PAG 82,PENJ101,PENJ101,PENJ101
+X AKL 3,UPACARA BENDERA,DDAK 118,DDAK 118,DDAK 118,DDAK 118,MAT 77,MAT 77,MAT 77,MAT 77,BIND 97,BIND 97,,BIND 97,BIND 97,EKO 32,EKO 32,EKO 32,KKA 119,KKA 119,KKA 119,DDAK 118,DDAK 118,DDAK 118,,DDAK 118,IPAS 111,IPAS 111,IPAS 111,IPAS 111,IPAS 111,IPAS 111,MLK 113,MLK 113,PENJ101,PENJ101,,PENJ101,SNB 74,SNB 74,INFOR 45,INFOR 45,INFOR 45,INFOR 45,BING 5,BING 5,BING 5,,,PKN32,PKN32,SEJ 83,SEJ 83,PAG 82,PAG 82,PAG 82
+X AKL 4,UPACARA BENDERA,MAT 77,MAT 77,MAT 77,MAT 77,BIND 97,BIND 97,BIND 97,BIND 97,EKO 32,EKO 32,,EKO 32,KKA 119,KKA 119,KKA 119,DDAK 118,DDAK 118,DDAK 118,DDAK 118,DDAK 118,DDAK 118,DDAK 118,,DDAK 118,MLK 113,MLK 113,SEJ 83,SEJ 83,IPAS 111,IPAS 111,IPAS 111,IPAS 111,IPAS 111,,IPAS 111,PKN32,PKN32,SNB 74,SNB 74,PENJ101,PENJ101,PENJ101,INFOR 45,INFOR 45,INFOR 45,,,INFOR 45,BING 5,BING 5,BING 5,PAG 82,PAG 82,PAG 82
+X LP,UPACARA BENDERA,DDLP 32,DDLP 32,DDLP 32,DDLP 32,BIND 97,BIND 97,MAT 77,MAT 77,MAT 77,MAT 77,,BIND 97,BIND 97,DDLP 32,DDLP 32,DDLP 32,DDLP 32,KKA 119,KKA 119,KKA 119,IPAS 111,IPAS 111,,IPAS 111,IPAS 111,IPAS 111,IPAS 111,INFOR 45,INFOR 45,INFOR 45,INFOR 45,SEJ 83,SEJ 83,SNB 74,,SNB 74,BING 5,BING 5,BING 5,PAG 82,PAG 82,PAG 82,PKN32,PKN32,MLK 113,,,MLK 113,PENJ101,PENJ101,PENJ101
+X LPKC 1,UPACARA BENDERA,DDLP 51,DDLP 51,DDLP 51,DDLP 51,BIND 42,BIND 42,BIND 42,BIND 42,MAT 16,MAT 16,,MAT 16,MAT 16,IPAS 6,IPAS 6,IPAS 6,IPAS 6,DDLP 51,DDLP 51,DDLP 51,DDLP 51,,KKA 119,KKA 119,KKA 119,INFOR 114,INFOR 114,INFOR 114,INFOR 114,BING 24,BING 24,BING 24,SEJ 102,,SEJ 102,PKN102,PKN102,SNB 46,SNB 46,IPAS 6,IPAS 6,PAG 71,PAG 71,PAG 71,MLK 113,,,MLK 113,PENJ101,PENJ101,PENJ101
+X LPKC 2,UPACARA BENDERA,BIND 42,BIND 42,BIND 42,BIND 42,DDLP 51,DDLP 51,DDLP 51,DDLP 51,IPAS 6,IPAS 6,,IPAS 6,IPAS 6,MAT 16,MAT 16,MAT 16,MAT 16,IPAS 6,IPAS 6,KKA 119,KKA 119,,KKA 119,DDLP 51,DDLP 51,DDLP 51,DDLP 51,SEJ 102,SEJ 102,BING 24,BING 24,BING 24,INFOR 114,,INFOR 114,INFOR 114,INFOR 114,PENJ101,PENJ101,PENJ101,SNB 46,SNB 46,PAG 71,PAG 71,PAG 71,,,PKN102,PKN102,MLK 113,MLK 113
+X LPKC 3,UPACARA BENDERA,MAT 16,MAT 16,MAT 16,MAT 16,IPAS 6,IPAS 6,IPAS 6,IPAS 6,BIND 42,BIND 42,,BIND 42,BIND 42,DDLP 51,DDLP 51,DDLP 51,DDLP 51,IPAS 6,IPAS 6,DDLP 51,DDLP 51,,DDLP 51,DDLP 51,KKA 119,KKA 119,KKA 119,BING 24,BING 24,BING 24,PENJ101,PENJ101,PENJ101,INFOR 114,,INFOR 114,INFOR 114,INFOR 114,SEJ 102,SEJ 102,PKN102,PKN102,SNB 46,SNB 46,PAG 71,,,PAG 71,PAG 71,MLK 113,MLK 113
+X DKV 1,UPACARA BENDERA,DDDK 108,DDDK 108,DDDK 108,DDDK 108,INFOR 114,INFOR 114,INFOR 114,INFOR 114,BIND 68,BIND 68,,BIND 68,BIND 68,MAT 116,MAT 116,MAT 116,MAT 116,DDDK 108,DDDK 108,DDDK 108,DDDK 108,,KKA 119,KKA 119,KKA 119,IPAS 6,IPAS 6,IPAS 6,IPAS 6,BING 27,BING 27,BING 27,SEJ 102,,SEJ 102,PKN78,PKN78,SNB 46,SNB 46,IPAS 6,IPAS 6,PAG 11,PAG 11,PAG 11,MLK 114,,,MLK 114,PENJ101,PENJ101,PENJ101
+X DKV 2,UPACARA BENDERA,INFOR 114,INFOR 114,INFOR 114,INFOR 114,DDDK 108,DDDK 108,DDDK 108,DDDK 108,MAT 116,MAT 116,,MAT 116,MAT 116,BIND 68,BIND 68,BIND 68,BIND 68,IPAS 6,IPAS 6,IPAS 6,IPAS 6,,DDDK 108,DDDK 108,DDDK 108,DDDK 108,KKA 119,KKA 119,KKA 119,IPAS 6,IPAS 6,BING 27,BING 27,,BING 27,SEJ 102,SEJ 102,PENJ101,PENJ101,PENJ101,SNB 46,SNB 46,PAG 11,PAG 11,PAG 11,,,PKN78,PKN78,MLK 114,MLK 114
+X RPL,UPACARA BENDERA,MAT 116,MAT 116,MAT 116,MAT 116,BIND 68,BIND 68,BIND 68,BIND 68,DDRPL 93,DDRPL 93,,DDRPL 93,DDRPL 93,DDRPL 93,DDRPL 93,DDRPL 93,DDRPL 93,INFOR 45,INFOR 45,INFOR 45,INFOR 45,,IPAS 6,IPAS 6,IPAS 6,IPAS 6,BING 49,BING 49,BING 49,KKA 119,KKA 119,KKA 119,SEJ 83,,SEJ 83,PKN56,PKN56,SNB 46,SNB 46,PENJ101,PENJ101,PENJ101,IPAS 6,IPAS 6,PAG 11,,,PAG 11,PAG 11,MLK 114,MLK 114
+X TKJ 1,UPACARA BENDERA,DDTKJ 55,DDTKJ 55,DDTKJ 55,DDTKJ 55,MAT 116,MAT 116,MAT 116,MAT 116,INFOR 114,INFOR 114,,INFOR 114,INFOR 114,BIND 68,BIND 68,BIND 68,BIND 68,DDTKJ 55,DDTKJ 55,DDTKJ 55,DDTKJ 55,,KKA 119,KKA 119,KKA 119,IPAS 6,IPAS 6,IPAS 6,IPAS 6,BING 49,BING 49,BING 49,SEJ 83,,SEJ 83,PKN56,PKN56,SNB 46,SNB 46,IPAS 6,IPAS 6,PAG 82,PAG 82,PAG 82,MLK 114,,,MLK 114,PENJ101,PENJ101,PENJ101
+X TKJ 2,UPACARA BENDERA,MAT 116,MAT 116,MAT 116,MAT 116,BIND 68,BIND 68,BIND 68,BIND 68,DDTKJ 91,DDTKJ 91,,DDTKJ 91,DDTKJ 91,DDTKJ 91,DDTKJ 91,DDTKJ 91,DDTKJ 91,INFOR 114,INFOR 114,INFOR 114,INFOR 114,,IPAS 6,IPAS 6,IPAS 6,IPAS 6,BING 49,BING 49,BING 49,KKA 119,KKA 119,KKA 119,SEJ 83,,SEJ 83,PKN56,PKN56,SNB 46,SNB 46,PENJ101,PENJ101,PENJ101,IPAS 6,IPAS 6,PAG 82,,,PAG 82,PAG 82,MLK 114,MLK 114
+X TKJ 3,UPACARA BENDERA,BIND 68,BIND 68,BIND 68,BIND 68,DDTKJ 94,DDTKJ 94,DDTKJ 94,DDTKJ 94,MAT 116,MAT 116,,MAT 116,MAT 116,INFOR 114,INFOR 114,INFOR 114,INFOR 114,IPAS 6,IPAS 6,IPAS 6,IPAS 6,,DDTKJ 94,DDTKJ 94,DDTKJ 94,DDTKJ 94,KKA 119,KKA 119,KKA 119,IPAS 6,IPAS 6,BING 49,BING 49,,BING 49,SEJ 83,SEJ 83,PENJ101,PENJ101,PENJ101,SNB 46,SNB 46,PAG 82,PAG 82,PAG 82,,,PKN56,PKN56,MLK 114,MLK 114
+X TEB,UPACARA BENDERA,DDTEB 103,DDTEB 103,DDTEB 103,DDTEB 103,BIND 68,BIND 68,BIND 68,BIND 68,MAT 116,MAT 116,,MAT 116,MAT 116,INFOR 45,INFOR 45,INFOR 45,INFOR 45,IPAS 6,IPAS 6,IPAS 6,IPAS 6,,DDTEB 103,DDTEB 103,DDTEB 103,DDTEB 103,KKA 119,KKA 119,KKA 119,IPAS 6,IPAS 6,BING 27,BING 27,,BING 27,SEJ 102,SEJ 102,PENJ101,PENJ101,PENJ101,SNB 46,SNB 46,PAG 11,PAG 11,PAG 11,,,PKN78,PKN78,MLK 114,MLK 114
+XI MP 1,BIND 79,BIND 79,MAT 54,MAT 54,MAT 54,BING 28,BING 28,KK MP 81,KK MP 81,KK MP 81,KK MP 81,,KK MP 81,KK MP 81,KK MP 81,KK MP 81,PKK MP 81,PKK MP 81,PKK MP 81,PAG 71,PAG 71,PAG 71,,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,PKN102,PKN102,,PKN102,PKK MP 81,PKK MP 81,BING 28,BING 28,MLK 113,MLK 113,PENJ101,PENJ101,PENJ101,,,BIND 79,BIND 79,KK MP 81,KK MP 81,KK MP 81,KK MP 81,KK MP 81,KK MP 81
+XI MP 2,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,BIND 79,BIND 79,MAT 54,,MAT 54,MAT 54,BING 28,BING 28,BING 28,BING 28,PKN102,PKN102,PKN102,,KK MP 46,KK MP 46,KK MP 46,KK MP 46,KK MP 46,KK MP 46,KK MP 46,KK MP 46,PKK MP 46,PKK MP 46,,PKK MP 46,PKK MP 46,PKK MP 46,PAG 71,PAG 71,PAG 71,MLK 113,MLK 113,PENJ101,PENJ101,PENJ101,,,BIND 79,BIND 79,KK MP 46,KK MP 46,KK MP 46,KK MP 46,KK MP 46,KK MP 46
+XI MP 3,MAT 54,MAT 54,MAT 54,BIND 79,BIND 79,KK MP 81,KK MP 81,KK MP 81,KK MP 81,KK MP 81,KK MP 81,,KK MP 81,KK MP 81,KK MP 81,KK MP 81,KK MP 81,KK MP 81,BIND 79,BIND 79,PKN102,,PKN102,PKN102,BING 28,BING 28,BING 28,BING 28,PAG 71,PAG 71,PAG 71,MLK 113,MLK 113,,PENJ101,PENJ101,PENJ101,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,,,PKK MP 81,PKK MP 81,PKK MP 81,PKK MP 81,PKK MP 81
+XI AKL 1,BIND 100,BIND 100,MAT 77,MAT 77,MAT 77,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,,KK AKL 118,KK AKL 118,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,,KK AKL 32,PKK AKL 118,PKK AKL 118,PKK AKL 118,PKK AKL 118,PKK AKL 118,BING 5,BING 5,PKN32,PKN32,,PKN32,BIND 100,BIND 100,PAG 82,PAG 82,PAG 82,MLK 113,MLK 113,PENJ101,PENJ101,PENJ101,,,BING 5,BING 5,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118
+XI AKL 2,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,BIND 100,BIND 100,MAT 77,,MAT 77,MAT 77,BING 5,BING 5,BING 5,BING 5,PKN32,PKN32,PKN32,,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,PKK AKL 118,PKK AKL 118,,PKK AKL 118,PKK AKL 118,PKK AKL 118,PAG 82,PAG 82,PAG 82,MLK 113,MLK 113,PENJ101,PENJ101,PENJ101,,,BIND 100,BIND 100,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118
+XI AKL 3,MAT 77,MAT 77,MAT 77,BIND 100,BIND 100,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,BIND 100,BIND 100,PKN32,,PKN32,PKN32,BING 5,BING 5,BING 5,BING 5,PAG 82,PAG 82,PAG 82,MLK 113,MLK 113,,PENJ101,PENJ101,PENJ101,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,,,PKK AKL 118,PKK AKL 118,PKK AKL 118,PKK AKL 118,PKK AKL 118
+XI AKL 4,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,PKK AKL 32,PKK AKL 32,PKK AKL 32,,PKK AKL 32,PKK AKL 32,BIND 100,BIND 100,BIND 100,BIND 100,PAG 82,PAG 82,PAG 82,,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,MAT 77,MAT 77,,MAT 77,BING 5,BING 5,BING 5,BING 5,MLK 113,MLK 113,PKN32,PKN32,PKN32,PENJ101,PENJ101,PENJ101,,,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118
+XI LP,BIND 100,BIND 100,MAT 77,MAT 77,MAT 77,BING 5,BING 5,KK LP 32,KK LP 32,KK LP 32,KK LP 32,,KK LP 32,KK LP 32,KK LP 32,KK LP 32,PKK LP 32,PKK LP 32,PKK LP 32,PAG 82,PAG 82,PAG 82,,KK LP 32,KK LP 32,KK LP 32,KK LP 32,KK LP 32,KK LP 32,KK LP 32,KK LP 32,PKN32,PKN32,,PKN32,PKK LP 32,PKK LP 32,BING 5,BING 5,MLK 113,MLK 113,PENJ101,PENJ101,PENJ101,,,BIND 100,BIND 100,KK LP 32,KK LP 32,KK LP 32,KK LP 32,KK LP 32,KK LP 32
+XI LPKC 1,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,BIND 79,BIND 79,MAT 54,,MAT 54,MAT 54,BING 24,BING 24,BING 24,BING 24,PKN102,PKN102,PKN102,,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,PKK KC 51,PKK KC 51,,PKK KC 51,PKK KC 51,PKK KC 51,PAG 71,PAG 71,PAG 71,MLK 113,MLK 113,PENJ101,PENJ101,PENJ101,,,BIND 79,BIND 79,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51
+XI LPKC 2,MAT 54,MAT 54,MAT 54,BIND 79,BIND 79,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,BIND 79,BIND 79,PKN102,,PKN102,PKN102,BING 24,BING 24,BING 24,BING 24,PAG 71,PAG 71,PAG 71,MLK 113,MLK 113,,PENJ101,PENJ101,PENJ101,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,,,PKK KC 51,PKK KC 51,PKK KC 51,PKK KC 51,PKK KC 51
+XI LPKC 3,BIND 79,BIND 79,MAT 54,MAT 54,MAT 54,BING 24,BING 24,KK KC 51,KK KC 51,KK KC 51,KK KC 51,,KK KC 51,KK KC 51,KK KC 51,KK KC 51,PKK KC 51,PKK KC 51,PKK KC 51,PAG 71,PAG 71,PAG 71,,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,PKN102,PKN102,,PKN102,PKK KC 51,PKK KC 51,BING 24,BING 24,MLK 113,MLK 113,PENJ101,PENJ101,PENJ101,,,BIND 79,BIND 79,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51
+XI DKV 1,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,BIND 68,BIND 68,MAT 116,,MAT 116,MAT 116,BING 27,BING 27,BING 27,BING 27,PKN78,PKN78,PKN78,,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,PKK DKV 108,PKK DKV 108,,PKK DKV 108,PKK DKV 108,PKK DKV 108,PAG 11,PAG 11,PAG 11,MLK 114,MLK 114,PENJ101,PENJ101,PENJ101,,,BIND 68,BIND 68,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108
+XI DKV 2,BIND 68,BIND 68,MAT 116,MAT 116,MAT 116,BING 27,BING 27,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,PKK DKV 108,PKK DKV 108,PKK DKV 108,PAG 11,PAG 11,PAG 11,,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,PKN78,PKN78,,PKN78,PKK DKV 108,PKK DKV 108,BING 27,BING 27,MLK 114,MLK 114,PENJ101,PENJ101,PENJ101,,,BIND 68,BIND 68,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108
+XI RPL 1,MAT 116,MAT 116,MAT 116,BIND 68,BIND 68,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,BIND 68,BIND 68,PKN56,,PKN56,PKN56,BING 49,BING 49,BING 49,BING 49,PAG 11,PAG 11,PAG 11,MLK 114,MLK 114,,PENJ101,PENJ101,PENJ101,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,,,PKK RPL 117,PKK RPL 117,PKK RPL 117,PKK RPL 117,PKK RPL 117
+XI RPL 2,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,BIND 68,BIND 68,MAT 116,,MAT 116,MAT 116,BING 49,BING 49,BING 49,BING 49,PKN56,PKN56,PKN56,,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,PKK RPL 117,PKK RPL 117,,PKK RPL 117,PKK RPL 117,PKK RPL 117,PAG 11,PAG 11,PAG 11,MLK 114,MLK 114,PENJ101,PENJ101,PENJ101,,,BIND 68,BIND 68,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93
+XI TKJ 1,KK TKJ 119,KK TKJ 119,KK TKJ 119,KK TKJ 119,KK TKJ 119,KK TKJ 119,KK TKJ 119,KK TKJ 119,BIND 68,BIND 68,MAT 116,,MAT 116,MAT 116,BING 49,BING 49,BING 49,BING 49,PKN56,PKN56,PKN56,,KK TKJ 55,KK TKJ 55,KK TKJ 55,KK TKJ 55,KK TKJ 55,KK TKJ 55,KK TKJ 55,KK TKJ 55,PKK TKJ 86,PKK TKJ 86,,PKK TKJ 86,PKK TKJ 86,PKK TKJ 86,PAG 82,PAG 82,PAG 82,MLK 114,MLK 114,PENJ101,PENJ101,PENJ101,,,BIND 68,BIND 68,KK TKJ 55,KK TKJ 55,KK TKJ 55,KK TKJ 55,KK TKJ 55,KK TKJ 55
+XI TKJ 2,BIND 68,BIND 68,MAT 116,MAT 116,MAT 116,BING 49,BING 49,KK TKJ 91,KK TKJ 91,KK TKJ 91,KK TKJ 91,,KK TKJ 91,KK TKJ 91,KK TKJ 91,KK TKJ 91,PKK TKJ 96,PKK TKJ 96,PKK TKJ 96,PAG 82,PAG 82,PAG 82,,KK TKJ 69,KK TKJ 69,KK TKJ 69,KK TKJ 69,KK TKJ 69,KK TKJ 69,KK TKJ 69,KK TKJ 69,PKN56,PKN56,,PKN56,PKK TKJ 96,PKK TKJ 96,BING 49,BING 49,MLK 114,MLK 114,PENJ101,PENJ101,PENJ101,,,BIND 68,BIND 68,KK TKJ 69,KK TKJ 69,KK TKJ 69,KK TKJ 69,KK TKJ 69,KK TKJ 69
+XI TKJ 3,MAT 116,MAT 116,MAT 116,BIND 68,BIND 68,KK TKJ 86,KK TKJ 86,KK TKJ 86,KK TKJ 86,KK TKJ 86,KK TKJ 86,,KK TKJ 86,KK TKJ 86,KK TKJ 86,KK TKJ 86,KK TKJ 86,KK TKJ 86,BIND 68,BIND 68,PKN56,,PKN56,PKN56,BING 49,BING 49,BING 49,BING 49,PAG 82,PAG 82,PAG 82,MLK 114,MLK 114,,PENJ101,PENJ101,PENJ101,KK TKJ 94,KK TKJ 94,KK TKJ 94,KK TKJ 94,KK TKJ 94,KK TKJ 94,KK TKJ 94,KK TKJ 94,,,PKK TKJ 91,PKK TKJ 91,PKK TKJ 91,PKK TKJ 91,PKK TKJ 91
+XI TEB,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,BIND 68,BIND 68,MAT 116,,MAT 116,MAT 116,BING 27,BING 27,BING 27,BING 27,PKN78,PKN78,PKN78,,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,PKK TEB 103,PKK TEB 103,,PKK TEB 103,PKK TEB 103,PKK TEB 103,PAG 11,PAG 11,PAG 11,MLK 114,MLK 114,PENJ101,PENJ101,PENJ101,,,BIND 68,BIND 68,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103
+XII MP 1,KK MP 81,KK MP 81,KK MP 81,KK MP 81,KK MP 81,KK MP 81,KK MP 81,KK MP 81,BIND 79,BIND 79,MAT 54,,MAT 54,MAT 54,BING 28,BING 28,BING 28,BING 28,PKN102,PKN102,PKN102,,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,PKK MP 81,PKK MP 81,,PKK MP 81,PKK MP 81,PKK MP 81,PAG 71,PAG 71,PAG 71,MLK 113,MLK 113,PENJ101,PENJ101,PENJ101,,,BIND 79,BIND 79,KK MP 81,KK MP 81,KK MP 81,KK MP 81,KK MP 81,KK MP 81
+XII MP 2,BIND 79,BIND 79,MAT 54,MAT 54,MAT 54,BING 28,BING 28,KK MP 81,KK MP 81,KK MP 81,KK MP 81,,KK MP 81,KK MP 81,KK MP 81,KK MP 81,PKK MP 81,PKK MP 81,PKK MP 81,PAG 71,PAG 71,PAG 71,,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,PKN102,PKN102,,PKN102,PKK MP 81,PKK MP 81,BING 28,BING 28,MLK 113,MLK 113,PENJ101,PENJ101,PENJ101,,,BIND 79,BIND 79,KK MP 81,KK MP 81,KK MP 81,KK MP 81,KK MP 81,KK MP 81
+XII MP 3,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,BIND 79,BIND 79,MAT 54,,MAT 54,MAT 54,BING 28,BING 28,BING 28,BING 28,PKN102,PKN102,PKN102,,KK MP 46,KK MP 46,KK MP 46,KK MP 46,KK MP 46,KK MP 46,KK MP 46,KK MP 46,PKK MP 46,PKK MP 46,,PKK MP 46,PKK MP 46,PKK MP 46,PAG 71,PAG 71,PAG 71,MLK 113,MLK 113,PENJ101,PENJ101,PENJ101,,,BIND 79,BIND 79,KK MP 46,KK MP 46,KK MP 46,KK MP 46,KK MP 46,KK MP 46
+XII AKL 1,BIND 100,BIND 100,MAT 77,MAT 77,MAT 77,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,,KK AKL 118,KK AKL 118,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,,KK AKL 32,PKK AKL 118,PKK AKL 118,PKK AKL 118,PKK AKL 118,PKK AKL 118,BING 5,BING 5,PKN32,PKN32,,PKN32,BIND 100,BIND 100,PAG 82,PAG 82,PAG 82,MLK 113,MLK 113,PENJ101,PENJ101,PENJ101,,,BING 5,BING 5,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118
+XII AKL 2,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,BIND 100,BIND 100,MAT 77,,MAT 77,MAT 77,BING 5,BING 5,BING 5,BING 5,PKN32,PKN32,PKN32,,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,PKK AKL 118,PKK AKL 118,,PKK AKL 118,PKK AKL 118,PKK AKL 118,PAG 82,PAG 82,PAG 82,MLK 113,MLK 113,PENJ101,PENJ101,PENJ101,,,BIND 100,BIND 100,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118
+XII LP,BIND 100,BIND 100,MAT 77,MAT 77,MAT 77,BING 5,BING 5,KK LP 32,KK LP 32,KK LP 32,KK LP 32,,KK LP 32,KK LP 32,KK LP 32,KK LP 32,PKK LP 32,PKK LP 32,PKK LP 32,PAG 82,PAG 82,PAG 82,,KK LP 32,KK LP 32,KK LP 32,KK LP 32,KK LP 32,KK LP 32,KK LP 32,KK LP 32,PKN32,PKN32,,PKN32,PKK LP 32,PKK LP 32,BING 5,BING 5,MLK 113,MLK 113,PENJ101,PENJ101,PENJ101,,,BIND 100,BIND 100,KK LP 32,KK LP 32,KK LP 32,KK LP 32,KK LP 32,KK LP 32
+XII LPKC 1,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,BIND 79,BIND 79,MAT 54,,MAT 54,MAT 54,BING 24,BING 24,BING 24,BING 24,PKN102,PKN102,PKN102,,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,PKK KC 51,PKK KC 51,,PKK KC 51,PKK KC 51,PKK KC 51,PAG 71,PAG 71,PAG 71,MLK 113,MLK 113,PENJ101,PENJ101,PENJ101,,,BIND 79,BIND 79,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51
+XII LPKC 2,MAT 54,MAT 54,MAT 54,BIND 79,BIND 79,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,BIND 79,BIND 79,PKN102,,PKN102,PKN102,BING 24,BING 24,BING 24,BING 24,PAG 71,PAG 71,PAG 71,MLK 113,MLK 113,,PENJ101,PENJ101,PENJ101,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,,,PKK KC 51,PKK KC 51,PKK KC 51,PKK KC 51,PKK KC 51
+XII LPKC 3,BIND 79,BIND 79,MAT 54,MAT 54,MAT 54,BING 24,BING 24,KK KC 51,KK KC 51,KK KC 51,KK KC 51,,KK KC 51,KK KC 51,KK KC 51,KK KC 51,PKK KC 51,PKK KC 51,PKK KC 51,PAG 71,PAG 71,PAG 71,,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,PKN102,PKN102,,PKN102,PKK KC 51,PKK KC 51,BING 24,BING 24,MLK 113,MLK 113,PENJ101,PENJ101,PENJ101,,,BIND 79,BIND 79,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51
+XII DKV 1,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,BIND 68,BIND 68,MAT 116,,MAT 116,MAT 116,BING 27,BING 27,BING 27,BING 27,PKN78,PKN78,PKN78,,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,PKK DKV 108,PKK DKV 108,,PKK DKV 108,PKK DKV 108,PKK DKV 108,PAG 11,PAG 11,PAG 11,MLK 114,MLK 114,PENJ101,PENJ101,PENJ101,,,BIND 68,BIND 68,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108
+XII DKV 2,BIND 68,BIND 68,MAT 116,MAT 116,MAT 116,BING 27,BING 27,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,PKK DKV 108,PKK DKV 108,PKK DKV 108,PAG 11,PAG 11,PAG 11,,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,PKN78,PKN78,,PKN78,PKK DKV 108,PKK DKV 108,BING 27,BING 27,MLK 114,MLK 114,PENJ101,PENJ101,PENJ101,,,BIND 68,BIND 68,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108
+XII RPL,MAT 116,MAT 116,MAT 116,BIND 68,BIND 68,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,BIND 68,BIND 68,PKN56,,PKN56,PKN56,BING 49,BING 49,BING 49,BING 49,PAG 11,PAG 11,PAG 11,MLK 114,MLK 114,,PENJ101,PENJ101,PENJ101,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,,,PKK RPL 117,PKK RPL 117,PKK RPL 117,PKK RPL 117,PKK RPL 117
+XII TKJ1,KK TKJ 119,KK TKJ 119,KK TKJ 119,KK TKJ 119,KK TKJ 119,KK TKJ 119,KK TKJ 119,KK TKJ 119,BING 49,BING 49,BING 49,,PKN56,PKN56,PKN56,KK TKJ 119,KK TKJ 119,KK TKJ 119,KK TKJ 119,BJPG 104,BJPG 104,BJPG 104,,KK TKJ 91,KK TKJ 91,KK TKJ 91,KK TKJ 91,PAG 82,PAG 82,PAG 82,BIND 68,BIND 68,BIND 68,KK TKJ 55,,KK TKJ 55,KK TKJ 55,MLK 114,MLK 114,MAT 116,MAT 116,MAT 116,MAT 116,KKTKJ 91,KKTKJ 91,KKTKJ 91,,,KK TKJ 55,KK TKJ 55,KK TKJ 55,PKK TKJ  86,PKK TKJ  86,PKK TKJ  86,PKK TKJ  86,PKK TKJ  86
+XII TKJ2,MLK 114,MLK 114,BING 24,BING 24,BING 24,BING 24,BJPG 104,BJPG 104,BJPG 104,BJPG 104,BJPG 104,,BIND 68,BIND 68,BIND 68,PAG 82,PAG 82,PAG 82,KK TKJ 69,KK TKJ 69,KK TKJ 69,KK TKJ 69,,KK TKJ 69,KK TKJ 69,KK TKJ 69,KK TKJ 69,KK TKJ 87,KK TKJ 87,KK TKJ 87,KK TKJ 87,PKN56,PKN56,PKN56,,KK TKJ 87,KK TKJ 87,KK TKJ 87,MAT 116,MAT 116,MAT 116,MAT 116,KK TKJ 69,KK TKJ 69,KK TKJ 69,KK TKJ 69,,,PKK TKJ  96,PKK TKJ  96,PKK TKJ  96,PKK TKJ  96,PKK TKJ  96
+XII TKJ3,BIND 68,BIND 68,BIND 68,PAG 82,PAG 82,PAG 82,KK TKJ 86,KK TKJ 86,KK TKJ 86,KK TKJ 86,KK TKJ 86,,BING 27,BING 27,BING 27,KK TKJ 94,KK TKJ 94,KK TKJ 94,KK TKJ 94,KK TKJ 94,MLK 114,MLK 114,,KK TKJ 86,KK TKJ 86,KK TKJ 86,KK TKJ 86,MAT 116,MAT 116,MAT 116,MAT 116,KK TKJ 94,KK TKJ 94,KK TKJ 94,,PKN78,PKN78,PKN78,BJPG 104,BJPG 104,BJPG 104,KK TKJ 94,KK TKJ 94,KK TKJ 94,KK TKJ 94,KK TKJ 94,,,PKK TKJ  91,PKK TKJ  91,PKK TKJ  91,PKK TKJ  91,PKK TKJ  91
+XII TKJ4,MAT 116,MAT 116,MAT 116,MAT 116,BING 49,BING 49,BING 49,BIND 68,BIND 68,BIND 68,PKK TKJ  91,,PKK TKJ  91,PKK TKJ  91,PKK TKJ  91,PKK TKJ  91,KK TKJ 94,KK TKJ 94,KK TKJ 94,KK TKJ 94,KK TKJ 94,,KK TKJ 94,KK TKJ 94,KK TKJ 94,KK TKJ 55,KK TKJ 55,KK TKJ 55,KK TKJ 55,KK TKJ 55,PAG 82,PAG 82,,PAG 82,PKN78,PKN78,PKN78,BJPG 104,BJPG 104,BJPG 104,MLK 114,MLK 114,KK TKJ 91,KK TKJ 91,KK TKJ 91,KK TKJ 91,,,KK TKJ 91,KK TKJ 91,KK TKJ 91,KK TKJ 91,KK TKJ 91
+XII TEB,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,BIND 68,BIND 68,MAT 116,,MAT 116,MAT 116,BING 27,BING 27,BING 27,BING 27,PKN78,PKN78,PKN78,,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,PKK TEB 103,PKK TEB 103,,PKK TEB 103,PKK TEB 103,PKK TEB 103,PAG 11,PAG 11,PAG 11,MLK 114,MLK 114,PENJ101,PENJ101,PENJ101,,,BIND 68,BIND 68,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103`;
 
 // LOCALSTORAGE DATA SDK EMULATION
 const customDataSdk = {
   init: function(handler) {
     const localData = localStorage.getItem('e_absensi_data');
     allRecords = localData ? JSON.parse(localData) : [];
-    
-    // Auto-inject daftar kelas baru jika belum terdaftar sama sekali
-    let dataUpdated = false;
-    daftarKelasBaru.forEach(namaKelas => {
-      const exists = allRecords.some(r => r.type === 'kelas' && r.nama === namaKelas);
-      if (!exists) {
-        allRecords.push({
-          type: 'kelas',
-          nama: namaKelas,
-          kelas: '', mapel: '', guru: '', jam_ke: 0, hadir: false, keterangan: '', tanggal: '', hari: '',
-          __backendId: 'id_' + Date.now() + Math.random().toString(36).substr(2, 5)
-        });
-        dataUpdated = true;
-      }
-    });
-
-    if (dataUpdated) {
-      localStorage.setItem('e_absensi_data', JSON.stringify(allRecords));
-    }
-
     this.handler = handler;
     this.handler.onDataChanged(allRecords);
   },
@@ -269,8 +291,96 @@ const customDataSdk = {
     allRecords = allRecords.filter(r => r.__backendId !== obj.__backendId);
     this.saveToLocal();
     return { isOk: true };
+  },
+  clearJadwalDanKelas: function() {
+    allRecords = allRecords.filter(r => r.type !== 'kelas' && r.type !== 'jadwal');
+    this.saveToLocal();
   }
 };
+
+// SINKRONISASI DATABASE JADWAL BERDASARKAN CSV MAPPER BERIKUT:
+function eksekusiSinkronisasiJadwalCSV() {
+  if (!confirm("Apakah Anda yakin ingin menyinkronkan data? Jadwal & Kelas lama akan diganti dengan Jadwal Resmi dari file KBM Genap 2025/2026.")) return;
+
+  // Bersihkan data kelas & jadwal lama agar bersih
+  customDataSdk.clearJadwalDanKelas();
+
+  const barisData = rawCsvData.trim().split('\n');
+  let jumlahJadwalTerbuat = 0;
+
+  barisData.forEach(baris => {
+    const kolom = baris.split(',');
+    let namaKelasRaw = kolom[0].trim();
+    if (!namaKelasRaw) return;
+
+    // Normalisasi penulisan nama kelas XII TKJ1 -> XII TKJ 1
+    if (namaKelasRaw === "XII TKJ1") namaKelasRaw = "XII TKJ 1";
+    if (namaKelasRaw === "XII TKJ2") namaKelasRaw = "XII TKJ 2";
+    if (namaKelasRaw === "XII TKJ3") namaKelasRaw = "XII TKJ 3";
+    if (namaKelasRaw === "XII TKJ4") namaKelasRaw = "XII TKJ 4";
+
+    // 1. Daftarkan Kelas ke Database
+    allRecords.push({
+      type: 'kelas', nama: namaKelasRaw, kelas: '', mapel: '', guru: '', jam_ke: 0, hadir: false, keterangan: '', tanggal: '', hari: '',
+      __backendId: 'id_kls_' + Math.random().toString(36).substr(2, 7)
+    });
+
+    // 2. Pemetaan Blok Kolom Berdasarkan Format Hari di File CSV Anda
+    // Senin: index 1 s/d 12 (12 Jam)
+    // Selasa: index 14 s/d 24 (11 Jam)
+    // Rabu: index 26 s/d 36 (11 Jam)
+    // Kamis: index 38 s/d 48 (11 Jam)
+    // Jumat: index 50 s/d 54 (5 Jam)
+    const petunjukHari = [
+      { namaHari: "Senin", indeksAwal: 1, totalJam: 12 },
+      { namaHari: "Selasa", indeksAwal: 14, totalJam: 11 },
+      { namaHari: "Rabu", indeksAwal: 26, totalJam: 11 },
+      { namaHari: "Kamis", indeksAwal: 38, totalJam: 11 },
+      { namaHari: "Jumat", indeksAwal: 50, totalJam: 5 }
+    ];
+
+    petunjukHari.forEach(h => {
+      for (let jam = 1; jam <= h.totalJam; jam++) {
+        const indeksKolom = h.indeksAwal + (jam - 1);
+        if (indeksKolom >= kolom.length) break;
+
+        const teksSel = kolom[indeksKolom] ? kolom[indeksKolom].trim() : "";
+        
+        // Lewati cell jika kosong atau berisi Upacara/Sholat/Kosong
+        if (!teksSel || teksSel === "" || teksSel.toUpperCase().includes("UPACARA")) continue;
+
+        // Pisahkan nama mata pelajaran dan kode angka guru (contoh: "DDMP 81" -> Mapel: DDMP, Guru: Guru 81)
+        const potongan = teksSel.split(' ');
+        let namaMapel = potongan[0];
+        let kodeGuru = potongan[1] ? "Guru " + potongan[1] : "Guru Utama";
+
+        if(potongan.length > 2) {
+          // Kasus khusus untuk token ganda seperti "PKK TKJ  86"
+          const cleanTokens = potongan.filter(t => t.trim() !== "");
+          kodeGuru = "Guru " + cleanTokens[cleanTokens.length - 1];
+          cleanTokens.pop();
+          namaMapel = cleanTokens.join(' ');
+        }
+
+        // Simpan baris jadwal pelajaran hasil ekstrak CSV
+        allRecords.push({
+          type: 'jadwal',
+          hari: h.namaHari,
+          kelas: namaKelasRaw,
+          jam_ke: jam,
+          mapel: namaMapel,
+          guru: kodeGuru,
+          nama: '', hadir: false, keterangan: '', tanggal: '',
+          __backendId: 'id_jdw_' + Math.random().toString(36).substr(2, 9)
+        });
+        jumlahJadwalTerbuat++;
+      }
+    });
+  });
+
+  customDataSdk.saveToLocal();
+  alert(`⚡ Sinkronisasi Sukses! \nSemua kelas telah dibuat otomatis dan sebanyak ${jumlahJadwalTerbuat} slot jadwal KBM berhasil di-import.`);
+}
 
 function getNamaHariDariTanggal(dateString) {
   const d = new Date(dateString);
@@ -333,6 +443,9 @@ function updateAdminStatus() {
   lucide.createIcons();
 }
 
+// BIND TOMBOL SYNC CSV DI PANEL ADMIN
+document.getElementById('btn-sync-csv').addEventListener('click', eksekusiSinkronisasiJadwalCSV);
+
 // ADMIN TAB NAVIGATION
 document.getElementById('btn-kelas').addEventListener('click', () => {
   document.getElementById('kelas-tab').classList.remove('hidden');
@@ -370,7 +483,7 @@ document.getElementById('btn-add-kelas').addEventListener('click', async () => {
 
 function renderKelasList() {
   const list = document.getElementById('kelas-list');
-  const kelas = allRecords.filter(r => r.type === 'kelas');
+  const kelas = allRecords.filter(r => r.type === 'kelas').sort((a,b) => a.nama.localeCompare(b.nama));
   list.innerHTML = kelas.map(k => `
     <tr class="border-b border-slate-100 hover:bg-blue-50/50 transition duration-150">
       <td class="px-4 py-3 font-medium text-slate-700 cursor-pointer hover:text-blue-600" onclick="lihatDetailJadwalKelas('${k.nama}')">
@@ -382,7 +495,7 @@ function renderKelasList() {
         </button>
       </td>
     </tr>
-  `).join('') || '<tr><td colspan="2" class="p-4 text-center text-slate-400">Tidak ada kelas</td></tr>';
+  `).join('') || '<tr><td class="p-4 text-center text-slate-400">Belum ada kelas. Klik tombol Sinkronkan di atas.</td></tr>';
 }
 
 // PANEL DETAIL JADWAL KELAS & EDIT INLINE
@@ -410,14 +523,12 @@ function renderDetailJadwalList() {
     return a.jam_ke - b.jam_ke;
   });
 
-  const listGuru = allRecords.filter(r => r.type === 'guru');
-
   tbody.innerHTML = listJadwal.map(j => `
-    <tr id="row-${j.__backendId}" class="border-b border-slate-100">
+    <tr id="row-${j.__backendId}" class="border-b border-slate-100 hover:bg-slate-50/50">
       <td class="px-3 py-2 font-medium text-blue-600">${j.hari}</td>
-      <td class="px-3 py-2">${j.jam_ke}</td>
-      <td class="px-3 py-2">${j.mapel}</td>
-      <td class="px-3 py-2">${j.guru}</td>
+      <td class="px-3 py-2 font-semibold text-slate-500">Jam ke-${j.jam_ke}</td>
+      <td class="px-3 py-2 text-slate-800">${j.mapel}</td>
+      <td class="px-3 py-2 text-slate-600 font-medium">${j.guru}</td>
       <td class="px-3 py-2 text-center whitespace-nowrap">
         <button class="px-2 py-1 bg-amber-500 text-white rounded text-xs hover:bg-amber-600 mr-1" onclick="aktifkanModeEditJadwal('${j.__backendId}')">
           Edit
@@ -435,8 +546,6 @@ function aktifkanModeEditJadwal(id) {
   if (!j) return;
 
   const row = document.getElementById(`row-${id}`);
-  const listGuru = allRecords.filter(r => r.type === 'guru');
-
   row.innerHTML = `
     <td class="px-3 py-1">
       <select id="edit-hari-${id}" class="border border-slate-300 rounded px-1 py-1 text-xs w-full">
@@ -448,15 +557,13 @@ function aktifkanModeEditJadwal(id) {
       </select>
     </td>
     <td class="px-3 py-1">
-      <input type="number" id="edit-jam-${id}" value="${j.jam_ke}" min="1" max="10" class="border border-slate-300 rounded px-1 py-1 text-xs w-14">
+      <input type="number" id="edit-jam-${id}" value="${j.jam_ke}" min="1" max="12" class="border border-slate-300 rounded px-1 py-1 text-xs w-14">
     </td>
     <td class="px-3 py-1">
-      <input type="text" id="edit-mapel-${id}" value="${j.mapel}" class="border border-slate-300 rounded px-1 py-1 text-xs w-full">
+      <input type="text" id="edit-mapel-${id}" value="${j.mapel}" class="border border-slate-300 rounded px-1 py-1 text-xs w-full font-bold">
     </td>
     <td class="px-3 py-1">
-      <select id="edit-guru-${id}" class="border border-slate-300 rounded px-1 py-1 text-xs w-full">
-        ${listGuru.map(g => `<option value="${g.nama}" ${g.nama===j.guru?'selected':''}>${g.nama}</option>`).join('')}
-      </select>
+      <input type="text" id="edit-guru-${id}" value="${j.guru}" class="border border-slate-300 rounded px-1 py-1 text-xs w-full">
     </td>
     <td class="px-3 py-1 text-center whitespace-nowrap">
       <button class="px-2 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700 mr-1" onclick="simpanPerubahanJadwal('${id}')">
@@ -476,9 +583,9 @@ async function simpanPerubahanJadwal(id) {
   const hari = document.getElementById(`edit-hari-${id}`).value;
   const jam_ke = parseInt(document.getElementById(`edit-jam-${id}`).value);
   const mapel = document.getElementById(`edit-mapel-${id}`).value.trim();
-  const guru = document.getElementById(`edit-guru-${id}`).value;
+  const guru = document.getElementById(`edit-guru-${id}`).value.trim();
 
-  if (!mapel || !jam_ke) return alert('Semua data edit harus terisi!');
+  if (!mapel || !jam_ke || !guru) return alert('Semua data edit harus diisi!');
 
   await customDataSdk.update({ ...existing, hari, jam_ke, mapel, guru });
   showSave("Jadwal Diperbarui");
@@ -508,25 +615,21 @@ function renderGuruList() {
         </button>
       </td>
     </tr>
-  `).join('') || '<tr><td colspan="2" class="p-4 text-center text-slate-400">Tidak ada guru</td></tr>';
+  `).join('') || '<tr><td class="p-4 text-center text-slate-400">Gunakan Kode Guru Otomatis hasil sinkronisasi CSV di tabel Jadwal.</td></tr>';
 }
 
 // JADWAL FUNCTIONS GLOBAL
 function updateJadwalSelects() {
   const kelasSel = document.getElementById('jadwal-kelas');
-  const guruSel = document.getElementById('jadwal-guru');
-  const kelas = allRecords.filter(r => r.type === 'kelas');
-  const guru = allRecords.filter(r => r.type === 'guru');
-  
+  const kelas = allRecords.filter(r => r.type === 'kelas').sort((a,b) => a.nama.localeCompare(b.nama));
   kelasSel.innerHTML = '<option value="">-- Pilih Kelas --</option>' + kelas.map(k => `<option value="${k.nama}">${k.nama}</option>`).join('');
-  guruSel.innerHTML = '<option value="">-- Pilih Guru --</option>' + guru.map(g => `<option value="${g.nama}">${g.nama}</option>`).join('');
 }
 
 document.getElementById('btn-add-jadwal').addEventListener('click', async () => {
   const hari = document.getElementById('jadwal-hari').value;
   const kelas = document.getElementById('jadwal-kelas').value;
-  const guru = document.getElementById('jadwal-guru').value;
   const mapel = document.getElementById('jadwal-mapel').value.trim();
+  const guru = document.getElementById('jadwal-guru').value.trim();
   const jam_ke = parseInt(document.getElementById('jadwal-jam').value);
 
   if (!hari || !kelas || !guru || !mapel || !jam_ke) return alert('Semua field harus diisi');
@@ -534,6 +637,7 @@ document.getElementById('btn-add-jadwal').addEventListener('click', async () => 
   const result = await customDataSdk.create({ type: 'jadwal', hari, kelas, guru, mapel, jam_ke, nama: '', hadir: false, keterangan: '', tanggal: '' });
   if (result.isOk) {
     document.getElementById('jadwal-mapel').value = '';
+    document.getElementById('jadwal-guru').value = '';
     document.getElementById('jadwal-jam').value = '';
     showSave("Jadwal disimpan");
   }
@@ -542,24 +646,25 @@ document.getElementById('btn-add-jadwal').addEventListener('click', async () => 
 function renderJadwalList() {
   const list = document.getElementById('jadwal-list');
   const jadwal = allRecords.filter(r => r.type === 'jadwal').sort((a, b) => {
+    if(a.kelas !== b.kelas) return a.kelas.localeCompare(b.kelas);
     if(urutanHari[a.hari] !== urutanHari[b.hari]) return urutanHari[a.hari] - urutanHari[b.hari];
     return a.jam_ke - b.jam_ke;
   });
   
   list.innerHTML = jadwal.map(j => `
-    <tr class="border-b border-slate-100">
-      <td class="px-4 py-3 font-semibold text-blue-600">${j.hari}</td>
-      <td class="px-4 py-3">${j.kelas}</td>
-      <td class="px-4 py-3">${j.jam_ke}</td>
-      <td class="px-4 py-3">${j.mapel}</td>
-      <td class="px-4 py-3">${j.guru}</td>
-      <td class="px-4 py-3 text-center">
-        <button class="px-3 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600" onclick="deleteRecord('${j.__backendId}')">
+    <tr class="border-b border-slate-100 text-xs">
+      <td class="px-4 py-2 font-semibold text-blue-600">${j.hari}</td>
+      <td class="px-4 py-2 font-bold">${j.kelas}</td>
+      <td class="px-4 py-2 text-slate-500">Jam ${j.jam_ke}</td>
+      <td class="px-4 py-2 font-medium">${j.mapel}</td>
+      <td class="px-4 py-2">${j.guru}</td>
+      <td class="px-4 py-2 text-center">
+        <button class="px-2 py-0.5 bg-red-500 text-white rounded text-[10px]" onclick="deleteRecord('${j.__backendId}')">
           Hapus
         </button>
       </td>
     </tr>
-  `).join('') || '<tr><td colspan="6" class="p-4 text-center text-slate-400">Tidak ada jadwal</td></tr>';
+  `).join('') || '<tr><td colspan="6" class="p-4 text-center text-slate-400">Tidak ada jadwal global.</td></tr>';
 }
 
 // DELETE FUNCTION GENERAL
@@ -599,7 +704,7 @@ function renderGuruTable() {
   const namaHariAktif = document.getElementById('nama-hari-aktif');
   
   if (!selectedKelas) {
-    tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-slate-400">Silahkan pilih kelas terlebih dahulu untuk menampilkan jadwal.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-slate-400">Silahkan pilih kelas terlebih dahulu untuk menampilkan jadwal resmi.</td></tr>';
     infoHariBox.classList.add('hidden');
     return;
   }
@@ -622,9 +727,9 @@ function renderGuruTable() {
     
     return `
       <tr class="border-b border-slate-100 hover:bg-slate-50">
-        <td class="px-4 py-3 font-medium">${j.jam_ke}</td>
-        <td class="px-4 py-3">${j.mapel}</td>
-        <td class="px-4 py-3">${j.guru}</td>
+        <td class="px-4 py-3 font-semibold text-slate-500">Jam Ke-${j.jam_ke}</td>
+        <td class="px-4 py-3 font-bold text-slate-800">${j.mapel}</td>
+        <td class="px-4 py-3 font-medium text-slate-600">${j.guru}</td>
         <td class="px-4 py-3 text-center">
           <input type="checkbox" class="chk-hadir w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer" ${hadir ? 'checked' : ''} data-kelas="${j.kelas}" data-guru="${j.guru}" data-jam="${j.jam_ke}" data-mapel="${j.mapel}" onchange="saveAbsensi(this)">
         </td>
@@ -639,7 +744,7 @@ function renderGuruTable() {
         </td>
       </tr>
     `;
-  }).join('') || `<tr><td colspan="5" class="p-8 text-center text-slate-400">Tidak ada jadwal pelajaran untuk kelas ini di hari ${namaHariIni}.</td></tr>`;
+  }).join('') || `<tr><td colspan="5" class="p-8 text-center text-slate-400">Tidak ada jadwal pelajaran resmi untuk kelas ini di hari ${namaHariIni}.</td></tr>`;
 }
 
 async function saveAbsensi(el) {
@@ -655,7 +760,7 @@ async function saveAbsensi(el) {
     await customDataSdk.update({ ...existing, hadir, keterangan });
   } else {
     await customDataSdk.create({
-      type: 'absensi', kelas, guru, jam_ke: jam, mapel: row.cells[1].textContent, hadir, keterangan, tanggal: selectedDate, nama: '', hari: ''
+      type: 'absensi', kelas, guru, jam_ke: jam, mapel: el.dataset.mapel || row.cells[1].textContent, hadir, keterangan, tanggal: selectedDate, nama: '', hari: ''
     });
   }
   showSave("Absensi Disimpan");
@@ -676,7 +781,7 @@ function renderAdminView() {
 }
 
 function initGuruView() {
-  const kelas = allRecords.filter(r => r.type === 'kelas');
+  const kelas = allRecords.filter(r => r.type === 'kelas').sort((a,b) => a.nama.localeCompare(b.nama));
   const select = document.getElementById('kelas-select');
   select.innerHTML = '<option value="">-- Pilih Kelas --</option>' + kelas.map(k => `<option value="${k.nama}" ${k.nama === selectedKelas ? 'selected' : ''}>${k.nama}</option>`).join('');
 }
