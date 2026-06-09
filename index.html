@@ -161,7 +161,7 @@
        <select id="jadwal-kelas" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"> <option value="">-- Pilih Kelas --</option> </select> 
        <select id="jadwal-guru" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"> <option value="">-- Pilih Guru --</option> </select> 
        <input type="text" id="jadwal-mapel" placeholder="Mapel" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"> 
-       <input type="number" id="jadwal-jam" placeholder="Jam ke-" min="1" max="12" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"> 
+       <input type="number" id="jadwal-jam" placeholder="Jam ke-" min="1" max="10" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"> 
        <button id="btn-add-jadwal" class="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700"><i data-lucide="plus" class="w-4 h-4 inline mr-1"></i>Tambah</button>
       </div>
       <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
@@ -210,39 +210,498 @@ let adminSelectedDetailKelas = "";
 const namaHariIndo = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
 const urutanHari = {"Senin":1, "Selasa":2, "Rabu":3, "Kamis":4, "Jumat":5};
 
+// DAFTAR KELAS BARU YANG DIINPUT OTOMATIS
 const daftarKelasBaru = [
   "X MP 1", "X MP 2", "X MP 3", "X AKL 1", "X AKL 2", "X AKL 3", "X AKL 4", "X LP", "X LPKC 1", "X LPKC 2", "X LPKC 3", "X DKV 1", "X DKV 2", "X RPL", "X TKJ 1", "X TKJ 2", "X TKJ 3", "X TEB",
   "XI MP 1", "XI MP 2", "XI MP 3", "XI AKL 1", "XI AKL 2", "XI AKL 3", "XI AKL 4", "XI LP", "XI LPKC 1", "XI LPKC 2", "XI LPKC 3", "XI DKV 1", "XI DKV 2", "XI RPL 1", "XI RPL 2", "XI TKJ 1", "XI TKJ 2", "XI TKJ 3", "XI TEB",
   "XII MP 1", "XII MP 2", "XII MP 3", "XII AKL 1", "XII AKL 2", "XII LP", "XII LPKC 1", "XII LPKC 2", "XII LPKC 3", "XII DKV 1", "XII DKV 2", "XII RPL", "XII TKJ 1", "XII TKJ 2", "XII TKJ 3", "XII TKJ 4", "XII TEB"
 ];
 
-// DATA SEEDER MASTER GURU SMK NEGERI 1 KOTAMOBAGU
-const masterGuruSmp = [
-  { nomor: 1, nama: "Hi.Hardi Mokoginta,S.Pd.MM" }, { nomor: 2, nama: "Dra.R. Kawulusan, M.M." },
-  { nomor: 3, nama: "I Wayan Supartha.SPd" }, { nomor: 4, nama: "Ishak Stion, S.Pd" },
-  { nomor: 6, nama: "Hi. Sahrudin S.Pd MM" }, { nomor: 10, nama: "Inggrit S. lndari S.Pd" },
-  { nomor: 11, nama: "Kalsum Malah S.Pd" }, { nomor: 16, nama: "Sriyanti Mokoagow S.Pd" },
-  { nomor: 24, nama: "Hanny S. Pangalila S.Pd" }, { nomor: 27, nama: "Sakina Mokoagow. S.Pd" },
-  { nomor: 28, nama: "Fitri Ali, S.Pd." }, { nomor: 30, nama: "Reflin J. Palima S.Pd" },
-  { nomor: 34, nama: "Rusmiati Jassin S.Pd" }, { nomor: 35, nama: "Rahmatia Gobel, S.Pd" },
-  { nomor: 39, nama: "Feibe G. P. Oroh, S.Pd." }, { nomor: 42, nama: "Stevani Paputungan, S.Pd." },
-  { nomor: 45, nama: "Heru Pratama, S.Kom" }, { font: 46, nomor: 46, nama: "Ray Damo, S.Pd." },
-  { nomor: 49, nama: "Vanny C. S. Tangian, S.Pd" }, { nomor: 55, nama: "Veronika S. Masuara, S.T" },
-  { nomor: 56, nama: "Kurniawati, S.Pd" }, { nomor: 68, nama: "Marini Bahar, S.Kom" },
-  { nomor: 69, nama: "Sugandhi P. Ibrahim, S.Kom." }, { nomor: 71, nama: "Paramita Ilam, S.Pd." },
-  { nomor: 78, nama: "Fahri Pontoh, S.Pd." }, { nomor: 80, nama: "Meiske S. R. Tulung, S.Pd" },
-  { nomor: 81, nama: "Suryani, S.Pd" }, { nomor: 82, nama: "Nurdiana Mokoginta, S.Pd" },
-  { nomor: 83, nama: "Hasnia Paputungan, S.Pd" }, { nomor: 86, nama: "Nolfie R. M. Tangkere, S.T" },
-  { nomor: 87, nama: "Suriati Mokodompit, S.Kom" }, { nomor: 91, nama: "Chandra C. Buchari, S.Kom" },
-  { nomor: 92, nama: "Fikry Pobela, S.Kom" }, { nomor: 93, nama: "Azis Al.Jufri, S.Kom" },
-  { nomor: 94, nama: "Doni Tabilantang, S.Pd" }, { nomor: 95, nama: "Fanhy Afandy Detu, S.Pd" },
-  { nomor: 96, nama: "Happy Rizky Maringka, S.Pd" }, { nomor: 97, nama: "Supriadi Paputungan, S.Kom" },
-  { nomor: 98, nama: "Agrianto M. G. S. Tumipa, S.Kom" }, { nomor: 101, nama: "Alifky Bakung, S.Pd" },
-  { nomor: 102, nama: "Pratiwi W.Mamonto, S.Pd" }, { nomor: 104, nama: "Eka Pratiwi, S.Kom" },
-  { nomor: 110, nama: "Meiske R. S. Tulung, S.Pd" }, { nomor: 113, nama: "Ningsi Paputungan, S.Pd" },
-  { nomor: 114, nama: "Indah F. S. Ramadhan, S.Pd" }, { nomor: 116, nama: "January Andiny Panawar,S.Pd" },
-  { nomor: 117, nama: "Sitti Rachma, S.Pd" }, { nomor: 119, nama: "Grand T. G. Tumipa, S.Kom" }
-];
+document.getElementById('date-picker').value = selectedDate;
 
-// DATA SEEDER MASTER JADWAL (DATABASE_JADWAL)
-const masterJadwalSmp =
+// LOCALSTORAGE DATA SDK EMULATION
+const customDataSdk = {
+  init: function(handler) {
+    const localData = localStorage.getItem('e_absensi_data');
+    allRecords = localData ? JSON.parse(localData) : [];
+    
+    // Auto-inject daftar kelas baru jika belum terdaftar sama sekali
+    let dataUpdated = false;
+    daftarKelasBaru.forEach(namaKelas => {
+      const exists = allRecords.some(r => r.type === 'kelas' && r.nama === namaKelas);
+      if (!exists) {
+        allRecords.push({
+          type: 'kelas',
+          nama: namaKelas,
+          kelas: '', mapel: '', guru: '', jam_ke: 0, hadir: false, keterangan: '', tanggal: '', hari: '',
+          __backendId: 'id_' + Date.now() + Math.random().toString(36).substr(2, 5)
+        });
+        dataUpdated = true;
+      }
+    });
+
+    if (dataUpdated) {
+      localStorage.setItem('e_absensi_data', JSON.stringify(allRecords));
+    }
+
+    this.handler = handler;
+    this.handler.onDataChanged(allRecords);
+  },
+  saveToLocal: function() {
+    localStorage.setItem('e_absensi_data', JSON.stringify(allRecords));
+    this.handler.onDataChanged(allRecords);
+  },
+  create: async function(obj) {
+    obj.__backendId = 'id_' + Date.now() + Math.random().toString(36).substr(2, 5);
+    allRecords.push(obj);
+    this.saveToLocal();
+    return { isOk: true };
+  },
+  update: async function(obj) {
+    const idx = allRecords.findIndex(r => r.__backendId === obj.__backendId);
+    if (idx !== -1) {
+      allRecords[idx] = obj;
+      this.saveToLocal();
+    }
+    return { isOk: true };
+  },
+  delete: async function(obj) {
+    allRecords = allRecords.filter(r => r.__backendId !== obj.__backendId);
+    this.saveToLocal();
+    return { isOk: true };
+  }
+};
+
+function getNamaHariDariTanggal(dateString) {
+  const d = new Date(dateString);
+  return namaHariIndo[d.getDay()];
+}
+
+// LOGIN FUNCTIONS
+document.getElementById('login-btn').addEventListener('click', () => {
+  if (isAdminLoggedIn) {
+    isAdminLoggedIn = false;
+    adminName = "";
+    updateAdminStatus();
+  } else {
+    document.getElementById('login-modal').classList.remove('hidden');
+    document.getElementById('admin-name').focus();
+  }
+});
+
+document.getElementById('login-confirm').addEventListener('click', () => {
+  const name = document.getElementById('admin-name').value.trim();
+  if (name) {
+    isAdminLoggedIn = true;
+    adminName = name;
+    document.getElementById('login-modal').classList.add('hidden');
+    document.getElementById('admin-name').value = '';
+    updateAdminStatus();
+  }
+});
+
+document.getElementById('login-cancel').addEventListener('click', () => {
+  document.getElementById('login-modal').classList.add('hidden');
+  document.getElementById('admin-name').value = '';
+});
+
+function updateAdminStatus() {
+  const statusEl = document.getElementById('admin-status');
+  const loginBtn = document.getElementById('login-btn');
+  const guruView = document.getElementById('guru-view');
+  const adminView = document.getElementById('admin-view');
+
+  if (isAdminLoggedIn) {
+    statusEl.textContent = `✅ Admin: ${adminName}`;
+    statusEl.className = 'text-xs text-green-600 mt-1 font-medium';
+    loginBtn.innerHTML = '<i data-lucide="log-out" class="w-4 h-4 inline mr-1"></i> Logout';
+    loginBtn.className = 'px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition';
+    guruView.classList.replace('block', 'hidden');
+    adminView.classList.remove('hidden');
+    renderAdminView();
+  } else {
+    statusEl.textContent = '📌 Belum login';
+    statusEl.className = 'text-xs text-slate-500 mt-1';
+    loginBtn.innerHTML = '<i data-lucide="log-in" class="w-4 h-4 inline mr-1"></i> Login Admin';
+    loginBtn.className = 'px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition';
+    adminView.classList.add('hidden');
+    guruView.classList.replace('hidden', 'block');
+    tutupDetailKelas();
+    initGuruView();
+    renderGuruTable();
+  }
+  lucide.createIcons();
+}
+
+// ADMIN TAB NAVIGATION
+document.getElementById('btn-kelas').addEventListener('click', () => {
+  document.getElementById('kelas-tab').classList.remove('hidden');
+  document.getElementById('guru-tab').classList.add('hidden');
+  document.getElementById('jadwal-tab').classList.add('hidden');
+  renderKelasList();
+});
+
+document.getElementById('btn-guru').addEventListener('click', () => {
+  document.getElementById('kelas-tab').classList.add('hidden');
+  document.getElementById('guru-tab').classList.remove('hidden');
+  document.getElementById('jadwal-tab').classList.add('hidden');
+  renderGuruList();
+});
+
+document.getElementById('btn-jadwal').addEventListener('click', () => {
+  document.getElementById('kelas-tab').classList.add('hidden');
+  document.getElementById('guru-tab').classList.add('hidden');
+  document.getElementById('jadwal-tab').classList.remove('hidden');
+  updateJadwalSelects();
+  renderJadwalList();
+});
+
+// KELAS FUNCTIONS
+document.getElementById('btn-add-kelas').addEventListener('click', async () => {
+  const nama = document.getElementById('kelas-input').value.trim();
+  if (!nama) return alert('Nama kelas tidak boleh kosong');
+  
+  const result = await customDataSdk.create({ type: 'kelas', nama, kelas: '', mapel: '', guru: '', jam_ke: 0, hadir: false, keterangan: '', tanggal: '', hari: '' });
+  if (result.isOk) {
+    document.getElementById('kelas-input').value = '';
+    showSave("Kelas ditambahkan");
+  }
+});
+
+function renderKelasList() {
+  const list = document.getElementById('kelas-list');
+  const kelas = allRecords.filter(r => r.type === 'kelas');
+  list.innerHTML = kelas.map(k => `
+    <tr class="border-b border-slate-100 hover:bg-blue-50/50 transition duration-150">
+      <td class="px-4 py-3 font-medium text-slate-700 cursor-pointer hover:text-blue-600" onclick="lihatDetailJadwalKelas('${k.nama}')">
+        📁 ${k.nama}
+      </td>
+      <td class="px-4 py-3 text-center">
+        <button class="px-2 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600" onclick="deleteRecord('${k.__backendId}'); event.stopPropagation();">
+          Hapus
+        </button>
+      </td>
+    </tr>
+  `).join('') || '<tr><td colspan="2" class="p-4 text-center text-slate-400">Tidak ada kelas</td></tr>';
+}
+
+// PANEL DETAIL JADWAL KELAS & EDIT INLINE
+function lihatDetailJadwalKelas(namaKelas) {
+  adminSelectedDetailKelas = namaKelas;
+  document.getElementById('kelas-blank-panel').classList.add('hidden');
+  const panel = document.getElementById('kelas-detail-panel');
+  panel.classList.remove('hidden');
+  document.getElementById('detail-nama-kelas').textContent = namaKelas;
+  renderDetailJadwalList();
+}
+
+function tutupDetailKelas() {
+  adminSelectedDetailKelas = "";
+  document.getElementById('kelas-detail-panel').classList.add('hidden');
+  document.getElementById('kelas-blank-panel').classList.remove('hidden');
+}
+
+function renderDetailJadwalList() {
+  const tbody = document.getElementById('detail-jadwal-list');
+  if (!adminSelectedDetailKelas) return;
+
+  const listJadwal = allRecords.filter(r => r.type === 'jadwal' && r.kelas === adminSelectedDetailKelas).sort((a, b) => {
+    if(urutanHari[a.hari] !== urutanHari[b.hari]) return urutanHari[a.hari] - urutanHari[b.hari];
+    return a.jam_ke - b.jam_ke;
+  });
+
+  const listGuru = allRecords.filter(r => r.type === 'guru');
+
+  tbody.innerHTML = listJadwal.map(j => `
+    <tr id="row-${j.__backendId}" class="border-b border-slate-100">
+      <td class="px-3 py-2 font-medium text-blue-600">${j.hari}</td>
+      <td class="px-3 py-2">${j.jam_ke}</td>
+      <td class="px-3 py-2">${j.mapel}</td>
+      <td class="px-3 py-2">${j.guru}</td>
+      <td class="px-3 py-2 text-center whitespace-nowrap">
+        <button class="px-2 py-1 bg-amber-500 text-white rounded text-xs hover:bg-amber-600 mr-1" onclick="aktifkanModeEditJadwal('${j.__backendId}')">
+          Edit
+        </button>
+        <button class="px-2 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600" onclick="deleteRecord('${j.__backendId}')">
+          Hapus
+        </button>
+      </td>
+    </tr>
+  `).join('') || '<tr><td colspan="5" class="p-4 text-center text-slate-400">Kelas ini belum memiliki jadwal pelajaran.</td></tr>';
+}
+
+function aktifkanModeEditJadwal(id) {
+  const j = allRecords.find(r => r.__backendId === id);
+  if (!j) return;
+
+  const row = document.getElementById(`row-${id}`);
+  const listGuru = allRecords.filter(r => r.type === 'guru');
+
+  row.innerHTML = `
+    <td class="px-3 py-1">
+      <select id="edit-hari-${id}" class="border border-slate-300 rounded px-1 py-1 text-xs w-full">
+        <option value="Senin" ${j.hari==='Senin'?'selected':''}>Senin</option>
+        <option value="Selasa" ${j.hari==='Selasa'?'selected':''}>Selasa</option>
+        <option value="Rabu" ${j.hari==='Rabu'?'selected':''}>Rabu</option>
+        <option value="Kamis" ${j.hari==='Kamis'?'selected':''}>Kamis</option>
+        <option value="Jumat" ${j.hari==='Jumat'?'selected':''}>Jumat</option>
+      </select>
+    </td>
+    <td class="px-3 py-1">
+      <input type="number" id="edit-jam-${id}" value="${j.jam_ke}" min="1" max="10" class="border border-slate-300 rounded px-1 py-1 text-xs w-14">
+    </td>
+    <td class="px-3 py-1">
+      <input type="text" id="edit-mapel-${id}" value="${j.mapel}" class="border border-slate-300 rounded px-1 py-1 text-xs w-full">
+    </td>
+    <td class="px-3 py-1">
+      <select id="edit-guru-${id}" class="border border-slate-300 rounded px-1 py-1 text-xs w-full">
+        ${listGuru.map(g => `<option value="${g.nama}" ${g.nama===j.guru?'selected':''}>${g.nama}</option>`).join('')}
+      </select>
+    </td>
+    <td class="px-3 py-1 text-center whitespace-nowrap">
+      <button class="px-2 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700 mr-1" onclick="simpanPerubahanJadwal('${id}')">
+        Simpan
+      </button>
+      <button class="px-2 py-1 bg-slate-400 text-white rounded text-xs hover:bg-slate-500" onclick="renderDetailJadwalList()">
+        Batal
+      </button>
+    </td>
+  `;
+}
+
+async function simpanPerubahanJadwal(id) {
+  const existing = allRecords.find(r => r.__backendId === id);
+  if (!existing) return;
+
+  const hari = document.getElementById(`edit-hari-${id}`).value;
+  const jam_ke = parseInt(document.getElementById(`edit-jam-${id}`).value);
+  const mapel = document.getElementById(`edit-mapel-${id}`).value.trim();
+  const guru = document.getElementById(`edit-guru-${id}`).value;
+
+  if (!mapel || !jam_ke) return alert('Semua data edit harus terisi!');
+
+  await customDataSdk.update({ ...existing, hari, jam_ke, mapel, guru });
+  showSave("Jadwal Diperbarui");
+}
+
+// GURU FUNCTIONS
+document.getElementById('btn-add-guru').addEventListener('click', async () => {
+  const nama = document.getElementById('guru-input').value.trim();
+  if (!nama) return alert('Nama guru tidak boleh kosong');
+
+  const result = await customDataSdk.create({ type: 'guru', nama, kelas: '', mapel: '', guru: '', jam_ke: 0, hadir: false, keterangan: '', tanggal: '', hari: '' });
+  if (result.isOk) {
+    document.getElementById('guru-input').value = '';
+    showSave("Guru ditambahkan");
+  }
+});
+
+function renderGuruList() {
+  const list = document.getElementById('guru-list');
+  const guru = allRecords.filter(r => r.type === 'guru');
+  list.innerHTML = guru.map(g => `
+    <tr class="border-b border-slate-100">
+      <td class="px-4 py-3">${g.nama}</td>
+      <td class="px-4 py-3 text-center">
+        <button class="px-3 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600" onclick="deleteRecord('${g.__backendId}')">
+          Hapus
+        </button>
+      </td>
+    </tr>
+  `).join('') || '<tr><td colspan="2" class="p-4 text-center text-slate-400">Tidak ada guru</td></tr>';
+}
+
+// JADWAL FUNCTIONS GLOBAL
+function updateJadwalSelects() {
+  const kelasSel = document.getElementById('jadwal-kelas');
+  const guruSel = document.getElementById('jadwal-guru');
+  const kelas = allRecords.filter(r => r.type === 'kelas');
+  const guru = allRecords.filter(r => r.type === 'guru');
+  
+  kelasSel.innerHTML = '<option value="">-- Pilih Kelas --</option>' + kelas.map(k => `<option value="${k.nama}">${k.nama}</option>`).join('');
+  guruSel.innerHTML = '<option value="">-- Pilih Guru --</option>' + guru.map(g => `<option value="${g.nama}">${g.nama}</option>`).join('');
+}
+
+document.getElementById('btn-add-jadwal').addEventListener('click', async () => {
+  const hari = document.getElementById('jadwal-hari').value;
+  const kelas = document.getElementById('jadwal-kelas').value;
+  const guru = document.getElementById('jadwal-guru').value;
+  const mapel = document.getElementById('jadwal-mapel').value.trim();
+  const jam_ke = parseInt(document.getElementById('jadwal-jam').value);
+
+  if (!hari || !kelas || !guru || !mapel || !jam_ke) return alert('Semua field harus diisi');
+  
+  const result = await customDataSdk.create({ type: 'jadwal', hari, kelas, guru, mapel, jam_ke, nama: '', hadir: false, keterangan: '', tanggal: '' });
+  if (result.isOk) {
+    document.getElementById('jadwal-mapel').value = '';
+    document.getElementById('jadwal-jam').value = '';
+    showSave("Jadwal disimpan");
+  }
+});
+
+function renderJadwalList() {
+  const list = document.getElementById('jadwal-list');
+  const jadwal = allRecords.filter(r => r.type === 'jadwal').sort((a, b) => {
+    if(urutanHari[a.hari] !== urutanHari[b.hari]) return urutanHari[a.hari] - urutanHari[b.hari];
+    return a.jam_ke - b.jam_ke;
+  });
+  
+  list.innerHTML = jadwal.map(j => `
+    <tr class="border-b border-slate-100">
+      <td class="px-4 py-3 font-semibold text-blue-600">${j.hari}</td>
+      <td class="px-4 py-3">${j.kelas}</td>
+      <td class="px-4 py-3">${j.jam_ke}</td>
+      <td class="px-4 py-3">${j.mapel}</td>
+      <td class="px-4 py-3">${j.guru}</td>
+      <td class="px-4 py-3 text-center">
+        <button class="px-3 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600" onclick="deleteRecord('${j.__backendId}')">
+          Hapus
+        </button>
+      </td>
+    </tr>
+  `).join('') || '<tr><td colspan="6" class="p-4 text-center text-slate-400">Tidak ada jadwal</td></tr>';
+}
+
+// DELETE FUNCTION GENERAL
+async function deleteRecord(id) {
+  const record = allRecords.find(r => r.__backendId === id);
+  if (!record) return;
+  const type = record.type;
+  const result = await customDataSdk.delete(record);
+  if (result.isOk) {
+    showSave("Data dihapus");
+    if (type === 'kelas') {
+      if (adminSelectedDetailKelas === record.nama) tutupDetailKelas();
+      renderKelasList();
+    }
+    if (type === 'guru') renderGuruList();
+    if (type === 'jadwal') {
+      renderJadwalList();
+      if (adminSelectedDetailKelas) renderDetailJadwalList();
+    }
+  }
+}
+
+// GURU VIEW - ABSENSI LOGIC
+document.getElementById('kelas-select').addEventListener('change', (e) => {
+  selectedKelas = e.target.value;
+  renderGuruTable();
+});
+
+document.getElementById('date-picker').addEventListener('change', (e) => {
+  selectedDate = e.target.value;
+  renderGuruTable();
+});
+
+function renderGuruTable() {
+  const tbody = document.getElementById('table-body');
+  const infoHariBox = document.getElementById('hari-info');
+  const namaHariAktif = document.getElementById('nama-hari-aktif');
+  
+  if (!selectedKelas) {
+    tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-slate-400">Silahkan pilih kelas terlebih dahulu untuk menampilkan jadwal.</td></tr>';
+    infoHariBox.classList.add('hidden');
+    return;
+  }
+
+  const namaHariIni = getNamaHariDariTanggal(selectedDate);
+  namaHariAktif.textContent = namaHariIni;
+  infoHariBox.classList.remove('hidden');
+
+  if (namaHariIni === "Sabtu" || namaHariIni === "Minggu") {
+    tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-amber-500 font-medium">Hari ${namaHariIni} adalah hari libur pekanan. Tidak ada jadwal mengajar.</td></tr>`;
+    return;
+  }
+
+  const jadwal = allRecords.filter(r => r.type === 'jadwal' && r.kelas === selectedKelas && r.hari === namaHariIni).sort((a, b) => a.jam_ke - b.jam_ke);
+  
+  tbody.innerHTML = jadwal.map(j => {
+    const record = allRecords.find(r => r.type === 'absensi' && r.guru === j.guru && r.kelas === j.kelas && r.tanggal === selectedDate && r.jam_ke === j.jam_ke);
+    const hadir = record ? record.hadir : false;
+    const keterangan = record ? record.keterangan : "Masuk";
+    
+    return `
+      <tr class="border-b border-slate-100 hover:bg-slate-50">
+        <td class="px-4 py-3 font-medium">${j.jam_ke}</td>
+        <td class="px-4 py-3">${j.mapel}</td>
+        <td class="px-4 py-3">${j.guru}</td>
+        <td class="px-4 py-3 text-center">
+          <input type="checkbox" class="chk-hadir w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer" ${hadir ? 'checked' : ''} data-kelas="${j.kelas}" data-guru="${j.guru}" data-jam="${j.jam_ke}" data-mapel="${j.mapel}" onchange="saveAbsensi(this)">
+        </td>
+        <td class="px-4 py-3">
+          <select class="sel-ket border border-slate-200 rounded-lg px-2 py-1.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" data-kelas="${j.kelas}" data-guru="${j.guru}" data-jam="${j.jam_ke}" onchange="saveAbsensi(this)">
+            <option value="Masuk" ${keterangan==='Masuk'?'selected':''}>Masuk</option>
+            <option value="Sakit" ${keterangan==='Sakit'?'selected':''}>Sakit</option>
+            <option value="Izin" ${keterangan==='Izin'?'selected':''}>Izin</option>
+            <option value="Alpha" ${keterangan==='Alpha'?'selected':''}>Alpha</option>
+            <option value="Terlambat" ${keterangan==='Terlambat'?'selected':''}>Terlambat</option>
+          </select>
+        </td>
+      </tr>
+    `;
+  }).join('') || `<tr><td colspan="5" class="p-8 text-center text-slate-400">Tidak ada jadwal pelajaran untuk kelas ini di hari ${namaHariIni}.</td></tr>`;
+}
+
+async function saveAbsensi(el) {
+  const row = el.closest('tr');
+  const kelas = el.dataset.kelas;
+  const guru = el.dataset.guru;
+  const jam = parseInt(el.dataset.jam);
+  const hadir = row.querySelector('.chk-hadir').checked;
+  const keterangan = row.querySelector('.sel-ket').value;
+  
+  const existing = allRecords.find(r => r.type === 'absensi' && r.kelas === kelas && r.guru === guru && r.jam_ke === jam && r.tanggal === selectedDate);
+  if (existing) {
+    await customDataSdk.update({ ...existing, hadir, keterangan });
+  } else {
+    await customDataSdk.create({
+      type: 'absensi', kelas, guru, jam_ke: jam, mapel: row.cells[1].textContent, hadir, keterangan, tanggal: selectedDate, nama: '', hari: ''
+    });
+  }
+  showSave("Absensi Disimpan");
+}
+
+function showSave(text) {
+  const el = document.getElementById('save-indicator');
+  el.innerHTML = `<i data-lucide="check" class="w-4 h-4 inline mr-1"></i> ${text}`;
+  el.style.opacity = '1';
+  setTimeout(() => el.style.opacity = '0', 1500);
+}
+
+function renderAdminView() {
+  document.getElementById('kelas-tab').classList.remove('hidden');
+  document.getElementById('guru-tab').classList.add('hidden');
+  document.getElementById('jadwal-tab').classList.add('hidden');
+  renderKelasList();
+}
+
+function initGuruView() {
+  const kelas = allRecords.filter(r => r.type === 'kelas');
+  const select = document.getElementById('kelas-select');
+  select.innerHTML = '<option value="">-- Pilih Kelas --</option>' + kelas.map(k => `<option value="${k.nama}" ${k.nama === selectedKelas ? 'selected' : ''}>${k.nama}</option>`).join('');
+}
+
+// Data Handler Bridge
+const dataHandler = {
+  onDataChanged(data) {
+    allRecords = data;
+    initGuruView(); 
+    if (!isAdminLoggedIn) {
+      renderGuruTable();
+    } else {
+      if (!document.getElementById('kelas-tab').classList.contains('hidden')) {
+        renderKelasList();
+        if (adminSelectedDetailKelas) renderDetailJadwalList();
+      }
+      if (!document.getElementById('guru-tab').classList.contains('hidden')) renderGuruList();
+      if (!document.getElementById('jadwal-tab').classList.contains('hidden')) { renderJadwalList(); updateJadwalSelects(); }
+    }
+  }
+};
+
+// Main Run
+customDataSdk.init(dataHandler);
+lucide.createIcons();
+  </script>
+ </body>
+</html>
