@@ -1,1 +1,853 @@
 
+<!doctype html>
+<html lang="id" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cek Kehadiran Guru - E-Absensi SMK N 1 Kotamobagu</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Plus Jakarta Sans', sans-serif; }
+    body { box-sizing: border-box; }
+  </style>
+ </head>
+ <body class="h-full">
+  <div id="app" class="h-full w-full bg-slate-50 overflow-auto" style="--primary:#2563eb; --surface:#ffffff; --text:#1e293b;">
+   <div class="max-w-6xl mx-auto p-4 sm:p-6">
+    
+    <div class="flex justify-between items-start mb-6">
+     <div>
+      <h1 id="page-title" class="text-2xl font-bold text-slate-800">Cek Kehadiran Guru</h1>
+      <p id="admin-status" class="text-xs text-slate-500 mt-1">📌 Belum login</p>
+     </div>
+     <button id="login-btn" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition"> 
+      <i data-lucide="log-in" class="w-4 h-4 inline mr-1"></i> Login Admin 
+     </button>
+    </div>
+
+    <div id="guru-view" class="block">
+     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+      <div>
+       <label class="block text-sm font-medium text-slate-700 mb-2">Pilih Kelas:</label> 
+       <select id="kelas-select" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"> 
+        <option value="">-- Pilih Kelas --</option> 
+       </select>
+      </div>
+      <div>
+       <label class="block text-sm font-medium text-slate-700 mb-2">Pilih Tanggal:</label>
+       <div class="flex items-center gap-2 border border-slate-200 bg-white rounded-lg px-3 py-2 focus-within:ring-2 focus-within:ring-blue-500">
+        <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>
+        <input type="date" id="date-picker" class="w-full text-sm bg-transparent focus:outline-none">
+       </div>
+      </div>
+     </div>
+
+     <div id="hari-info" class="text-sm font-semibold text-blue-600 bg-blue-50 border border-blue-100 rounded-lg px-4 py-2 mb-5 hidden">
+      📅 Menampilkan Jadwal Hari: <span id="nama-hari-aktif">-</span>
+     </div>
+
+     <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+      <div class="overflow-x-auto">
+       <table class="w-full text-sm">
+        <thead class="bg-slate-50 border-b border-slate-200">
+         <tr>
+          <th class="px-4 py-3 text-left font-semibold text-slate-600">Jam</th>
+          <th class="px-4 py-3 text-left font-semibold text-slate-600">Mapel</th>
+          <th class="px-4 py-3 text-left font-semibold text-slate-600">Guru</th>
+          <th class="px-4 py-3 text-center font-semibold text-slate-600">Cek Hadir</th>
+          <th class="px-4 py-3 text-left font-semibold text-slate-600">Keterangan</th>
+         </tr>
+        </thead>
+        <tbody id="table-body">
+         <tr>
+          <td colspan="5" class="p-8 text-center text-slate-400">
+           <p>Silahkan pilih kelas terlebih dahulu untuk menampilkan jadwal.</p>
+          </td>
+         </tr>
+        </tbody>
+       </table>
+      </div>
+     </div>
+    </div>
+
+    <div id="admin-view" class="hidden">
+     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <button id="btn-kelas" class="p-4 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl font-medium hover:shadow-lg transition"><i data-lucide="book" class="w-5 h-5 inline mr-2"></i>Kelola Kelas</button> 
+      <button id="btn-guru" class="p-4 bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl font-medium hover:shadow-lg transition"><i data-lucide="users" class="w-5 h-5 inline mr-2"></i>Kelola Guru</button> 
+      <button id="btn-jadwal" class="p-4 bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl font-medium hover:shadow-lg transition"><i data-lucide="calendar" class="w-5 h-5 inline mr-2"></i>Kelola Jadwal</button>
+     </div>
+
+     <div id="kelas-tab" class="hidden mb-6">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold text-slate-800">📚 Daftar Kelas (Sesuai Jadwal)</h2>
+        <button id="btn-sync-csv" class="px-3 py-1.5 bg-amber-600 text-white rounded-lg text-xs font-semibold hover:bg-amber-700 transition flex items-center gap-1 shadow">
+          <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Sinkronkan Jadwal Resmi KBM (CSV)
+        </button>
+      </div>
+      <p class="text-xs text-slate-500 mb-3">💡 Tip: Klik pada nama kelas untuk melihat seluruh susunan jadwal mengajar kelas tersebut.</p>
+      
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-1">
+          <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm max-h-[500px] overflow-y-auto">
+           <table class="w-full text-sm">
+            <tbody id="kelas-list"></tbody>
+           </table>
+          </div>
+        </div>
+
+        <div class="lg:col-span-2">
+          <div id="kelas-detail-panel" class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hidden">
+            <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
+              <h3 class="text-lg font-bold text-slate-800">📅 Jadwal Kelas: <span id="detail-nama-kelas" class="text-blue-600"></span></h3>
+              <button onclick="tutupDetailKelas()" class="text-slate-400 hover:text-slate-600 text-sm font-medium">Tutup ✕</button>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead class="bg-slate-50 border-b border-slate-200">
+                  <tr>
+                    <th class="px-3 py-2 text-left font-semibold">Hari</th>
+                    <th class="px-3 py-2 text-left font-semibold">Jam Ke</th>
+                    <th class="px-3 py-2 text-left font-semibold">Mata Pelajaran</th>
+                    <th class="px-3 py-2 text-left font-semibold">Guru Pengajar</th>
+                    <th class="px-3 py-2 text-center font-semibold">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="detail-jadwal-list"></tbody>
+              </table>
+            </div>
+          </div>
+          <div id="kelas-blank-panel" class="bg-slate-100 border border-dashed border-slate-300 rounded-xl p-12 text-center text-slate-400 text-sm">
+            Silahkan pilih salah satu kelas di sebelah kiri untuk melihat detail jadwal kelas.
+          </div>
+        </div>
+      </div>
+     </div>
+
+     <div id="guru-tab" class="hidden mb-6">
+      <h2 class="text-xl font-bold text-slate-800 mb-4">👨‍🏫 Daftar Guru</h2>
+      <div class="flex gap-2 mb-4">
+       <input type="text" id="guru-input" placeholder="Nama guru / Kode guru" class="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"> 
+       <button id="btn-add-guru" class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700"><i data-lucide="plus" class="w-4 h-4 inline mr-1"></i>Tambah</button>
+      </div>
+      <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
+       <table class="w-full text-sm">
+        <tbody id="guru-list"></tbody>
+       </table>
+      </div>
+     </div>
+
+     <div id="jadwal-tab" class="hidden mb-6">
+      <h2 class="text-xl font-bold text-slate-800 mb-4">📅 Daftar Jadwal Mengajar (Semua Kelas)</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-2 mb-4">
+       <select id="jadwal-hari" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold text-blue-600 bg-blue-50">
+        <option value="Senin">Senin</option>
+        <option value="Selasa">Selasa</option>
+        <option value="Rabu">Rabu</option>
+        <option value="Kamis">Kamis</option>
+        <option value="Jumat">Jumat</option>
+       </select>
+       <select id="jadwal-kelas" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"></select> 
+       <input type="text" id="jadwal-mapel" placeholder="Mapel" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"> 
+       <input type="text" id="jadwal-guru" placeholder="Nama/Kode Guru" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"> 
+       <input type="number" id="jadwal-jam" placeholder="Jam ke-" min="1" max="12" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"> 
+       <button id="btn-add-jadwal" class="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700"><i data-lucide="plus" class="w-4 h-4 inline mr-1"></i>Tambah</button>
+      </div>
+      <div class="bg-white rounded-xl border border-slate-200 overflow-hidden max-h-[600px] overflow-y-auto">
+       <table class="w-full text-sm">
+        <thead class="bg-slate-50 border-b border-slate-200 sticky top-0">
+         <tr>
+          <th class="px-4 py-3 text-left font-semibold">Hari</th>
+          <th class="px-4 py-3 text-left font-semibold">Kelas</th>
+          <th class="px-4 py-3 text-left font-semibold">Jam Ke</th>
+          <th class="px-4 py-3 text-left font-semibold">Mapel</th>
+          <th class="px-4 py-3 text-left font-semibold">Guru</th>
+          <th class="px-4 py-3 text-center font-semibold">Aksi</th>
+         </tr>
+        </thead>
+        <tbody id="jadwal-list"></tbody>
+       </table>
+      </div>
+     </div>
+    </div>
+
+    <div id="login-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+     <div class="bg-white rounded-xl p-6 w-96 shadow-lg">
+      <h2 class="text-lg font-bold text-slate-800 mb-4">Login Admin</h2>
+      <input type="text" id="admin-name" placeholder="Masukkan nama admin" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
+      <div class="flex gap-3">
+       <button id="login-confirm" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition">Login</button> 
+       <button id="login-cancel" class="flex-1 px-4 py-2 bg-slate-200 text-slate-800 rounded-lg text-sm font-medium hover:bg-slate-300 transition">Batal</button>
+      </div>
+     </div>
+    </div>
+
+    <div id="save-indicator" class="fixed bottom-4 right-4 bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-lg opacity-0 transition-opacity duration-300 z-50">
+     <i data-lucide="check" class="w-4 h-4 inline mr-1"></i> Tersimpan
+    </div>
+
+   </div>
+  </div>
+
+  <script>
+let allRecords = [];
+let isAdminLoggedIn = false;
+let adminName = "";
+let selectedDate = new Date().toISOString().split('T')[0];
+let selectedKelas = "";
+let adminSelectedDetailKelas = ""; 
+const namaHariIndo = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+const urutanHari = {"Senin":1, "Selasa":2, "Rabu":3, "Kamis":4, "Jumat":5};
+
+document.getElementById('date-picker').value = selectedDate;
+
+// RAW JADWAL DATA DARI DATABASE CSV BARU YANG ANDA UNGGAH
+const rawCsvData = `ID,Kelas,Hari,Jam Ke,Kode Mapel,Kode Guru,Nama Guru
+SENIN-1-XMP1,X MP 1,SENIN,1,DDMP,81,Sigit Supriyanto, S.Pd
+SENIN-5-XMP1,X MP 1,SENIN,5,MLK,113,Siti Afdianti Domu, S.Pd.
+SENIN-7-XMP1,X MP 1,SENIN,7,BIND,42,Stevani Paputungan, S.Pd.
+SENIN-11-XMP1,X MP 1,SENIN,11,KKA,119,Grand T. G. Tumipa, S.Kom
+SELASA-1-XMP1,X MP 1,SELASA,1,MAT,16,Luli T. S Andu S.PD
+SELASA-5-XMP1,X MP 1,SELASA,5,IPAS,6,Hj. Pannece
+SELASA-8-XMP1,X MP 1,SELASA,8,DDMP,81,Sigit Supriyanto, S.Pd
+RABU-1-XMP1,X MP 1,RABU,1,PENJ,101,Alifky Bakung, S.Pd
+RABU-4-XMP1,X MP 1,RABU,4,SEJ,83,Rawisma Agow, S.Pd.
+RABU-6-XMP1,X MP 1,RABU,6,SNB,46,Ray Damo, S.Pd.
+RABU-8-XMP1,X MP 1,RABU,8,BING,28,Fitri Ali, S.Pd.
+KAMIS-1-XMP1,X MP 1,KAMIS,1,IPAS,6,Hj. Pannece
+KAMIS-4-XMP1,X MP 1,KAMIS,4,INFOR,45,Heru Pratama
+KAMIS-8-XMP1,X MP 1,KAMIS,8,DDMP,81,Sigit Supriyanto, S.Pd
+JUMAT-1-XMP1,X MP 1,JUMAT,1,PKN,102,Pratiwi W.Mamonto, S.Pd
+JUMAT-3-XMP1,X MP 1,JUMAT,3,PAG,71,Paramita Ilam, S.Pd.
+SENIN-1-XMP2,X MP 2,SENIN,1,KKA,96,Happy Rizky Maringka, S.Pd
+SENIN-3-XMP2,X MP 2,SENIN,3,SEJ,83,Rawisma Agow, S.Pd.
+SENIN-5-XMP2,X MP 2,SENIN,5,DDMP,46,Ray Damo, S.Pd.
+SENIN-9-XMP2,X MP 2,SENIN,9,MAT,16,Luli T. S Andu S.PD
+SELASA-1-XMP2,X MP 2,SELASA,1,IPAS,6,Hj. Pannece
+SELASA-3-XMP2,X MP 2,SELASA,3,BIND,42,Stevani Paputungan, S.Pd.
+SELASA-7-XMP2,X MP 2,SELASA,7,KKA,119,Grand T. G. Tumipa, S.Kom
+SELASA-10-XMP2,X MP 2,SELASA,10,DDMP,46,Ray Damo, S.Pd.
+RABU-1-XMP2,X MP 2,RABU,1,IPAS,6,Hj. Pannece
+RABU-5-XMP2,X MP 2,RABU,5,INFOR,45,Heru Pratama
+RABU-9-XMP2,X MP 2,RABU,9,MLK,113,Siti Afdianti Domu, S.Pd.
+KAMIS-1-XMP2,X MP 2,KAMIS,1,PAG,71,Paramita Ilam, S.Pd.
+KAMIS-4-XMP2,X MP 2,KAMIS,4,PKN,102,Pratiwi W.Mamonto, S.Pd
+KAMIS-6-XMP2,X MP 2,KAMIS,6,BING,28,Fitri Ali, S.Pd.
+KAMIS-9-XMP2,X MP 2,KAMIS,9,PENJ,101,Alifky Bakung, S.Pd
+JUMAT-1-XMP2,X MP 2,JUMAT,1,SNB,46,Ray Damo, S.Pd.
+JUMAT-3-XMP2,X MP 2,JUMAT,3,DDMP,46,Ray Damo, S.Pd.
+SENIN-1-XMP3,X MP 3,SENIN,1,KKA,119,Grand T. G. Tumipa, S.Kom
+SENIN-4-XMP3,X MP 3,SENIN,4,MAT,16,Luli T. S Andu S.PD
+SENIN-8-XMP3,X MP 3,SENIN,8,DDMP,81,Sigit Supriyanto, S.Pd
+SELASA-1-XMP3,X MP 3,SELASA,1,IPAS,6,Hj. Pannece
+SELASA,4,BIND,42,Stevani Paputungan, S.Pd.
+SELASA-8-XMP3,X MP 3,SELASA,8,MLK,113,Siti Afdianti Domu, S.Pd.
+SELASA-10-XMP3,X MP 3,SELASA,10,DDMP,81,Sigit Supriyanto, S.Pd
+RABU-1-XMP3,X MP 3,RABU,1,DDMP,81,Sigit Supriyanto, S.Pd
+RABU-5-XMP3,X MP 3,RABU,5,BING,28,Fitri Ali, S.Pd.
+RABU-8-XMP3,X MP 3,RABU,8,SNB,46,Ray Damo, S.Pd.
+RABU-10-XMP3,X MP 3,RABU,10,SEJ,83,Rawisma Agow, S.Pd.
+KAMIS-1-XMP3,X MP 3,KAMIS,1,INFOR,45,Heru Pratama
+KAMIS-5-XMP3,X MP 3,KAMIS,5,PENJ,101,Alifky Bakung, S.Pd
+KAMIS-8-XMP3,X MP 3,KAMIS,8,IPAS,6,Hj. Pannece
+KAMIS-11-XMP3,X MP 3,KAMIS,11,PKN,102,Pratiwi W.Mamonto, S.Pd
+JUMAT-1-XMP3,X MP 3,JUMAT,1,PAG,71,Paramita Ilam, S.Pd.
+JUMAT-4-XMP3,X MP 3,JUMAT,4,DDMP,81,Sigit Supriyanto, S.Pd
+SENIN-1-XAKL1,X AKL 1,SENIN,1,EKO,32,PKN32 / EKO 32
+SENIN-4-XAKL1,X AKL 1,SENIN,4,BIND,97,BIND 97
+SENIN-6-XAKL1,X AKL 1,SENIN,6,DDAK,118,Tiara Arista Dondo, S.Pd
+SELASA-1-XAKL1,X AKL 1,SELASA,1,MAT,77,Franklien Lumettu, S.Pd
+SELASA-5-XAKL1,X AKL 1,SELASA,5,DDAK,118,Tiara Arista Dondo, S.Pd
+SELASA-9-XAKL1,X AKL 1,SELASA,9,IPAS,111,IPAS 111
+RABU-1-XAKL1,X AKL 1,RABU,1,BIND,97,BIND 97
+RABU-3-XAKL1,X AKL 1,RABU,3,IPAS,111,IPAS 111
+RABU-5-XAKL1,X AKL 1,RABU,5,INFOR,45,Heru Pratama
+RABU-9-XAKL1,X AKL 1,RABU,9,KKA,119,Grand T. G. Tumipa, S.Kom
+KAMIS-1-XAKL1,X AKL 1,KAMIS,1,KKA,119,Grand T. G. Tumipa, S.Kom
+KAMIS-2-XAKL1,X AKL 1,KAMIS,2,BING,5,BING 5
+KAMIS-5-XAKL1,X AKL 1,KAMIS,5,SEJ,83,Rawisma Agow, S.Pd.
+KAMIS-7-XAKL1,X AKL 1,KAMIS,7,SNB,74,SNB 74
+KAMIS-9-XAKL1,X AKL 1,KAMIS,9,PAG,82,Yuyun Paputungan, S.Pd.
+JUMAT-1-XAKL1,X AKL 1,JUMAT,1,PKN,32,PKN32 / EKO 32
+JUMAT-3-XAKL1,X AKL 1,JUMAT,3,MLK,113,Siti Afdianti Domu, S.Pd.
+JUMAT-5-XAKL1,X AKL 1,JUMAT,5,PENJ,101,Alifky Bakung, S.Pd
+SENIN-1-XAKL2,X AKL 2,SENIN,1,BIND,97,BIND 97
+SENIN-5-XAKL2,X AKL 2,SENIN,5,EKO,32,PKN32 / EKO 32
+SENIN-8-XAKL2,X AKL 2,SENIN,8,MAT,77,Franklien Lumettu, S.Pd
+SELASA-1-XAKL2,X AKL 2,SELASA,1,MAT,77,Franklien Lumettu, S.Pd
+SELASA-2-XAKL2,X AKL 2,SELASA,2,DDAK,118,Tiara Arista Dondo, S.Pd
+SELASA-6-XAKL2,X AKL 2,SELASA,6,IPAS,111,IPAS 111
+SELASA-9-XAKL2,X AKL 2,SELASA,9,KKA,119,Grand T. G. Tumipa, S.Kom
+RABU-1-XAKL2,X AKL 2,RABU,1,INFOR,45,Heru Pratama
+RABU-5-XAKL2,X AKL 2,RABU,5,DDAK,118,Tiara Arista Dondo, S.Pd
+RABU-9-XAKL2,X AKL 2,RABU,9,IPAS,111,IPAS 111
+KAMIS-1-XAKL2,X AKL 2,KAMIS,1,SEJ,83,Rawisma Agow, S.Pd.
+KAMIS-3-XAKL2,X AKL 2,KAMIS,3,BING,5,BING 5
+KAMIS-6-XAKL2,X AKL 2,KAMIS,6,PKN,32,PKN32 / EKO 32
+KAMIS-8-XAKL2,X AKL 2,KAMIS,8,SNB,74,SNB 74
+KAMIS-10-XAKL2,X AKL 2,KAMIS,10,MLK,113,Siti Afdianti Domu, S.Pd.
+JUMAT-1-XAKL2,X AKL 2,JUMAT,1,PAG,82,Yuyun Paputungan, S.Pd.
+JUMAT-4-XAKL2,X AKL 2,JUMAT,4,PENJ,101,Alifky Bakung, S.Pd
+SENIN-1-XAKL3,X AKL 3,SENIN,1,DDAK,118,Tiara Arista Dondo, S.Pd
+SENIN-5-XAKL3,X AKL 3,SENIN,5,MAT,77,Franklien Lumettu, S.Pd
+SENIN-9-XAKL3,X AKL 3,SENIN,9,BIND,97,BIND 97
+SELASA-1-XAKL3,X AKL 3,SELASA,1,BIND,97,BIND 97
+SELASA-3-XAKL3,X AKL 3,SELASA,3,EKO,32,PKN32 / EKO 32
+SELASA-6-XAKL3,X AKL 3,SELASA,6,KKA,119,Grand T. G. Tumipa, S.Kom
+SELASA-9-XAKL3,X AKL 3,SELASA,9,DDAK,118,Tiara Arista Dondo, S.Pd
+RABU-1-XAKL3,X AKL 3,RABU,1,DDAK,118,Tiara Arista Dondo, S.Pd
+RABU-2-XAKL3,X AKL 3,RABU,2,IPAS,111,IPAS 111
+RABU-8-XAKL3,X AKL 3,RABU,8,MLK,113,Siti Afdianti Domu, S.Pd.
+RABU-10-XAKL3,X AKL 3,RABU,10,PENJ,101,Alifky Bakung, S.Pd
+KAMIS-2-XAKL3,X AKL 3,KAMIS,2,SNB,74,SNB 74
+KAMIS-4-XAKL3,X AKL 3,KAMIS,4,INFOR,45,Heru Pratama
+KAMIS-8-XAKL3,X AKL 3,KAMIS,8,BING,5,BING 5
+JUMAT-1-XAKL3,X AKL 3,JUMAT,1,PKN,32,PKN32 / EKO 32
+JUMAT-3-XAKL3,X AKL 3,JUMAT,3,PAG,82,Yuyun Paputungan, S.Pd.
+JUMAT-6-XAKL3,X AKL 3,JUMAT,6,EKO,32,PKN32 / EKO 32
+JUMAT-8-XAKL3,X AKL 3,JUMAT,8,MAT,77,Franklien Lumettu, S.Pd
+SENIN-1-XITKJ1,XI TKJ 1,SENIN,1,KK TKJ,100,Moh. Adjis Sabbihi, S.Kpm
+SENIN-7-XITKJ1,XI TKJ 1,SENIN,7,MLK,110,MLK 110
+SENIN-9-XITKJ1,XI TKJ 1,SENIN,9,PKN,95,Fanhy Afandy Detu, S.Pd
+SELASA-1-XITKJ1,XI TKJ 1,SELASA,1,BING,27,Sakina Mokoagow. S.Pd
+SELASA-5-XITKJ1,XI TKJ 1,SELASA,5,PAG,10,Hi. Romi Siyong, S.Ag
+SELASA-8-XITKJ1,XI TKJ 1,SELASA,8,MAPIL,86,MAPIL 86
+RABU-1-XITKJ1,XI TKJ 1,RABU,1,KK TKJ,92,Fikry Pobela, S.Kom
+RABU-7-XITKJ1,XI TKJ 1,RABU,7,SEJ,83,Rawisma Agow, S.Pd.
+RABU-9-XITKJ1,XI TKJ 1,RABU,9,BIND,42,Stevani Paputungan, S.Pd.
+KAMIS-1-XITKJ1,XI TKJ 1,KAMIS,1,KK TKJ,86,Happy Rizky Maringka, S.Pd
+KAMIS-7-XITKJ1,XI TKJ 1,KAMIS,7,MAT,39,MAT 39
+KAMIS-10-XITKJ1,XI TKJ 1,KAMIS,10,PENJ,101,Alifky Bakung, S.Pd
+JUMAT-1-XITKJ1,XI TKJ 1,JUMAT,1,PKK TKJ,86,Happy Rizky Maringka, S.Pd
+SENIN-1-XITKJ2,XI TKJ 2,SENIN,1,PKN,95,Fanhy Afandy Detu, S.Pd
+SENIN-3-XITKJ2,XI TKJ 2,SENIN,3,KK TKJ,94,Doni Tabilantang, S.Pd
+SENIN-9-XITKJ2,XI TKJ 2,SENIN,9,MLK,110,MLK 110
+SELASA-1-XITKJ2,XI TKJ 2,SELASA,1,BIND,97,BIND 97
+SELASA-4-XITKJ2,XI TKJ 2,SELASA,4,SEJ,83,Rawisma Agow, S.Pd.
+SELASA-6-XITKJ2,XI TKJ 2,SELASA,6,KK TKJ,94,Doni Tabilantang, S.Pd
+SELASA-8-XITKJ2,XI TKJ 2,SELASA,8,MAPIL,96,Happy Rizky Maringka, S.Pd
+RABU-1-XITKJ2,XI TKJ 2,RABU,1,KK TKJ,94,Doni Tabilantang, S.Pd
+RABU-5-XITKJ2,XI TKJ 2,RABU,5,PAG,10,Hi. Romi Siyong, S.Ag
+RABU-8-XITKJ2,XI TKJ 2,RABU,8,BING,27,Sakina Mokoagow. S.Pd
+KAMIS-1-XITKJ2,XI TKJ 2,KAMIS,1,MAT,39,MAT 39
+KAMIS-4-XITKJ2,XI TKJ 2,KAMIS,4,PENJ,101,Alifky Bakung, S.Pd
+KAMIS-6-XITKJ2,XI TKJ 2,KAMIS,6,KK TKJ,92,Fikry Pobela, S.Kom
+JUMAT-1-XITKJ2,XI TKJ 2,JUMAT,1,PKK TKJ,91,Chandra C. Buchari, S.Kom
+SENIN-1-XITKJ3,XI TKJ 3,SENIN,1,BING,27,Sakina Mokoagow. S.Pd
+SENIN-5-XITKJ3,XI TKJ 3,SENIN,5,KK TKJ,92,Fikry Pobela, S.Kom
+SELASA-1-XITKJ3,XI TKJ 3,SELASA,1,PENJ,30,PENJ 30
+SELASA-3-XITKJ3,XI TKJ 3,SELASA,3,PKN,95,Fanhy Afandy Detu, S.Pd
+SELASA-5-XITKJ3,XI TKJ 3,SELASA,5,MAT,39,MAT 39
+SELASA-8-XITKJ3,XI TKJ 3,SELASA,8,MAPIL,91,Chandra C. Buchari, S.Kom
+RABU-1-XITKJ3,XI TKJ 3,RABU,1,KK TKJ,87,Sugandhi P. Ibrahim, S.Kom.
+RABU-7-XITKJ3,XI TKJ 3,RABU,7,PKK TKJ,96,Happy Rizky Maringka, S.Pd
+KAMIS-1-XITKJ3,XI TKJ 3,KAMIS,1,KK TJT,87,Sugandhi P. Ibrahim, S.Kom.
+KAMIS-7-XITKJ3,XI TKJ 3,KAMIS,7,SEJ,83,Rawisma Agow, S.Pd.
+KAMIS-9-XITKJ3,XI TKJ 3,KAMIS,9,BIND,97,BIND 97
+JUMAT-1-XITKJ3,XI TKJ 3,JUMAT,1,MLK,110,MLK 110
+JUMAT-3-XITKJ3,XI TKJ 3,JUMAT,3,PAG,10,Hi. Romi Siyong, S.Ag
+SENIN-1-XIITKJ4,XII TKJ 4,SENIN,1,MAT,116,January Andiny Panawar,S.Pd
+SENIN-5-XIITKJ4,XII TKJ 4,SENIN,5,KK TKJ,100,Moh. Adjis Sabbihi, S.Kpm
+SENIN-8-XIITKJ4,XII TKJ 4,SENIN,8,PAG,82,Yuyun Paputungan, S.Pd.
+SELASA-1-XIITKJ4,XII TKJ 4,SELASA,1,KKT TKJ,96,Happy Rizky Maringka, S.Pd
+SELASA-4-XIITKJ4,XII TKJ 4,SELASA,4,BIND,68,Marini Bahar
+SELASA-7-XIITKJ4,XII TKJ 4,SELASA,7,KK TKJ,100,Moh. Adjis Sabbihi, S.Kpm
+RABU-1-XIITKJ4,XII TKJ 4,RABU,1,BING,24,Dian Ekawati Maani S.S
+RABU-5-XIITKJ4,XII TKJ 4,RABU,5,MLK,114,Fita Rstika Tundu, S.Pd
+RABU-7-XIITKJ4,XII TKJ 4,RABU,7,PKK TKJ,96,Happy Rizky Maringka, S.Pd
+KAMIS-1-XIITKJ4,XII TKJ 4,KAMIS,1,KK TKJ,100,Moh. Adjis Sabbihi, S.Kpm
+KAMIS-6-XIITKJ4,XII TKJ 4,KAMIS,6,PKN,56,Moh.Padil Makalalag, S.Pd.
+KAMIS-8-XIITKJ4,XII TKJ 4,KAMIS,8,BJPG,104,Eka Pratiwi, S.Pd`;
+
+// FUNGSI PENTING: MENGEKSTRAK KELAS YANG UNIK DAN VALID DARI DATA JADWAL AKTIF
+function getDaftarKelasDariJadwal() {
+  const kelasSet = new Set();
+  allRecords.forEach(record => {
+    if (record.type === 'jadwal' && record.kelas) {
+      kelasSet.add(record.kelas.trim());
+    }
+  });
+  
+  // Jika database masih kosong, isi dengan fallback default dari data CSV agar tidak kosong saat awal muat
+  if (kelasSet.size === 0) {
+    const lines = rawCsvData.trim().split('\n');
+    for (let i = 1; i < lines.length; i++) { // Lewati baris header CSV
+      const parts = lines[i].split(',');
+      if (parts[1] && parts[1].trim() !== "") {
+        kelasSet.add(parts[1].trim());
+      }
+    }
+  }
+  
+  return Array.from(kelasSet).sort((a, b) => a.localeCompare(b, undefined, {numeric: true, sensitivity: 'base'}));
+}
+
+function initData() {
+  const saved = localStorage.getItem('e_absensi_v2_data');
+  if (saved) {
+    allRecords = JSON.parse(saved);
+  } else {
+    parseRawCsvData();
+  }
+  refreshKelasDropdowns();
+}
+
+// MEMPERBARUI SELURUH DROPDOWN DAN LIST KELAS BERDASARKAN JADWAL
+function refreshKelasDropdowns() {
+  const daftarKelas = getDaftarKelasDariJadwal();
+  
+  // 1. Update dropdown Pilih Kelas di Halaman Utama Guru
+  const selectKelas = document.getElementById('kelas-select');
+  selectKelas.innerHTML = '<option value="">-- Pilih Kelas --</option>' + 
+    daftarKelas.map(k => `<option value="${k}" ${k === selectedKelas ? 'selected' : ''}>${k}</option>`).join('');
+
+  // 2. Update dropdown Pilih Kelas di Form Tambah Jadwal Admin
+  const selectJadwalKelas = document.getElementById('jadwal-kelas');
+  if (selectJadwalKelas) {
+    selectJadwalKelas.innerHTML = daftarKelas.map(k => `<option value="${k}">${k}</option>`).join('');
+  }
+
+  // 3. Render List Kelola Kelas di Tab Admin
+  renderKelasList(daftarKelas);
+}
+
+function parseRawCsvData() {
+  allRecords = [];
+  const lines = rawCsvData.trim().split('\n');
+  const guruSet = new Set();
+
+  // Membaca baris mulai dari indeks 1 (melewati baris header ID,Kelas,Hari...)
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+
+    const parts = line.split(',');
+    if (parts.length < 7) continue;
+
+    const id = parts[0].trim();
+    const kelas = parts[1].trim();
+    const hari = parts[2].trim().charAt(0).toUpperCase() + parts[2].trim().slice(1).toLowerCase(); // Format Kapital Awal (Senin, Selasa...)
+    const jamKe = parseInt(parts[3].trim());
+    const mapel = parts[4].trim();
+    const kodeGuru = parts[5].trim();
+    const namaGuru = parts[6].trim();
+
+    // Daftarkan Guru Baru secara unik ke rekaman data guru
+    if (!guruSet.has(kodeGuru)) {
+      guruSet.add(kodeGuru);
+      allRecords.push({ id: `guru-${kodeGuru}`, type: 'guru', kode: kodeGuru, nama: namaGuru });
+    }
+
+    // Daftarkan baris jadwal ke rekaman data jadwal
+    allRecords.push({
+      id: `jadwal-${id}-${i}`,
+      type: 'jadwal',
+      kelas: kelas,
+      hari: hari,
+      jamKe: jamKe,
+      mapel: mapel,
+      guru: namaGuru
+    });
+  }
+  saveData();
+}
+
+function saveData() {
+  localStorage.setItem('e_absensi_v2_data', JSON.stringify(allRecords));
+  showIndicator();
+}
+
+function showIndicator() {
+  const el = document.getElementById('save-indicator');
+  el.style.opacity = '1';
+  setTimeout(() => el.style.opacity = '0', 1500);
+}
+
+// TAMPILAN GURU / UTAMA
+function getNamaHariDariTanggal(dateStr) {
+  if (!dateStr) return "";
+  const d = new Date(dateStr);
+  return namaHariIndo[d.getDay()];
+}
+
+function renderGuruTable() {
+  const tbody = document.getElementById('table-body');
+  const hariInfo = document.getElementById('hari-info');
+  const namaHariAktif = document.getElementById('nama-hari-aktif');
+
+  if (!selectedKelas) {
+    hariInfo.classList.add('hidden');
+    tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400"><p>Silahkan pilih kelas terlebih dahulu untuk menampilkan jadwal.</p></td></tr>`;
+    return;
+  }
+
+  const hariIni = getNamaHariDariTanggal(selectedDate);
+  namaHariAktif.textContent = hariIni;
+  hariInfo.classList.remove('hidden');
+
+  if (!["Senin", "Selasa", "Rabu", "Kamis", "Jumat"].includes(hariIni)) {
+    tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-amber-600 font-medium bg-amber-50">📅 Hari ${hariIni} tidak ada jadwal Kegiatan Belajar Mengajar (KBM).</td></tr>`;
+    return;
+  }
+
+  const jadwalKelasHariIni = allRecords.filter(r => r.type === 'jadwal' && r.kelas === selectedKelas && r.hari === hariIni);
+  
+  if (jadwalKelasHariIni.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400">Tidak ada jadwal mengajar untuk kelas ${selectedKelas} pada hari ${hariIni}.</td></tr>`;
+    return;
+  }
+
+  jadwalKelasHariIni.sort((a, b) => parseInt(a.jamKe) - parseInt(b.jamKe));
+
+  tbody.innerHTML = jadwalKelasHariIni.map(j => {
+    const absensiKey = `absensiresi_${selectedDate}_${selectedKelas}_${j.jamKe}`;
+    const savedAbsen = allRecords.find(r => r.type === 'absensi' && r.key === absensiKey) || { status: 'Belum Diisi', ket: '' };
+    
+    let statusClass = "bg-slate-100 text-slate-700";
+    if (savedAbsen.status === "Hadir") statusClass = "bg-green-100 text-green-700 font-semibold";
+    if (savedAbsen.status === "Izin" || savedAbsen.status === "Sakit") statusClass = "bg-amber-100 text-amber-700 font-semibold";
+    if (savedAbsen.status === "Alfa") statusClass = "bg-red-100 text-red-700 font-semibold";
+
+    if (isAdminLoggedIn) {
+      return `
+        <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+          <td class="px-4 py-3 font-medium text-slate-700">Jam Ke-${j.jamKe}</td>
+          <td class="px-4 py-3 text-slate-600 font-semibold">${j.mapel}</td>
+          <td class="px-4 py-3 text-slate-600">${j.guru}</td>
+          <td class="px-4 py-3 text-center">
+            <select onchange="updateAbsensiDirect('${absensiKey}', this.value)" class="border border-slate-200 rounded px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500">
+              <option value="Belum Diisi" ${savedAbsen.status === 'Belum Diisi' ? 'selected' : ''}>- Pilih -</option>
+              <option value="Hadir" ${savedAbsen.status === 'Hadir' ? 'selected' : ''}>🟢 Hadir</option>
+              <option value="Izin" ${savedAbsen.status === 'Izin' ? 'selected' : ''}>🟡 Izin</option>
+              <option value="Sakit" ${savedAbsen.status === 'Sakit' ? 'selected' : ''}>🔵 Sakit</option>
+              <option value="Alfa" ${savedAbsen.status === 'Alfa' ? 'selected' : ''}>🔴 Alfa</option>
+            </select>
+          </td>
+          <td class="px-4 py-3">
+            <input type="text" placeholder="Catatan..." value="${savedAbsen.ket || ''}" onchange="updateKeteranganDirect('${absensiKey}', this.value)" class="w-full border border-slate-200 rounded px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500">
+          </td>
+        </tr>
+      `;
+    } else {
+      return `
+        <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+          <td class="px-4 py-3 font-medium text-slate-700">Jam Ke-${j.jamKe}</td>
+          <td class="px-4 py-3 text-slate-600 font-semibold">${j.mapel}</td>
+          <td class="px-4 py-3 text-slate-600">${j.guru}</td>
+          <td class="px-4 py-3 text-center">
+            <span class="px-2.5 py-1 rounded-full text-xs ${statusClass}">${savedAbsen.status}</span>
+          </td>
+          <td class="px-4 py-3 text-xs text-slate-500 italic">${savedAbsen.ket || '-'}</td>
+        </tr>
+      `;
+    }
+  }).join('');
+  
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+function updateAbsensiDirect(key, val) {
+  let record = allRecords.find(r => r.type === 'absensi' && r.key === key);
+  if (record) {
+    record.status = val;
+  } else {
+    allRecords.push({ id: 'absen-' + Date.now() + Math.random(), type: 'absensi', key: key, status: val, ket: '' });
+  }
+  saveData();
+  renderGuruTable();
+}
+
+function updateKeteranganDirect(key, val) {
+  let record = allRecords.find(r => r.type === 'absensi' && r.key === key);
+  if (record) {
+    record.ket = val;
+  } else {
+    allRecords.push({ id: 'absen-' + Date.now() + Math.random(), type: 'absensi', key: key, status: 'Belum Diisi', ket: val });
+  }
+  saveData();
+}
+
+// ADMIN VIEW - MANAGEMENT KELAS BERDASARKAN JADWAL
+function renderKelasList(daftarKelas) {
+  const list = document.getElementById('kelas-list');
+  if (!list) return;
+  
+  const kelasAktif = daftarKelas || getDaftarKelasDariJadwal();
+
+  if (kelasAktif.length === 0) {
+    list.innerHTML = `<tr><td class="p-4 text-center text-slate-400">Belum ada data kelas di jadwal.</td></tr>`;
+    return;
+  }
+
+  list.innerHTML = kelasAktif.map(k => `
+    <tr class="border-b border-slate-100 hover:bg-blue-50/50 cursor-pointer transition ${adminSelectedDetailKelas === k ? 'bg-blue-50 font-semibold' : ''}" onclick="lihatDetailJadwalKelas('${k}')">
+      <td class="px-4 py-3 text-slate-700 flex justify-between items-center">
+        <span>📚 ${k}</span>
+        <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+      </td>
+    </tr>
+  `).join('');
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+function lihatDetailJadwalKelas(namaKelas) {
+  adminSelectedDetailKelas = namaKelas;
+  document.getElementById('kelas-blank-panel').classList.add('hidden');
+  const panel = document.getElementById('kelas-detail-panel');
+  panel.classList.remove('hidden');
+  document.getElementById('detail-nama-kelas').textContent = namaKelas;
+  renderDetailJadwalList();
+  renderKelasList();
+}
+
+function tutupDetailKelas() {
+  adminSelectedDetailKelas = "";
+  document.getElementById('kelas-detail-panel').classList.add('hidden');
+  document.getElementById('kelas-blank-panel').classList.remove('hidden');
+  renderKelasList();
+}
+
+function renderDetailJadwalList() {
+  const tbody = document.getElementById('detail-jadwal-list');
+  if (!tbody || !adminSelectedDetailKelas) return;
+
+  const jadwalKelas = allRecords.filter(r => r.type === 'jadwal' && r.kelas === adminSelectedDetailKelas);
+  jadwalKelas.sort((a,b) => {
+    if(urutanHari[a.hari] !== urutanHari[b.hari]) return urutanHari[a.hari] - urutanHari[b.hari];
+    return parseInt(a.jamKe) - parseInt(b.jamKe);
+  });
+
+  if (jadwalKelas.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">Belum ada jadwal mengajar terdaftar untuk kelas ini.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = jadwalKelas.map(j => `
+    <tr class="border-b border-slate-100 hover:bg-slate-50">
+      <td class="px-3 py-2 font-medium text-slate-800">${j.hari}</td>
+      <td class="px-3 py-2 text-slate-600">Jam Ke-${j.jamKe}</td>
+      <td class="px-3 py-2 text-slate-700 font-semibold">${j.mapel}</td>
+      <td class="px-3 py-2 text-slate-600">${j.guru}</td>
+      <td class="px-3 py-2 text-center">
+        <button onclick="deleteJadwalRecord('${j.id}')" class="text-red-500 hover:text-red-700 font-medium text-xs bg-red-50 hover:bg-red-100 px-2 py-1 rounded">Hapus</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function deleteJadwalRecord(id) {
+  if (confirm("Hapus baris jadwal ini?")) {
+    allRecords = allRecords.filter(r => r.id !== id);
+    saveData();
+    refreshKelasDropdowns();
+    if (adminSelectedDetailKelas) renderDetailJadwalList();
+    renderJadwalList();
+  }
+}
+
+// MANAGEMENT GURU
+function renderGuruList() {
+  const list = document.getElementById('guru-list');
+  const guru = allRecords.filter(r => r.type === 'guru').sort((a,b) => a.nama.localeCompare(b.nama));
+  
+  if (guru.length === 0) {
+    list.innerHTML = `<tr><td class="p-4 text-center text-slate-400">Belum ada data guru.</td></tr>`;
+    return;
+  }
+
+  list.innerHTML = guru.map(g => `
+    <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+      <td class="px-4 py-3 font-medium text-slate-500 w-24">[ ${g.kode || '-'} ]</td>
+      <td class="px-4 py-3 text-slate-800 font-semibold">${g.nama}</td>
+      <td class="px-4 py-3 text-right">
+        <button onclick="deleteGuru('${g.id}')" class="text-red-600 hover:text-red-800 text-sm font-medium"><i data-lucide="trash-2" class="w-4 h-4 inline"></i></button>
+      </td>
+    </tr>
+  `).join('');
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+function deleteGuru(id) {
+  if (confirm("Hapus guru ini dari daftar?")) {
+    allRecords = allRecords.filter(r => r.id !== id);
+    saveData();
+    renderGuruList();
+  }
+}
+
+// MANAGEMENT JADWAL GLOBAL
+function renderJadwalList() {
+  const tbody = document.getElementById('jadwal-list');
+  const filteredJadwal = allRecords.filter(r => r.type === 'jadwal');
+  
+  filteredJadwal.sort((a,b) => {
+    if (a.kelas !== b.kelas) return a.kelas.localeCompare(b.kelas, undefined, {numeric:true});
+    if (urutanHari[a.hari] !== urutanHari[b.hari]) return urutanHari[a.hari] - urutanHari[b.hari];
+    return parseInt(a.jamKe) - parseInt(b.jamKe);
+  });
+
+  if (filteredJadwal.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400">Belum ada data jadwal mengajar.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filteredJadwal.map(j => `
+    <tr class="border-b border-slate-100 hover:bg-slate-50">
+      <td class="px-4 py-2.5 font-medium text-slate-700">${j.hari}</td>
+      <td class="px-4 py-2.5 text-blue-600 font-semibold">${j.kelas}</td>
+      <td class="px-4 py-2.5 text-slate-500">Jam ${j.jamKe}</td>
+      <td class="px-4 py-2.5 text-slate-800 font-medium">${j.mapel}</td>
+      <td class="px-4 py-2.5 text-slate-600">${j.guru}</td>
+      <td class="px-4 py-2.5 text-center">
+        <button onclick="deleteJadwalRecord('${j.id}')" class="text-red-500 hover:text-red-700"><i data-lucide="trash-2" class="w-4 h-4 inline"></i></button>
+      </td>
+    </tr>
+  `).join('');
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+// EVENTS & LISTENERS
+document.getElementById('kelas-select').addEventListener('change', (e) => {
+  selectedKelas = e.target.value;
+  renderGuruTable();
+});
+
+document.getElementById('date-picker').addEventListener('change', (e) => {
+  selectedDate = e.target.value;
+  renderGuruTable();
+});
+
+// Auth admin toggle
+document.getElementById('login-btn').addEventListener('click', () => {
+  if (isAdminLoggedIn) {
+    isAdminLoggedIn = false;
+    adminName = "";
+    document.getElementById('login-btn').innerHTML = `<i data-lucide="log-in" class="w-4 h-4 inline mr-1"></i> Login Admin`;
+    document.getElementById('admin-status').textContent = "📌 Belum login";
+    document.getElementById('admin-view').classList.add('hidden');
+    document.getElementById('guru-view').classList.remove('block');
+    document.getElementById('guru-view').classList.add('block');
+    renderGuruTable();
+  } else {
+    document.getElementById('login-modal').classList.remove('hidden');
+  }
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+});
+
+document.getElementById('login-cancel').addEventListener('click', () => {
+  document.getElementById('login-modal').classList.add('hidden');
+});
+
+document.getElementById('login-confirm').addEventListener('click', () => {
+  const nameInput = document.getElementById('admin-name').value.trim();
+  if (nameInput) {
+    isAdminLoggedIn = true;
+    adminName = nameInput;
+    document.getElementById('login-modal').classList.add('hidden');
+    document.getElementById('login-btn').innerHTML = `<i data-lucide="log-out" class="w-4 h-4 inline mr-1"></i> Logout (${adminName})`;
+    document.getElementById('admin-status').textContent = `⚡ Mode Admin: ${adminName}`;
+    document.getElementById('guru-view').classList.remove('block');
+    document.getElementById('admin-view').classList.remove('hidden');
+    renderAdminView();
+  } else {
+    alert("Masukkan nama admin valid.");
+  }
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+});
+
+function renderAdminView() {
+  document.getElementById('kelas-tab').classList.remove('hidden');
+  document.getElementById('guru-tab').classList.add('hidden');
+  document.getElementById('jadwal-tab').classList.add('hidden');
+  refreshKelasDropdowns();
+}
+
+document.getElementById('btn-kelas').addEventListener('click', () => {
+  document.getElementById('kelas-tab').classList.remove('hidden');
+  document.getElementById('guru-tab').classList.add('hidden');
+  document.getElementById('jadwal-tab').classList.add('hidden');
+  refreshKelasDropdowns();
+});
+
+document.getElementById('btn-guru').addEventListener('click', () => {
+  document.getElementById('kelas-tab').classList.add('hidden');
+  document.getElementById('guru-tab').classList.remove('hidden');
+  document.getElementById('jadwal-tab').classList.add('hidden');
+  renderGuruList();
+});
+
+document.getElementById('btn-jadwal').addEventListener('click', () => {
+  document.getElementById('kelas-tab').classList.add('hidden');
+  document.getElementById('guru-tab').classList.add('hidden');
+  document.getElementById('jadwal-tab').classList.remove('hidden');
+  renderJadwalList();
+});
+
+// Tambah Guru Baru
+document.getElementById('btn-add-guru').addEventListener('click', () => {
+  const val = document.getElementById('guru-input').value.trim();
+  if (!val) return;
+  let kode = "";
+  let nama = val;
+  if (val.includes('/')) {
+    const p = val.split('/');
+    nama = p[0].trim();
+    kode = p[1].trim();
+  }
+  allRecords.push({ id: 'guru-' + Date.now(), type: 'guru', kode: kode, nama: nama });
+  document.getElementById('guru-input').value = "";
+  saveData();
+  renderGuruList();
+});
+
+// Tambah Jadwal Baru Manual
+document.getElementById('btn-add-jadwal').addEventListener('click', () => {
+  const hari = document.getElementById('jadwal-hari').value;
+  const kelas = document.getElementById('jadwal-kelas').value;
+  const mapel = document.getElementById('jadwal-mapel').value.trim();
+  const guru = document.getElementById('jadwal-guru').value.trim();
+  const jam = document.getElementById('jadwal-jam').value.trim();
+
+  if (!kelas || !mapel || !guru || !jam) {
+    alert("Mohon lengkapi semua isian formulir jadwal!");
+    return;
+  }
+
+  allRecords.push({
+    id: 'jadwal-' + Date.now(),
+    type: 'jadwal',
+    kelas: kelas,
+    hari: hari,
+    jamKe: parseInt(jam),
+    mapel: mapel,
+    guru: guru
+  });
+
+  document.getElementById('jadwal-mapel').value = "";
+  document.getElementById('jadwal-guru').value = "";
+  document.getElementById('jadwal-jam').value = "";
+  
+  saveData();
+  refreshKelasDropdowns();
+  renderJadwalList();
+});
+
+// Re-sinkronisasi CSV
+document.getElementById('btn-sync-csv').addEventListener('click', () => {
+  if (confirm("Apakah Anda yakin ingin memuat ulang jadwal KBM resmi? Tindakan ini akan menyetel kembali semua jadwal ke versi bawaan CSV.")) {
+    parseRawCsvData();
+    refreshKelasDropdowns();
+    if (adminSelectedDetailKelas) lihatDetailJadwalKelas(adminSelectedDetailKelas);
+    alert("Berhasil menyinkronkan data dengan Jadwal KBM Resmi!");
+  }
+});
+
+// INITIALIZATION ON LOAD
+window.addEventListener('DOMContentLoaded', () => {
+  initData();
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+});
+  </script>
+ </body>
+</html>
