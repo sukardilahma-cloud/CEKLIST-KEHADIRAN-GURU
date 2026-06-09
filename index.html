@@ -201,13 +201,163 @@ const urutanHari = {"Senin":1, "Selasa":2, "Rabu":3, "Kamis":4, "Jumat":5};
 
 document.getElementById('date-picker').value = selectedDate;
 
-// DATA STRUKTUR RAW DARI FILE CSV YANG ANDA SERAHKAN
-const rawCsvData = `X MP 1,UPACARA BENDERA,DDMP 81,DDMP 81,DDMP 81,DDMP 81,MLK 113,MLK 113,BIND 42,BIND 42,BIND 42,BIND 42,,KKA 119,KKA 119,KKA 119,MAT 16,MAT 16,MAT 16,MAT 16,IPAS 6,IPAS 6,IPAS 6,,DDMP 81,DDMP 81,DDMP 81,DDMP 81,PENJ101,PENJ101,PENJ101,SEJ 83,SEJ 83,SNB 46,SNB 46,,BING 28,BING 28,BING 28,IPAS 6,IPAS 6,IPAS 6,INFOR 45,INFOR 45,INFOR 45,INFOR 45,,,DDMP 81,DDMP 81,DDMP 81,PKN102,PKN102,PAG 71,PAG 71,PAG 71
-X MP 2,UPACARA BENDERA,DDMP 46,DDMP 46,DDMP 46,DDMP 46,MAT 16,MAT 16,MAT 16,MAT 16,IPAS 6,IPAS 6,,BIND 42,BIND 42,BIND 42,BIND 42,KKA 119,KKA 119,KKA 119,DDMP 46,DDMP 46,DDMP 46,,IPAS 6,IPAS 6,IPAS 6,IPAS 6,SEJ 83,SEJ 83,INFOR 45,INFOR 45,INFOR 45,INFOR 45,MLK 113,,MLK 113,PAG 71,PAG 71,PAG 71,PKN102,PKN102,BING 28,BING 28,BING 28,PENJ101,PENJ101,,,PENJ101,SNB 46,SNB 46,DDMP 46,DDMP 46,DDMP 46,DDMP 46
-X MP 3,UPACARA BENDERA,KKA 119,KKA 119,KKA 119,MAT 16,MAT 16,MAT 16,MAT 16,DDMP 81,DDMP 81,DDMP 81,,IPAS 6,IPAS 6,IPAS 6,BIND 42,BIND 42,BIND 42,BIND 42,MLK 113,MLK 113,DDMP 81,,DDMP 81,DDMP 81,DDMP 81,DDMP 81,BING 28,BING 28,BING 28,SNB 46,SNB 46,SEJ 83,SEJ 83,,INFOR 45,INFOR 45,INFOR 45,INFOR 45,PENJ101,PENJ101,PENJ101,IPAS 6,IPAS 6,IPAS 6,PKN102,,,PKN102,PAG 71,PAG 71,PAG 71,DDMP 81,DDMP 81,DDMP 81,DDMP 81
-X AKL 1,UPACARA BENDERA,EKO 32,EKO 32,EKO 32,BIND 97,BIND 97,DDAK 118,DDAK 118,DDAK 118,DDAK 118,,MAT 77,MAT 77,MAT 77,MAT 77,DDAK 118,DDAK 118,DDAK 118,DDAK 118,IPAS 111,IPAS 111,IPAS 111,,BIND 97,BIND 97,IPAS 111,IPAS 111,IPAS 111,INFOR 45,INFOR 45,INFOR 45,INFOR 45,KKA 119,KKA 119,,KKA 119,BING 5,BING 5,BING 5,SEJ 83,SEJ 83,SNB 74,SNB 74,PAG 82,PAG 82,PAG 82,,,PKN32,PKN32,MLK 113,MLK 113,PENJ101,PENJ101,PENJ101
-X AKL 2,UPACARA BENDERA,BIND 97,BIND 97,BIND 97,BIND 97,EKO 32,EKO 32,EKO 32,MAT 77,MAT 77,MAT 77,,MAT 77,DDAK 118,DDAK 118,DDAK 118,DDAK 118,IPAS 111,IPAS 111,IPAS 111,KKA 119,KKA 119,KKA 119,,INFOR 45,INFOR 45,INFOR 45,INFOR 45,DDAK 118,DDAK 118,DDAK 118,DDAK 118,IPAS 111,IPAS 111,IPAS 111,,SEJ 83,SEJ 83,BING 5,BING 5,BING 5,PKN32,PKN32,SNB 74,SNB 74,MLK 113,MLK 113,,,PAG 82,PAG 82,PAG 82,PENJ101,PENJ101,PENJ101
-X AKL 3,UPACARA BENDERA,DDAK 118,DDAK 118,DDAK 118,DDAK 118,MAT 77,MAT 77,MAT 77,MAT 77,BIND 97,BIND 97,,BIND 97,BIND 97,EKO 32,EKO 32,EKO 32,KKA 119,KKA 119,KKA 119,DDAK 118,DDAK 118,DDAK 118,,DDAK 118,IPAS 111,IPAS 111,IPAS 111,IPAS 111,IPAS 111,IPAS 111,MLK 113,MLK 113,PENJ101,PENJ101,,PENJ101,SNB 74,SNB 74,INFOR 45,INFOR 45,INFOR 45,INFOR 45,BING 5,BING 5,BING 5,,,PKN32,PKN32,PAG 82,PAG 82,PAG 82,EKO 32,EKO 32,MAT 77,MAT 77`;
+// RAW JADWAL DATA DARI DATABASE CSV BARU YANG ANDA UNGGAH
+const rawCsvData = `ID,Kelas,Hari,Jam Ke,Kode Mapel,Kode Guru,Nama Guru
+SENIN-1-XMP1,X MP 1,SENIN,1,DDMP,81,Sigit Supriyanto, S.Pd
+SENIN-5-XMP1,X MP 1,SENIN,5,MLK,113,Siti Afdianti Domu, S.Pd.
+SENIN-7-XMP1,X MP 1,SENIN,7,BIND,42,Stevani Paputungan, S.Pd.
+SENIN-11-XMP1,X MP 1,SENIN,11,KKA,119,Grand T. G. Tumipa, S.Kom
+SELASA-1-XMP1,X MP 1,SELASA,1,MAT,16,Luli T. S Andu S.PD
+SELASA-5-XMP1,X MP 1,SELASA,5,IPAS,6,Hj. Pannece
+SELASA-8-XMP1,X MP 1,SELASA,8,DDMP,81,Sigit Supriyanto, S.Pd
+RABU-1-XMP1,X MP 1,RABU,1,PENJ,101,Alifky Bakung, S.Pd
+RABU-4-XMP1,X MP 1,RABU,4,SEJ,83,Rawisma Agow, S.Pd.
+RABU-6-XMP1,X MP 1,RABU,6,SNB,46,Ray Damo, S.Pd.
+RABU-8-XMP1,X MP 1,RABU,8,BING,28,Fitri Ali, S.Pd.
+KAMIS-1-XMP1,X MP 1,KAMIS,1,IPAS,6,Hj. Pannece
+KAMIS-4-XMP1,X MP 1,KAMIS,4,INFOR,45,Heru Pratama
+KAMIS-8-XMP1,X MP 1,KAMIS,8,DDMP,81,Sigit Supriyanto, S.Pd
+JUMAT-1-XMP1,X MP 1,JUMAT,1,PKN,102,Pratiwi W.Mamonto, S.Pd
+JUMAT-3-XMP1,X MP 1,JUMAT,3,PAG,71,Paramita Ilam, S.Pd.
+SENIN-1-XMP2,X MP 2,SENIN,1,KKA,96,Happy Rizky Maringka, S.Pd
+SENIN-3-XMP2,X MP 2,SENIN,3,SEJ,83,Rawisma Agow, S.Pd.
+SENIN-5-XMP2,X MP 2,SENIN,5,DDMP,46,Ray Damo, S.Pd.
+SENIN-9-XMP2,X MP 2,SENIN,9,MAT,16,Luli T. S Andu S.PD
+SELASA-1-XMP2,X MP 2,SELASA,1,IPAS,6,Hj. Pannece
+SELASA-3-XMP2,X MP 2,SELASA,3,BIND,42,Stevani Paputungan, S.Pd.
+SELASA-7-XMP2,X MP 2,SELASA,7,KKA,119,Grand T. G. Tumipa, S.Kom
+SELASA-10-XMP2,X MP 2,SELASA,10,DDMP,46,Ray Damo, S.Pd.
+RABU-1-XMP2,X MP 2,RABU,1,IPAS,6,Hj. Pannece
+RABU-5-XMP2,X MP 2,RABU,5,INFOR,45,Heru Pratama
+RABU-9-XMP2,X MP 2,RABU,9,MLK,113,Siti Afdianti Domu, S.Pd.
+KAMIS-1-XMP2,X MP 2,KAMIS,1,PAG,71,Paramita Ilam, S.Pd.
+KAMIS-4-XMP2,X MP 2,KAMIS,4,PKN,102,Pratiwi W.Mamonto, S.Pd
+KAMIS-6-XMP2,X MP 2,KAMIS,6,BING,28,Fitri Ali, S.Pd.
+KAMIS-9-XMP2,X MP 2,KAMIS,9,PENJ,101,Alifky Bakung, S.Pd
+JUMAT-1-XMP2,X MP 2,JUMAT,1,SNB,46,Ray Damo, S.Pd.
+JUMAT-3-XMP2,X MP 2,JUMAT,3,DDMP,46,Ray Damo, S.Pd.
+SENIN-1-XMP3,X MP 3,SENIN,1,KKA,119,Grand T. G. Tumipa, S.Kom
+SENIN-4-XMP3,X MP 3,SENIN,4,MAT,16,Luli T. S Andu S.PD
+SENIN-8-XMP3,X MP 3,SENIN,8,DDMP,81,Sigit Supriyanto, S.Pd
+SELASA-1-XMP3,X MP 3,SELASA,1,IPAS,6,Hj. Pannece
+SELASA,4,BIND,42,Stevani Paputungan, S.Pd.
+SELASA-8-XMP3,X MP 3,SELASA,8,MLK,113,Siti Afdianti Domu, S.Pd.
+SELASA-10-XMP3,X MP 3,SELASA,10,DDMP,81,Sigit Supriyanto, S.Pd
+RABU-1-XMP3,X MP 3,RABU,1,DDMP,81,Sigit Supriyanto, S.Pd
+RABU-5-XMP3,X MP 3,RABU,5,BING,28,Fitri Ali, S.Pd.
+RABU-8-XMP3,X MP 3,RABU,8,SNB,46,Ray Damo, S.Pd.
+RABU-10-XMP3,X MP 3,RABU,10,SEJ,83,Rawisma Agow, S.Pd.
+KAMIS-1-XMP3,X MP 3,KAMIS,1,INFOR,45,Heru Pratama
+KAMIS-5-XMP3,X MP 3,KAMIS,5,PENJ,101,Alifky Bakung, S.Pd
+KAMIS-8-XMP3,X MP 3,KAMIS,8,IPAS,6,Hj. Pannece
+KAMIS-11-XMP3,X MP 3,KAMIS,11,PKN,102,Pratiwi W.Mamonto, S.Pd
+JUMAT-1-XMP3,X MP 3,JUMAT,1,PAG,71,Paramita Ilam, S.Pd.
+JUMAT-4-XMP3,X MP 3,JUMAT,4,DDMP,81,Sigit Supriyanto, S.Pd
+SENIN-1-XAKL1,X AKL 1,SENIN,1,EKO,32,PKN32 / EKO 32
+SENIN-4-XAKL1,X AKL 1,SENIN,4,BIND,97,BIND 97
+SENIN-6-XAKL1,X AKL 1,SENIN,6,DDAK,118,Tiara Arista Dondo, S.Pd
+SELASA-1-XAKL1,X AKL 1,SELASA,1,MAT,77,Franklien Lumettu, S.Pd
+SELASA-5-XAKL1,X AKL 1,SELASA,5,DDAK,118,Tiara Arista Dondo, S.Pd
+SELASA-9-XAKL1,X AKL 1,SELASA,9,IPAS,111,IPAS 111
+RABU-1-XAKL1,X AKL 1,RABU,1,BIND,97,BIND 97
+RABU-3-XAKL1,X AKL 1,RABU,3,IPAS,111,IPAS 111
+RABU-5-XAKL1,X AKL 1,RABU,5,INFOR,45,Heru Pratama
+RABU-9-XAKL1,X AKL 1,RABU,9,KKA,119,Grand T. G. Tumipa, S.Kom
+KAMIS-1-XAKL1,X AKL 1,KAMIS,1,KKA,119,Grand T. G. Tumipa, S.Kom
+KAMIS-2-XAKL1,X AKL 1,KAMIS,2,BING,5,BING 5
+KAMIS-5-XAKL1,X AKL 1,KAMIS,5,SEJ,83,Rawisma Agow, S.Pd.
+KAMIS-7-XAKL1,X AKL 1,KAMIS,7,SNB,74,SNB 74
+KAMIS-9-XAKL1,X AKL 1,KAMIS,9,PAG,82,Yuyun Paputungan, S.Pd.
+JUMAT-1-XAKL1,X AKL 1,JUMAT,1,PKN,32,PKN32 / EKO 32
+JUMAT-3-XAKL1,X AKL 1,JUMAT,3,MLK,113,Siti Afdianti Domu, S.Pd.
+JUMAT-5-XAKL1,X AKL 1,JUMAT,5,PENJ,101,Alifky Bakung, S.Pd
+SENIN-1-XAKL2,X AKL 2,SENIN,1,BIND,97,BIND 97
+SENIN-5-XAKL2,X AKL 2,SENIN,5,EKO,32,PKN32 / EKO 32
+SENIN-8-XAKL2,X AKL 2,SENIN,8,MAT,77,Franklien Lumettu, S.Pd
+SELASA-1-XAKL2,X AKL 2,SELASA,1,MAT,77,Franklien Lumettu, S.Pd
+SELASA-2-XAKL2,X AKL 2,SELASA,2,DDAK,118,Tiara Arista Dondo, S.Pd
+SELASA-6-XAKL2,X AKL 2,SELASA,6,IPAS,111,IPAS 111
+SELASA-9-XAKL2,X AKL 2,SELASA,9,KKA,119,Grand T. G. Tumipa, S.Kom
+RABU-1-XAKL2,X AKL 2,RABU,1,INFOR,45,Heru Pratama
+RABU-5-XAKL2,X AKL 2,RABU,5,DDAK,118,Tiara Arista Dondo, S.Pd
+RABU-9-XAKL2,X AKL 2,RABU,9,IPAS,111,IPAS 111
+KAMIS-1-XAKL2,X AKL 2,KAMIS,1,SEJ,83,Rawisma Agow, S.Pd.
+KAMIS-3-XAKL2,X AKL 2,KAMIS,3,BING,5,BING 5
+KAMIS-6-XAKL2,X AKL 2,KAMIS,6,PKN,32,PKN32 / EKO 32
+KAMIS-8-XAKL2,X AKL 2,KAMIS,8,SNB,74,SNB 74
+KAMIS-10-XAKL2,X AKL 2,KAMIS,10,MLK,113,Siti Afdianti Domu, S.Pd.
+JUMAT-1-XAKL2,X AKL 2,JUMAT,1,PAG,82,Yuyun Paputungan, S.Pd.
+JUMAT-4-XAKL2,X AKL 2,JUMAT,4,PENJ,101,Alifky Bakung, S.Pd
+SENIN-1-XAKL3,X AKL 3,SENIN,1,DDAK,118,Tiara Arista Dondo, S.Pd
+SENIN-5-XAKL3,X AKL 3,SENIN,5,MAT,77,Franklien Lumettu, S.Pd
+SENIN-9-XAKL3,X AKL 3,SENIN,9,BIND,97,BIND 97
+SELASA-1-XAKL3,X AKL 3,SELASA,1,BIND,97,BIND 97
+SELASA-3-XAKL3,X AKL 3,SELASA,3,EKO,32,PKN32 / EKO 32
+SELASA-6-XAKL3,X AKL 3,SELASA,6,KKA,119,Grand T. G. Tumipa, S.Kom
+SELASA-9-XAKL3,X AKL 3,SELASA,9,DDAK,118,Tiara Arista Dondo, S.Pd
+RABU-1-XAKL3,X AKL 3,RABU,1,DDAK,118,Tiara Arista Dondo, S.Pd
+RABU-2-XAKL3,X AKL 3,RABU,2,IPAS,111,IPAS 111
+RABU-8-XAKL3,X AKL 3,RABU,8,MLK,113,Siti Afdianti Domu, S.Pd.
+RABU-10-XAKL3,X AKL 3,RABU,10,PENJ,101,Alifky Bakung, S.Pd
+KAMIS-2-XAKL3,X AKL 3,KAMIS,2,SNB,74,SNB 74
+KAMIS-4-XAKL3,X AKL 3,KAMIS,4,INFOR,45,Heru Pratama
+KAMIS-8-XAKL3,X AKL 3,KAMIS,8,BING,5,BING 5
+JUMAT-1-XAKL3,X AKL 3,JUMAT,1,PKN,32,PKN32 / EKO 32
+JUMAT-3-XAKL3,X AKL 3,JUMAT,3,PAG,82,Yuyun Paputungan, S.Pd.
+JUMAT-6-XAKL3,X AKL 3,JUMAT,6,EKO,32,PKN32 / EKO 32
+JUMAT-8-XAKL3,X AKL 3,JUMAT,8,MAT,77,Franklien Lumettu, S.Pd
+SENIN-1-XITKJ1,XI TKJ 1,SENIN,1,KK TKJ,100,Moh. Adjis Sabbihi, S.Kpm
+SENIN-7-XITKJ1,XI TKJ 1,SENIN,7,MLK,110,MLK 110
+SENIN-9-XITKJ1,XI TKJ 1,SENIN,9,PKN,95,Fanhy Afandy Detu, S.Pd
+SELASA-1-XITKJ1,XI TKJ 1,SELASA,1,BING,27,Sakina Mokoagow. S.Pd
+SELASA-5-XITKJ1,XI TKJ 1,SELASA,5,PAG,10,Hi. Romi Siyong, S.Ag
+SELASA-8-XITKJ1,XI TKJ 1,SELASA,8,MAPIL,86,MAPIL 86
+RABU-1-XITKJ1,XI TKJ 1,RABU,1,KK TKJ,92,Fikry Pobela, S.Kom
+RABU-7-XITKJ1,XI TKJ 1,RABU,7,SEJ,83,Rawisma Agow, S.Pd.
+RABU-9-XITKJ1,XI TKJ 1,RABU,9,BIND,42,Stevani Paputungan, S.Pd.
+KAMIS-1-XITKJ1,XI TKJ 1,KAMIS,1,KK TKJ,86,Happy Rizky Maringka, S.Pd
+KAMIS-7-XITKJ1,XI TKJ 1,KAMIS,7,MAT,39,MAT 39
+KAMIS-10-XITKJ1,XI TKJ 1,KAMIS,10,PENJ,101,Alifky Bakung, S.Pd
+JUMAT-1-XITKJ1,XI TKJ 1,JUMAT,1,PKK TKJ,86,Happy Rizky Maringka, S.Pd
+SENIN-1-XITKJ2,XI TKJ 2,SENIN,1,PKN,95,Fanhy Afandy Detu, S.Pd
+SENIN-3-XITKJ2,XI TKJ 2,SENIN,3,KK TKJ,94,Doni Tabilantang, S.Pd
+SENIN-9-XITKJ2,XI TKJ 2,SENIN,9,MLK,110,MLK 110
+SELASA-1-XITKJ2,XI TKJ 2,SELASA,1,BIND,97,BIND 97
+SELASA-4-XITKJ2,XI TKJ 2,SELASA,4,SEJ,83,Rawisma Agow, S.Pd.
+SELASA-6-XITKJ2,XI TKJ 2,SELASA,6,KK TKJ,94,Doni Tabilantang, S.Pd
+SELASA-8-XITKJ2,XI TKJ 2,SELASA,8,MAPIL,96,Happy Rizky Maringka, S.Pd
+RABU-1-XITKJ2,XI TKJ 2,RABU,1,KK TKJ,94,Doni Tabilantang, S.Pd
+RABU-5-XITKJ2,XI TKJ 2,RABU,5,PAG,10,Hi. Romi Siyong, S.Ag
+RABU-8-XITKJ2,XI TKJ 2,RABU,8,BING,27,Sakina Mokoagow. S.Pd
+KAMIS-1-XITKJ2,XI TKJ 2,KAMIS,1,MAT,39,MAT 39
+KAMIS-4-XITKJ2,XI TKJ 2,KAMIS,4,PENJ,101,Alifky Bakung, S.Pd
+KAMIS-6-XITKJ2,XI TKJ 2,KAMIS,6,KK TKJ,92,Fikry Pobela, S.Kom
+JUMAT-1-XITKJ2,XI TKJ 2,JUMAT,1,PKK TKJ,91,Chandra C. Buchari, S.Kom
+SENIN-1-XITKJ3,XI TKJ 3,SENIN,1,BING,27,Sakina Mokoagow. S.Pd
+SENIN-5-XITKJ3,XI TKJ 3,SENIN,5,KK TKJ,92,Fikry Pobela, S.Kom
+SELASA-1-XITKJ3,XI TKJ 3,SELASA,1,PENJ,30,PENJ 30
+SELASA-3-XITKJ3,XI TKJ 3,SELASA,3,PKN,95,Fanhy Afandy Detu, S.Pd
+SELASA-5-XITKJ3,XI TKJ 3,SELASA,5,MAT,39,MAT 39
+SELASA-8-XITKJ3,XI TKJ 3,SELASA,8,MAPIL,91,Chandra C. Buchari, S.Kom
+RABU-1-XITKJ3,XI TKJ 3,RABU,1,KK TKJ,87,Sugandhi P. Ibrahim, S.Kom.
+RABU-7-XITKJ3,XI TKJ 3,RABU,7,PKK TKJ,96,Happy Rizky Maringka, S.Pd
+KAMIS-1-XITKJ3,XI TKJ 3,KAMIS,1,KK TJT,87,Sugandhi P. Ibrahim, S.Kom.
+KAMIS-7-XITKJ3,XI TKJ 3,KAMIS,7,SEJ,83,Rawisma Agow, S.Pd.
+KAMIS-9-XITKJ3,XI TKJ 3,KAMIS,9,BIND,97,BIND 97
+JUMAT-1-XITKJ3,XI TKJ 3,JUMAT,1,MLK,110,MLK 110
+JUMAT-3-XITKJ3,XI TKJ 3,JUMAT,3,PAG,10,Hi. Romi Siyong, S.Ag
+SENIN-1-XIITKJ4,XII TKJ 4,SENIN,1,MAT,116,January Andiny Panawar,S.Pd
+SENIN-5-XIITKJ4,XII TKJ 4,SENIN,5,KK TKJ,100,Moh. Adjis Sabbihi, S.Kpm
+SENIN-8-XIITKJ4,XII TKJ 4,SENIN,8,PAG,82,Yuyun Paputungan, S.Pd.
+SELASA-1-XIITKJ4,XII TKJ 4,SELASA,1,KKT TKJ,96,Happy Rizky Maringka, S.Pd
+SELASA-4-XIITKJ4,XII TKJ 4,SELASA,4,BIND,68,Marini Bahar
+SELASA-7-XIITKJ4,XII TKJ 4,SELASA,7,KK TKJ,100,Moh. Adjis Sabbihi, S.Kpm
+RABU-1-XIITKJ4,XII TKJ 4,RABU,1,BING,24,Dian Ekawati Maani S.S
+RABU-5-XIITKJ4,XII TKJ 4,RABU,5,MLK,114,Fita Rstika Tundu, S.Pd
+RABU-7-XIITKJ4,XII TKJ 4,RABU,7,PKK TKJ,96,Happy Rizky Maringka, S.Pd
+KAMIS-1-XIITKJ4,XII TKJ 4,KAMIS,1,KK TKJ,100,Moh. Adjis Sabbihi, S.Kpm
+KAMIS-6-XIITKJ4,XII TKJ 4,KAMIS,6,PKN,56,Moh.Padil Makalalag, S.Pd.
+KAMIS-8-XIITKJ4,XII TKJ 4,KAMIS,8,BJPG,104,Eka Pratiwi, S.Pd`;
 
 // FUNGSI PENTING: MENGEKSTRAK KELAS YANG UNIK DAN VALID DARI DATA JADWAL AKTIF
 function getDaftarKelasDariJadwal() {
@@ -220,12 +370,13 @@ function getDaftarKelasDariJadwal() {
   
   // Jika database masih kosong, isi dengan fallback default dari data CSV agar tidak kosong saat awal muat
   if (kelasSet.size === 0) {
-    rawCsvData.trim().split('\n').forEach(line => {
-      const parts = line.split(',');
-      if (parts[0] && parts[0].trim() !== "") {
-        kelasSet.add(parts[0].trim());
+    const lines = rawCsvData.trim().split('\n');
+    for (let i = 1; i < lines.length; i++) { // Lewati baris header CSV
+      const parts = lines[i].split(',');
+      if (parts[1] && parts[1].trim() !== "") {
+        kelasSet.add(parts[1].trim());
       }
-    });
+    }
   }
   
   return Array.from(kelasSet).sort((a, b) => a.localeCompare(b, undefined, {numeric: true, sensitivity: 'base'}));
@@ -263,67 +414,41 @@ function refreshKelasDropdowns() {
 function parseRawCsvData() {
   allRecords = [];
   const lines = rawCsvData.trim().split('\n');
-  const hariList = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat"];
-  
-  // Tambah default guru dari data kode numerik
-  const guruMap = {
-    "113": "Siti Afdianti Domu, S.Pd.", "42": "Stevani Paputungan, S.Pd.", "119": "Grand T. G. Tumipa, S.Kom",
-    "16": "Luli T. S Andu S.PD", "6": "Hj. Pannece", "81": "Sigit Supriyanto, S.Pd", "101": "Alifky Bakung, S.Pd",
-    "83": "Rawisma Agow, S.Pd.", "46": "Ray Damo, S.Pd.", "28": "BING 28", "45": "Heru Pratama", "71": "PAG 71",
-    "102": "Pratiwi W.Mamonto, S.Pd", "32": "PKN32 / EKO 32", "97": "BIND 97", "118": "DDAK 118", "77": "MAT 77",
-    "111": "IPAS 111", "5": "BING 5", "74": "SNB 74", "82": "PAG 82"
-  };
+  const guruSet = new Set();
 
-  Object.entries(guruMap).forEach(([kode, nama]) => {
-    allRecords.push({ id: `guru-${kode}`, type: 'guru', kode: kode, nama: nama });
-  });
+  // Membaca baris mulai dari indeks 1 (melewati baris header ID,Kelas,Hari...)
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
 
-  lines.forEach((line, index) => {
-    const tokens = line.split(',');
-    const namaKelas = tokens[0]?.trim();
-    if (!namaKelas) return;
+    const parts = line.split(',');
+    if (parts.length < 7) continue;
 
-    let tokenIdx = 1; 
-    hariList.forEach(hari => {
-      let maxJam = (hari === "Senin") ? 12 : 11;
-      for (let jam = 1; jam <= maxJam; jam++) {
-        let val = tokens[tokenIdx];
-        tokenIdx++;
-        if (val === undefined) break;
-        val = val.trim();
-        if (!val || val === "" || val.toUpperCase() === "UPACARA BENDERA") continue;
+    const id = parts[0].trim();
+    const kelas = parts[1].trim();
+    const hari = parts[2].trim().charAt(0).toUpperCase() + parts[2].trim().slice(1).toLowerCase(); // Format Kapital Awal (Senin, Selasa...)
+    const jamKe = parseInt(parts[3].trim());
+    const mapel = parts[4].trim();
+    const kodeGuru = parts[5].trim();
+    const namaGuru = parts[6].trim();
 
-        let mapel = val;
-        let kodeGuru = "";
-        const parts = val.split(' ');
-        if (parts.length > 1) {
-          const possibleKode = parts[parts.length - 1];
-          if (!isNaN(possibleKode)) {
-            kodeGuru = possibleKode;
-            mapel = parts.slice(0, parts.length - 1).join(' ');
-          }
-        } else {
-          const match = val.match(/\d+/);
-          if (match) {
-            kodeGuru = match[0];
-            mapel = val.replace(kodeGuru, '').trim();
-          }
-        }
+    // Daftarkan Guru Baru secara unik ke rekaman data guru
+    if (!guruSet.has(kodeGuru)) {
+      guruSet.add(kodeGuru);
+      allRecords.push({ id: `guru-${kodeGuru}`, type: 'guru', kode: kodeGuru, nama: namaGuru });
+    }
 
-        let namaGuru = guruMap[kodeGuru] || `Guru Kode ${kodeGuru || '?'}`;
-        allRecords.push({
-          id: `jadwal-${index}-${hari}-${jam}`,
-          type: 'jadwal',
-          kelas: namaKelas,
-          hari: hari,
-          jamKe: jam,
-          mapel: mapel || val,
-          guru: namaGuru
-        });
-      }
-      tokenIdx++; 
+    // Daftarkan baris jadwal ke rekaman data jadwal
+    allRecords.push({
+      id: `jadwal-${id}-${i}`,
+      type: 'jadwal',
+      kelas: kelas,
+      hari: hari,
+      jamKe: jamKe,
+      mapel: mapel,
+      guru: namaGuru
     });
-  });
+  }
   saveData();
 }
 
