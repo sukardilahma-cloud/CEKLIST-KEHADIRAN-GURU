@@ -85,15 +85,15 @@
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div class="lg:col-span-1">
           <div class="flex gap-2 mb-4">
-           <input type="text" id="kelas-input" placeholder="Nama kelas (contoh: XII IPA 1)" class="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"> 
+           <input type="text" id="kelas-input" placeholder="Nama kelas baru" class="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"> 
            <button id="btn-add-kelas" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 flex items-center"><i data-lucide="plus" class="w-4 h-4 mr-1"></i>Tambah</button>
           </div>
-          <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+          <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm max-h-[500px] overflow-y-auto">
            <table class="w-full text-sm">
-            <thead class="bg-slate-50 border-b border-slate-200">
+            <thead class="bg-slate-50 border-b border-slate-200 sticky top-0 z-10">
              <tr>
-              <th class="px-4 py-3 text-left font-semibold">Nama Kelas</th>
-              <th class="px-4 py-3 text-center font-semibold">Aksi</th>
+              <th class="px-4 py-3 text-left font-semibold bg-slate-50">Nama Kelas</th>
+              <th class="px-4 py-3 text-center font-semibold bg-slate-50">Aksi</th>
              </tr>
             </thead>
             <tbody id="kelas-list"></tbody>
@@ -206,9 +206,16 @@ let isAdminLoggedIn = false;
 let adminName = "";
 let selectedDate = new Date().toISOString().split('T')[0];
 let selectedKelas = "";
-let adminSelectedDetailKelas = ""; // Menyimpan kelas yang sedang aktif dilihat detailnya
+let adminSelectedDetailKelas = ""; 
 const namaHariIndo = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
 const urutanHari = {"Senin":1, "Selasa":2, "Rabu":3, "Kamis":4, "Jumat":5};
+
+// DAFTAR KELAS BARU YANG DIINPUT OTOMATIS
+const daftarKelasBaru = [
+  "X MP 1", "X MP 2", "X MP 3", "X AKL 1", "X AKL 2", "X AKL 3", "X AKL 4", "X LP", "X LPKC 1", "X LPKC 2", "X LPKC 3", "X DKV 1", "X DKV 2", "X RPL", "X TKJ 1", "X TKJ 2", "X TKJ 3", "X TEB",
+  "XI MP 1", "XI MP 2", "XI MP 3", "XI AKL 1", "XI AKL 2", "XI AKL 3", "XI AKL 4", "XI LP", "XI LPKC 1", "XI LPKC 2", "XI LPKC 3", "XI DKV 1", "XI DKV 2", "XI RPL 1", "XI RPL 2", "XI TKJ 1", "XI TKJ 2", "XI TKJ 3", "XI TEB",
+  "XII MP 1", "XII MP 2", "XII MP 3", "XII AKL 1", "XII AKL 2", "XII LP", "XII LPKC 1", "XII LPKC 2", "XII LPKC 3", "XII DKV 1", "XII DKV 2", "XII RPL", "XII TKJ 1", "XII TKJ 2", "XII TKJ 3", "XII TKJ 4", "XII TEB"
+];
 
 document.getElementById('date-picker').value = selectedDate;
 
@@ -217,6 +224,26 @@ const customDataSdk = {
   init: function(handler) {
     const localData = localStorage.getItem('e_absensi_data');
     allRecords = localData ? JSON.parse(localData) : [];
+    
+    // Auto-inject daftar kelas baru jika belum terdaftar sama sekali
+    let dataUpdated = false;
+    daftarKelasBaru.forEach(namaKelas => {
+      const exists = allRecords.some(r => r.type === 'kelas' && r.nama === namaKelas);
+      if (!exists) {
+        allRecords.push({
+          type: 'kelas',
+          nama: namaKelas,
+          kelas: '', mapel: '', guru: '', jam_ke: 0, hadir: false, keterangan: '', tanggal: '', hari: '',
+          __backendId: 'id_' + Date.now() + Math.random().toString(36).substr(2, 5)
+        });
+        dataUpdated = true;
+      }
+    });
+
+    if (dataUpdated) {
+      localStorage.setItem('e_absensi_data', JSON.stringify(allRecords));
+    }
+
     this.handler = handler;
     this.handler.onDataChanged(allRecords);
   },
@@ -350,16 +377,15 @@ function renderKelasList() {
         📁 ${k.nama}
       </td>
       <td class="px-4 py-3 text-center">
-        <button class="px-3 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600" onclick="deleteRecord('${k.__backendId}'); event.stopPropagation();">
+        <button class="px-2 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600" onclick="deleteRecord('${k.__backendId}'); event.stopPropagation();">
           Hapus
         </button>
       </td>
     </tr>
   `).join('') || '<tr><td colspan="2" class="p-4 text-center text-slate-400">Tidak ada kelas</td></tr>';
-  lucide.createIcons();
 }
 
-// PANEL LIHAT DETAIL JADWAL KELAS & EDIT INLINE
+// PANEL DETAIL JADWAL KELAS & EDIT INLINE
 function lihatDetailJadwalKelas(namaKelas) {
   adminSelectedDetailKelas = namaKelas;
   document.getElementById('kelas-blank-panel').classList.add('hidden');
@@ -454,14 +480,7 @@ async function simpanPerubahanJadwal(id) {
 
   if (!mapel || !jam_ke) return alert('Semua data edit harus terisi!');
 
-  await customDataSdk.update({
-    ...existing,
-    hari,
-    jam_ke,
-    mapel,
-    guru
-  });
-
+  await customDataSdk.update({ ...existing, hari, jam_ke, mapel, guru });
   showSave("Jadwal Diperbarui");
 }
 
@@ -512,15 +531,11 @@ document.getElementById('btn-add-jadwal').addEventListener('click', async () => 
 
   if (!hari || !kelas || !guru || !mapel || !jam_ke) return alert('Semua field harus diisi');
   
-  const result = await customDataSdk.create({ 
-    type: 'jadwal', hari, kelas, guru, mapel, jam_ke,
-    nama: '', hadir: false, keterangan: '', tanggal: ''
-  });
-  
+  const result = await customDataSdk.create({ type: 'jadwal', hari, kelas, guru, mapel, jam_ke, nama: '', hadir: false, keterangan: '', tanggal: '' });
   if (result.isOk) {
     document.getElementById('jadwal-mapel').value = '';
     document.getElementById('jadwal-jam').value = '';
-    showSave("Jadwal global disimpan");
+    showSave("Jadwal disimpan");
   }
 });
 
@@ -636,7 +651,6 @@ async function saveAbsensi(el) {
   const keterangan = row.querySelector('.sel-ket').value;
   
   const existing = allRecords.find(r => r.type === 'absensi' && r.kelas === kelas && r.guru === guru && r.jam_ke === jam && r.tanggal === selectedDate);
-  
   if (existing) {
     await customDataSdk.update({ ...existing, hadir, keterangan });
   } else {
@@ -672,13 +686,12 @@ const dataHandler = {
   onDataChanged(data) {
     allRecords = data;
     initGuruView(); 
-    
     if (!isAdminLoggedIn) {
       renderGuruTable();
     } else {
       if (!document.getElementById('kelas-tab').classList.contains('hidden')) {
         renderKelasList();
-        if (adminSelectedDetailKelas) renderDetailJadwalList(); // Refresh data detail jadwal jika sedang dibuka
+        if (adminSelectedDetailKelas) renderDetailJadwalList();
       }
       if (!document.getElementById('guru-tab').classList.contains('hidden')) renderGuruList();
       if (!document.getElementById('jadwal-tab').classList.contains('hidden')) { renderJadwalList(); updateJadwalSelects(); }
