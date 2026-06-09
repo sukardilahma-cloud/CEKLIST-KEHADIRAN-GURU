@@ -16,6 +16,7 @@
   <div id="app" class="h-full w-full bg-slate-50 overflow-auto" style="--primary:#2563eb; --surface:#ffffff; --text:#1e293b;">
    <div class="max-w-6xl mx-auto p-4 sm:p-6">
     
+    <!-- Header with Login -->
     <div class="flex justify-between items-start mb-6">
      <div>
       <h1 id="page-title" class="text-2xl font-bold text-slate-800">Cek Kehadiran Guru</h1>
@@ -26,17 +27,28 @@
      </button>
     </div>
 
+    <!-- GURU VIEW -->
     <div id="guru-view" class="block">
-     <div class="mb-5">
-      <label class="block text-sm font-medium text-slate-700 mb-2">Pilih Kelas:</label> 
-      <select id="kelas-select" class="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"> 
-       <option value="">-- Pilih Kelas --</option> 
-      </select>
+     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+      <div>
+       <label class="block text-sm font-medium text-slate-700 mb-2">Pilih Kelas:</label> 
+       <select id="kelas-select" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"> 
+        <option value="">-- Pilih Kelas --</option> 
+       </select>
+      </div>
+      <div>
+       <label class="block text-sm font-medium text-slate-700 mb-2">Pilih Tanggal:</label>
+       <div class="flex items-center gap-2 border border-slate-200 bg-white rounded-lg px-3 py-2 focus-within:ring-2 focus-within:ring-blue-500">
+        <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>
+        <input type="date" id="date-picker" class="w-full text-sm bg-transparent focus:outline-none">
+       </div>
+      </div>
      </div>
-     <div class="flex items-center gap-3 mb-5">
-      <i data-lucide="calendar" class="w-5 h-5 text-blue-600"></i> 
-      <input type="date" id="date-picker" class="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+
+     <div id="hari-info" class="text-sm font-semibold text-blue-600 bg-blue-50 border border-blue-100 rounded-lg px-4 py-2 mb-5 hidden">
+      📅 Menampilkan Jadwal Hari: <span id="nama-hari-aktif">-</span>
      </div>
+
      <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
       <div class="overflow-x-auto">
        <table class="w-full text-sm">
@@ -61,6 +73,7 @@
      </div>
     </div>
 
+    <!-- ADMIN VIEW -->
     <div id="admin-view" class="hidden">
      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
       <button id="btn-kelas" class="p-4 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl font-medium hover:shadow-lg transition"><i data-lucide="book" class="w-5 h-5 inline mr-2"></i>Kelola Kelas</button> 
@@ -68,6 +81,7 @@
       <button id="btn-jadwal" class="p-4 bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl font-medium hover:shadow-lg transition"><i data-lucide="calendar" class="w-5 h-5 inline mr-2"></i>Kelola Jadwal</button>
      </div>
 
+     <!-- KELAS TAB -->
      <div id="kelas-tab" class="hidden mb-6">
       <h2 class="text-xl font-bold text-slate-800 mb-4">📚 Daftar Kelas</h2>
       <div class="flex gap-2 mb-4">
@@ -87,6 +101,7 @@
       </div>
      </div>
 
+     <!-- GURU TAB -->
      <div id="guru-tab" class="hidden mb-6">
       <h2 class="text-xl font-bold text-slate-800 mb-4">👨‍🏫 Daftar Guru</h2>
       <div class="flex gap-2 mb-4">
@@ -106,21 +121,30 @@
       </div>
      </div>
 
+     <!-- JADWAL TAB -->
      <div id="jadwal-tab" class="hidden mb-6">
       <h2 class="text-xl font-bold text-slate-800 mb-4">📅 Daftar Jadwal Mengajar</h2>
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-2 mb-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-2 mb-4">
+       <select id="jadwal-hari" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold text-blue-600 bg-blue-50">
+        <option value="Senin">Senin</option>
+        <option value="Selasa">Selasa</option>
+        <option value="Rabu">Rabu</option>
+        <option value="Kamis">Kamis</option>
+        <option value="Jumat">Jumat</option>
+       </select>
        <select id="jadwal-kelas" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"> <option value="">-- Pilih Kelas --</option> </select> 
        <select id="jadwal-guru" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"> <option value="">-- Pilih Guru --</option> </select> 
        <input type="text" id="jadwal-mapel" placeholder="Mapel" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"> 
-       <input type="number" id="jadwal-jam" placeholder="Jam (1-6)" min="1" max="6" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"> 
+       <input type="number" id="jadwal-jam" placeholder="Jam ke-" min="1" max="10" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"> 
        <button id="btn-add-jadwal" class="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700"><i data-lucide="plus" class="w-4 h-4 inline mr-1"></i>Tambah</button>
       </div>
       <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
        <table class="w-full text-sm">
         <thead class="bg-slate-50 border-b border-slate-200">
          <tr>
+          <th class="px-4 py-3 text-left font-semibold">Hari</th>
           <th class="px-4 py-3 text-left font-semibold">Kelas</th>
-          <th class="px-4 py-3 text-left font-semibold">Jam</th>
+          <th class="px-4 py-3 text-left font-semibold">Jam Ke</th>
           <th class="px-4 py-3 text-left font-semibold">Mapel</th>
           <th class="px-4 py-3 text-left font-semibold">Guru</th>
           <th class="px-4 py-3 text-center font-semibold">Aksi</th>
@@ -132,6 +156,7 @@
      </div>
     </div>
 
+    <!-- Login Modal -->
     <div id="login-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
      <div class="bg-white rounded-xl p-6 w-96 shadow-lg">
       <h2 class="text-lg font-bold text-slate-800 mb-4">Login Admin</h2>
@@ -143,6 +168,7 @@
      </div>
     </div>
 
+    <!-- Save indicator -->
     <div id="save-indicator" class="fixed bottom-4 right-4 bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-lg opacity-0 transition-opacity duration-300 z-50">
      <i data-lucide="check" class="w-4 h-4 inline mr-1"></i> Tersimpan
     </div>
@@ -156,11 +182,12 @@ let isAdminLoggedIn = false;
 let adminName = "";
 let selectedDate = new Date().toISOString().split('T')[0];
 let selectedKelas = "";
+const namaHariIndo = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
 
 // Set date picker default value
 document.getElementById('date-picker').value = selectedDate;
 
-// LOCALSTORAGE DATA SDK EMULATION (Solusi Independen GitHub)
+// LOCALSTORAGE DATA SDK EMULATION
 const customDataSdk = {
   init: function(handler) {
     const localData = localStorage.getItem('e_absensi_data');
@@ -192,6 +219,12 @@ const customDataSdk = {
     return { isOk: true };
   }
 };
+
+// HELPER: Ambil nama hari string dari format tanggal YYYY-MM-DD
+function getNamaHariDariTanggal(dateString) {
+  const d = new Date(dateString);
+  return namaHariIndo[d.getDay()];
+}
 
 // LOGIN FUNCTIONS
 document.getElementById('login-btn').addEventListener('click', () => {
@@ -282,7 +315,7 @@ document.getElementById('btn-add-kelas').addEventListener('click', async () => {
   const nama = document.getElementById('kelas-input').value.trim();
   if (!nama) return alert('Nama kelas tidak boleh kosong');
   
-  const result = await customDataSdk.create({ type: 'kelas', nama, kelas: '', mapel: '', guru: '', jam_ke: 0, hadir: false, keterangan: '', tanggal: '' });
+  const result = await customDataSdk.create({ type: 'kelas', nama, kelas: '', mapel: '', guru: '', jam_ke: 0, hadir: false, keterangan: '', tanggal: '', hari: '' });
   if (result.isOk) {
     document.getElementById('kelas-input').value = '';
     showSave("Kelas ditambahkan");
@@ -310,7 +343,7 @@ document.getElementById('btn-add-guru').addEventListener('click', async () => {
   const nama = document.getElementById('guru-input').value.trim();
   if (!nama) return alert('Nama guru tidak boleh kosong');
 
-  const result = await customDataSdk.create({ type: 'guru', nama, kelas: '', mapel: '', guru: '', jam_ke: 0, hadir: false, keterangan: '', tanggal: '' });
+  const result = await customDataSdk.create({ type: 'guru', nama, kelas: '', mapel: '', guru: '', jam_ke: 0, hadir: false, keterangan: '', tanggal: '', hari: '' });
   if (result.isOk) {
     document.getElementById('guru-input').value = '';
     showSave("Guru ditambahkan");
@@ -333,7 +366,7 @@ function renderGuruList() {
   lucide.createIcons();
 }
 
-// JADWAL FUNCTIONS
+// JADWAL FUNCTIONS WITH HARI
 function updateJadwalSelects() {
   const kelasSel = document.getElementById('jadwal-kelas');
   const guruSel = document.getElementById('jadwal-guru');
@@ -345,15 +378,17 @@ function updateJadwalSelects() {
 }
 
 document.getElementById('btn-add-jadwal').addEventListener('click', async () => {
+  const hari = document.getElementById('jadwal-hari').value;
   const kelas = document.getElementById('jadwal-kelas').value;
   const guru = document.getElementById('jadwal-guru').value;
   const mapel = document.getElementById('jadwal-mapel').value.trim();
   const jam_ke = parseInt(document.getElementById('jadwal-jam').value);
 
-  if (!kelas || !guru || !mapel || !jam_ke) return alert('Semua field harus diisi');
+  if (!hari || !kelas || !guru || !mapel || !jam_ke) return alert('Semua field harus diisi');
   
   const result = await customDataSdk.create({ 
     type: 'jadwal', 
+    hari,
     kelas, 
     guru, 
     mapel, 
@@ -364,15 +399,22 @@ document.getElementById('btn-add-jadwal').addEventListener('click', async () => 
   if (result.isOk) {
     document.getElementById('jadwal-mapel').value = '';
     document.getElementById('jadwal-jam').value = '';
-    showSave("Jadwal ditambahkan");
+    showSave(`Jadwal hari ${hari} disimpan`);
   }
 });
 
 function renderJadwalList() {
   const list = document.getElementById('jadwal-list');
-  const jadwal = allRecords.filter(r => r.type === 'jadwal').sort((a, b) => a.jam_ke - b.jam_ke);
+  // Urutkan berdasarkan Nama Hari (urutan sekolah Senin-Jumat) dan Jam Mengajar
+  const urutanHari = {"Senin":1, "Selasa":2, "Rabu":3, "Kamis":4, "Jumat":5};
+  const jadwal = allRecords.filter(r => r.type === 'jadwal').sort((a, b) => {
+    if(urutanHari[a.hari] !== urutanHari[b.hari]) return urutanHari[a.hari] - urutanHari[b.hari];
+    return a.jam_ke - b.jam_ke;
+  });
+  
   list.innerHTML = jadwal.map(j => `
     <tr class="border-b border-slate-100">
+      <td class="px-4 py-3 font-semibold text-blue-600">${j.hari}</td>
       <td class="px-4 py-3">${j.kelas}</td>
       <td class="px-4 py-3">${j.jam_ke}</td>
       <td class="px-4 py-3">${j.mapel}</td>
@@ -383,7 +425,7 @@ function renderJadwalList() {
         </button>
       </td>
     </tr>
-  `).join('') || '<tr><td colspan="5" class="p-4 text-center text-slate-400">Tidak ada jadwal</td></tr>';
+  `).join('') || '<tr><td colspan="6" class="p-4 text-center text-slate-400">Tidak ada jadwal</td></tr>';
   lucide.createIcons();
 }
 
@@ -401,7 +443,7 @@ async function deleteRecord(id) {
   }
 }
 
-// GURU VIEW - ABSENSI LOGIC
+// GURU VIEW - ABSENSI LOGIC (FILTER HARI OTOMATIS)
 document.getElementById('kelas-select').addEventListener('change', (e) => {
   selectedKelas = e.target.value;
   renderGuruTable();
@@ -414,14 +456,30 @@ document.getElementById('date-picker').addEventListener('change', (e) => {
 
 function renderGuruTable() {
   const tbody = document.getElementById('table-body');
+  const infoHariBox = document.getElementById('hari-info');
+  const namaHariAktif = document.getElementById('nama-hari-aktif');
+  
   if (!selectedKelas) {
     tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-slate-400">Silahkan pilih kelas terlebih dahulu untuk menampilkan jadwal.</td></tr>';
+    infoHariBox.classList.add('hidden');
     return;
   }
 
-  const jadwal = allRecords.filter(r => r.type === 'jadwal' && r.kelas === selectedKelas).sort((a, b) => a.jam_ke - b.jam_ke);
+  // Ambil Hari dari Kalender yang dipasang pengguna
+  const namaHariIni = getNamaHariDariTanggal(selectedDate);
+  namaHariAktif.textContent = namaHariIni;
+  infoHariBox.classList.remove('hidden');
+
+  if (namaHariIni === "Sabtu" || namaHariIni === "Minggu") {
+    tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-amber-500 font-medium">Hari ${namaHariIni} adalah hari libur pekanan. Tidak ada jadwal mengajar.</td></tr>`;
+    return;
+  }
+
+  // Saring Jadwal Berdasarkan: KELAS + HARI YANG COCOK
+  const jadwal = allRecords.filter(r => r.type === 'jadwal' && r.kelas === selectedKelas && r.hari === namaHariIni).sort((a, b) => a.jam_ke - b.jam_ke);
   
   tbody.innerHTML = jadwal.map(j => {
+    // Record absensi terikat ke kombinasi Guru, Kelas, Jam Mengajar, dan Tanggal spesifik
     const record = allRecords.find(r => r.type === 'absensi' && r.guru === j.guru && r.kelas === j.kelas && r.tanggal === selectedDate && r.jam_ke === j.jam_ke);
     const hadir = record ? record.hadir : false;
     const keterangan = record ? record.keterangan : "Masuk";
@@ -445,7 +503,7 @@ function renderGuruTable() {
         </td>
       </tr>
     `;
-  }).join('') || '<tr><td colspan="5" class="p-8 text-center text-slate-400">Tidak ada jadwal untuk kelas ini</td></tr>';
+  }).join('') || `<tr><td colspan="5" class="p-8 text-center text-slate-400">Tidak ada jadwal pelajaran untuk kelas ini di hari ${namaHariIni}.</td></tr>`;
   lucide.createIcons();
 }
 
@@ -471,10 +529,11 @@ async function saveAbsensi(el) {
       hadir,
       keterangan,
       tanggal: selectedDate,
-      nama: ''
+      nama: '',
+      hari: ''
     });
   }
-  showSave("Tersimpan");
+  showSave("Absensi Disimpan");
 }
 
 function showSave(text) {
@@ -498,11 +557,10 @@ function initGuruView() {
   select.innerHTML = '<option value="">-- Pilih Kelas --</option>' + kelas.map(k => `<option value="${k.nama}" ${k.nama === selectedKelas ? 'selected' : ''}>${k.nama}</option>`).join('');
 }
 
-// Data Handler Bridge (SINKRONISASI DIPERBAIKI)
+// Data Handler Bridge
 const dataHandler = {
   onDataChanged(data) {
     allRecords = data;
-    // Pilihan dropdown di halaman guru HARUS selalu sinkron kapan pun data berubah
     initGuruView(); 
     
     if (!isAdminLoggedIn) {
