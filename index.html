@@ -52,17 +52,17 @@
        <table class="w-full text-sm">
         <thead class="bg-slate-50 border-b border-slate-200">
          <tr>
-          <th class="px-4 py-3 text-left font-semibold text-slate-600">Jam Ke</th>
+          <th class="px-4 py-3 text-left font-semibold text-slate-600">Jam</th>
           <th class="px-4 py-3 text-left font-semibold text-slate-600">Mapel</th>
-          <th class="px-4 py-3 text-left font-semibold text-slate-600">Guru Pengajar</th>
-          <th class="px-4 py-3 text-center font-semibold text-slate-600">Status Kehadiran</th>
+          <th class="px-4 py-3 text-left font-semibold text-slate-600">Guru</th>
+          <th class="px-4 py-3 text-center font-semibold text-slate-600">Cek Hadir</th>
           <th class="px-4 py-3 text-left font-semibold text-slate-600">Keterangan</th>
          </tr>
         </thead>
         <tbody id="table-body">
          <tr>
           <td colspan="5" class="p-8 text-center text-slate-400">
-           <p>Silahkan pilih kelas dan tanggal terlebih dahulu untuk menampilkan jadwal.</p>
+           <p>Silahkan pilih kelas terlebih dahulu untuk menampilkan jadwal.</p>
           </td>
          </tr>
         </tbody>
@@ -72,435 +72,463 @@
     </div>
 
     <div id="admin-view" class="hidden">
-     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-      <button id="btn-tab-jadwal" class="p-4 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl font-medium hover:shadow-lg transition flex items-center justify-center gap-2">
-        <i data-lucide="calendar" class="w-5 h-5"></i> Kelola & Sinkronisasi Jadwal KBM
-      </button> 
-      <button id="btn-tab-absensi" class="p-4 bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl font-medium hover:shadow-lg transition flex items-center justify-center gap-2">
-        <i data-lucide="clipboard-check" class="w-5 h-5"></i> Rekap Kehadiran Guru
-      </button>
+     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <button id="btn-kelas" class="p-4 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl font-medium hover:shadow-lg transition"><i data-lucide="book" class="w-5 h-5 inline mr-2"></i>Kelola Kelas</button> 
+      <button id="btn-guru" class="p-4 bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl font-medium hover:shadow-lg transition"><i data-lucide="users" class="w-5 h-5 inline mr-2"></i>Kelola Guru</button> 
+      <button id="btn-jadwal" class="p-4 bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl font-medium hover:shadow-lg transition"><i data-lucide="calendar" class="w-5 h-5 inline mr-2"></i>Kelola Jadwal</button>
      </div>
 
-     <div id="jadwal-tab" class="block mb-6">
-      <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm mb-6">
-        <div class="sm:flex justify-between items-center border-b border-slate-100 pb-4 mb-4">
-          <div>
-            <h2 class="text-lg font-bold text-slate-800">🔄 Sinkronisasi Database CSV</h2>
-            <p class="text-xs text-slate-500 mt-1">Impor file database CSV jadwal mengajar resmi semester genap.</p>
-          </div>
-          <div class="mt-3 sm:mt-0">
-            <label class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-sm font-semibold rounded-lg shadow transition">
-              <i data-lucide="upload-cloud" class="w-4 h-4"></i> Unggah File CSV Jadwal
-              <input type="file" id="csv-file-input" accept=".csv" class="hidden">
-            </label>
-          </div>
-        </div>
-        <div id="csv-stats" class="text-xs text-slate-600 bg-slate-50 p-3 rounded-lg border border-slate-200 hidden"></div>
+     <div id="kelas-tab" class="hidden mb-6">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold text-slate-800">📚 Daftar Kelas (Sesuai Jadwal)</h2>
+        <button id="btn-sync-csv" class="px-3 py-1.5 bg-amber-600 text-white rounded-lg text-xs font-semibold hover:bg-amber-700 transition flex items-center gap-1 shadow">
+          <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Sinkronkan Jadwal Resmi KBM (CSV)
+        </button>
       </div>
-
+      <p class="text-xs text-slate-500 mb-3">💡 Tip: Klik pada nama kelas untuk melihat seluruh susunan jadwal mengajar kelas tersebut.</p>
+      
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div class="lg:col-span-1">
-          <h3 class="text-sm font-bold text-slate-700 mb-3">Daftar Kelas Terdeteksi</h3>
-          <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm max-h-[400px] overflow-y-auto">
-            <ul id="admin-kelas-list" class="divide-y divide-slate-100 text-sm">
-              <li class="p-4 text-center text-slate-400">Belum ada data kelas. Silahkan unggah database CSV.</li>
-            </ul>
+          <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm max-h-[500px] overflow-y-auto">
+           <table class="w-full text-sm">
+            <tbody id="kelas-list"></tbody>
+           </table>
           </div>
         </div>
+
         <div class="lg:col-span-2">
-          <div id="admin-detail-panel" class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hidden">
-            <h3 class="text-base font-bold text-slate-800 mb-3 pb-2 border-b">Detail Jadwal Kelas: <span id="admin-selected-kelas" class="text-blue-600"></span></h3>
-            <div class="overflow-x-auto max-h-[400px] overflow-y-auto">
+          <div id="kelas-detail-panel" class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hidden">
+            <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
+              <h3 class="text-lg font-bold text-slate-800">📅 Jadwal Kelas: <span id="detail-nama-kelas" class="text-blue-600"></span></h3>
+              <button onclick="tutupDetailKelas()" class="text-slate-400 hover:text-slate-600 text-sm font-medium">Tutup ✕</button>
+            </div>
+            <div class="overflow-x-auto">
               <table class="w-full text-sm">
-                <thead class="bg-slate-50 sticky top-0 border-b">
+                <thead class="bg-slate-50 border-b border-slate-200">
                   <tr>
-                    <th class="p-2 text-left text-xs font-semibold text-slate-600">Hari</th>
-                    <th class="p-2 text-left text-xs font-semibold text-slate-600">Jam Ke</th>
-                    <th class="p-2 text-left text-xs font-semibold text-slate-600">Mapel</th>
-                    <th class="p-2 text-left text-xs font-semibold text-slate-600">Guru</th>
+                    <th class="px-3 py-2 text-left font-semibold">Hari</th>
+                    <th class="px-3 py-2 text-left font-semibold">Jam Ke</th>
+                    <th class="px-3 py-2 text-left font-semibold">Mata Pelajaran</th>
+                    <th class="px-3 py-2 text-left font-semibold">Guru Pengajar</th>
+                    <th class="px-3 py-2 text-center font-semibold">Aksi</th>
                   </tr>
                 </thead>
-                <tbody id="admin-jadwal-body" class="divide-y"></tbody>
+                <tbody id="detail-jadwal-list"></tbody>
               </table>
             </div>
           </div>
+          <div id="kelas-blank-panel" class="bg-slate-100 border border-dashed border-slate-300 rounded-xl p-12 text-center text-slate-400 text-sm">
+            Silahkan pilih salah satu kelas di sebelah kiri untuk melihat detail jadwal kelas.
+          </div>
         </div>
       </div>
      </div>
 
-     <div id="absensi-tab" class="hidden mb-6 bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-       <h2 class="text-lg font-bold text-slate-800 mb-4">📋 Rekap Kehadiran Guru Semuanya</h2>
-       <div class="overflow-x-auto">
-         <table class="w-full text-sm">
-           <thead class="bg-slate-50 border-b">
-             <tr>
-               <th class="px-4 py-2 text-left font-semibold text-slate-600">Tanggal</th>
-               <th class="px-4 py-2 text-left font-semibold text-slate-600">Kelas</th>
-               <th class="px-4 py-2 text-left font-semibold text-slate-600">Jam</th>
-               <th class="px-4 py-2 text-left font-semibold text-slate-600">Mapel</th>
-               <th class="px-4 py-2 text-left font-semibold text-slate-600">Guru</th>
-               <th class="px-4 py-2 text-center font-semibold text-slate-600">Status</th>
-               <th class="px-4 py-2 text-left font-semibold text-slate-600">Keterangan</th>
-             </tr>
-           </thead>
-           <tbody id="rekap-absensi-body">
-             <tr>
-               <td colspan="7" class="p-6 text-center text-slate-400">Belum ada rekaman absensi yang tersimpan di perangkat ini.</td>
-             </tr>
-           </tbody>
-         </table>
-       </div>
+     <div id="guru-tab" class="hidden mb-6">
+      <h2 class="text-xl font-bold text-slate-800 mb-4">👨‍🏫 Daftar Guru</h2>
+      <div class="flex gap-2 mb-4">
+       <input type="text" id="guru-input" placeholder="Nama guru / Kode guru" class="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"> 
+       <button id="btn-add-guru" class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700"><i data-lucide="plus" class="w-4 h-4 inline mr-1"></i>Tambah</button>
+      </div>
+      <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
+       <table class="w-full text-sm">
+        <tbody id="guru-list"></tbody>
+       </table>
+      </div>
      </div>
 
+     <div id="jadwal-tab" class="hidden mb-6">
+      <h2 class="text-xl font-bold text-slate-800 mb-4">📅 Daftar Jadwal Mengajar (Semua Kelas)</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-2 mb-4">
+       <select id="jadwal-hari" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold text-blue-600 bg-blue-50">
+        <option value="Senin">Senin</option>
+        <option value="Selasa">Selasa</option>
+        <option value="Rabu">Rabu</option>
+        <option value="Kamis">Kamis</option>
+        <option value="Jumat">Jumat</option>
+       </select>
+       <select id="jadwal-kelas" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"></select> 
+       <input type="text" id="jadwal-mapel" placeholder="Mapel" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"> 
+       <input type="text" id="jadwal-guru" placeholder="Nama/Kode Guru" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"> 
+       <input type="number" id="jadwal-jam" placeholder="Jam ke-" min="1" max="12" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"> 
+       <button id="btn-add-jadwal" class="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700"><i data-lucide="plus" class="w-4 h-4 inline mr-1"></i>Tambah</button>
+      </div>
+      <div class="bg-white rounded-xl border border-slate-200 overflow-hidden max-h-[600px] overflow-y-auto">
+       <table class="w-full text-sm">
+        <thead class="bg-slate-50 border-b border-slate-200 sticky top-0">
+         <tr>
+          <th class="px-4 py-3 text-left font-semibold">Hari</th>
+          <th class="px-4 py-3 text-left font-semibold">Kelas</th>
+          <th class="px-4 py-3 text-left font-semibold">Jam Ke</th>
+          <th class="px-4 py-3 text-left font-semibold">Mapel</th>
+          <th class="px-4 py-3 text-left font-semibold">Guru</th>
+          <th class="px-4 py-3 text-center font-semibold">Aksi</th>
+         </tr>
+        </thead>
+        <tbody id="jadwal-list"></tbody>
+       </table>
+      </div>
+     </div>
     </div>
 
-    <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-4 py-3 rounded-lg shadow-xl text-sm flex items-center gap-2 opacity-0 transition-opacity duration-300 pointer-events-none z-50"></div>
+    <div id="login-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+     <div class="bg-white rounded-xl p-6 w-96 shadow-lg">
+      <h2 class="text-lg font-bold text-slate-800 mb-4">Login Admin</h2>
+      <input type="text" id="admin-name" placeholder="Masukkan nama admin" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
+      <div class="flex gap-3">
+       <button id="login-confirm" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition">Login</button> 
+       <button id="login-cancel" class="flex-1 px-4 py-2 bg-slate-200 text-slate-800 rounded-lg text-sm font-medium hover:bg-slate-300 transition">Batal</button>
+      </div>
+     </div>
+    </div>
+
+    <div id="save-indicator" class="fixed bottom-4 right-4 bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-lg opacity-0 transition-opacity duration-300 z-50">
+     <i data-lucide="check" class="w-4 h-4 inline mr-1"></i> Tersimpan
+    </div>
 
    </div>
   </div>
 
   <script>
-    // STATE MANAGEMENTS
-    let dbJadwal = [];
-    let dbAbsensi = [];
-    let daftarKelas = [];
-    let isAdminLoggedIn = false;
-    let selectedKelasAdmin = '';
+let allRecords = [];
+let isAdminLoggedIn = false;
+let adminName = "";
+let selectedDate = new Date().toISOString().split('T')[0];
+let selectedKelas = "";
+let adminSelectedDetailKelas = ""; 
+const namaHariIndo = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+const urutanHari = {"Senin":1, "Selasa":2, "Rabu":3, "Kamis":4, "Jumat":5};
 
-    const HARI_MAP = {
-      0: "MINGGU", 1: "SENIN", 2: "SELASA", 3: "RABU", 4: "KAMIS", 5: "JUMAT", 6: "SABTU"
-    };
+document.getElementById('date-picker').value = selectedDate;
 
-    // INIT LOADING DATA
-    window.addEventListener('DOMContentLoaded', () => {
-      loadStorageData();
-      initEventListeners();
-      updateKelasDropdown();
-      renderAdminKelas();
-      lucide.createIcons();
-      
-      // Set default input tanggal ke hari ini
-      const hariIni = new Date().toISOString().split('T')[0];
-      document.getElementById('date-picker').value = hariIni;
-      handleFilterJadwalUser();
+// DATA STRUKTUR RAW DARI FILE CSV YANG ANDA SERAHKAN
+const rawCsvData = `X MP 1,UPACARA BENDERA,DDMP 81,DDMP 81,DDMP 81,DDMP 81,MLK 113,MLK 113,BIND 42,BIND 42,BIND 42,BIND 42,,KKA 119,KKA 119,KKA 119,MAT 16,MAT 16,MAT 16,MAT 16,IPAS 6,IPAS 6,IPAS 6,,DDMP 81,DDMP 81,DDMP 81,DDMP 81,PENJ101,PENJ101,PENJ101,SEJ 83,SEJ 83,SNB 46,SNB 46,,BING 28,BING 28,BING 28,IPAS 6,IPAS 6,IPAS 6,INFOR 45,INFOR 45,INFOR 45,INFOR 45,,,DDMP 81,DDMP 81,DDMP 81,PKN102,PKN102,PAG 71,PAG 71,PAG 71
+X MP 2,UPACARA BENDERA,DDMP 46,DDMP 46,DDMP 46,DDMP 46,MAT 16,MAT 16,MAT 16,MAT 16,IPAS 6,IPAS 6,,BIND 42,BIND 42,BIND 42,BIND 42,KKA 119,KKA 119,KKA 119,DDMP 46,DDMP 46,DDMP 46,,IPAS 6,IPAS 6,IPAS 6,IPAS 6,SEJ 83,SEJ 83,INFOR 45,INFOR 45,INFOR 45,INFOR 45,MLK 113,,MLK 113,PAG 71,PAG 71,PAG 71,PKN102,PKN102,BING 28,BING 28,BING 28,PENJ101,PENJ101,,,PENJ101,SNB 46,SNB 46,DDMP 46,DDMP 46,DDMP 46,DDMP 46
+X MP 3,UPACARA BENDERA,KKA 119,KKA 119,KKA 119,MAT 16,MAT 16,MAT 16,MAT 16,DDMP 81,DDMP 81,DDMP 81,,IPAS 6,IPAS 6,IPAS 6,BIND 42,BIND 42,BIND 42,BIND 42,MLK 113,MLK 113,DDMP 81,,DDMP 81,DDMP 81,DDMP 81,DDMP 81,BING 28,BING 28,BING 28,SNB 46,SNB 46,SEJ 83,SEJ 83,,INFOR 45,INFOR 45,INFOR 45,INFOR 45,PENJ101,PENJ101,PENJ101,IPAS 6,IPAS 6,IPAS 6,PKN102,,,PKN102,PAG 71,PAG 71,PAG 71,DDMP 81,DDMP 81,DDMP 81,DDMP 81
+X AKL 1,UPACARA BENDERA,EKO 32,EKO 32,EKO 32,BIND 97,BIND 97,DDAK 118,DDAK 118,DDAK 118,DDAK 118,,MAT 77,MAT 77,MAT 77,MAT 77,DDAK 118,DDAK 118,DDAK 118,DDAK 118,IPAS 111,IPAS 111,IPAS 111,,BIND 97,BIND 97,IPAS 111,IPAS 111,IPAS 111,INFOR 45,INFOR 45,INFOR 45,INFOR 45,KKA 119,KKA 119,,KKA 119,BING 5,BING 5,BING 5,SEJ 83,SEJ 83,SNB 74,SNB 74,PAG 82,PAG 82,PAG 82,,,PKN32,PKN32,MLK 113,MLK 113,PENJ101,PENJ101,PENJ101
+X AKL 2,UPACARA BENDERA,BIND 97,BIND 97,BIND 97,BIND 97,EKO 32,EKO 32,EKO 32,MAT 77,MAT 77,MAT 77,,MAT 77,DDAK 118,DDAK 118,DDAK 118,DDAK 118,IPAS 111,IPAS 111,IPAS 111,KKA 119,KKA 119,KKA 119,,INFOR 45,INFOR 45,INFOR 45,INFOR 45,DDAK 118,DDAK 118,DDAK 118,DDAK 118,IPAS 111,IPAS 111,IPAS 111,,SEJ 83,SEJ 83,BING 5,BING 5,BING 5,PKN32,PKN32,SNB 74,SNB 74,MLK 113,MLK 113,,,PAG 82,PAG 82,PAG 82,PENJ101,PENJ101,PENJ101
+X AKL 3,UPACARA BENDERA,DDAK 118,DDAK 118,DDAK 118,DDAK 118,MAT 77,MAT 77,MAT 77,MAT 77,BIND 97,BIND 97,,BIND 97,BIND 97,EKO 32,EKO 32,EKO 32,KKA 119,KKA 119,KKA 119,DDAK 118,DDAK 118,DDAK 118,,DDAK 118,IPAS 111,IPAS 111,IPAS 111,IPAS 111,IPAS 111,IPAS 111,MLK 113,MLK 113,PENJ101,PENJ101,,PENJ101,SNB 74,SNB 74,INFOR 45,INFOR 45,INFOR 45,INFOR 45,BING 5,BING 5,BING 5,,,PKN32,PKN32,PAG 82,PAG 82,PAG 82,EKO 32,EKO 32,MAT 77,MAT 77`;
+
+// FUNGSI PENTING: MENGEKSTRAK KELAS YANG UNIK DAN VALID DARI DATA JADWAL AKTIF
+function getDaftarKelasDariJadwal() {
+  const kelasSet = new Set();
+  allRecords.forEach(record => {
+    if (record.type === 'jadwal' && record.kelas) {
+      kelasSet.add(record.kelas.trim());
+    }
+  });
+  
+  // Jika database masih kosong, isi dengan fallback default dari data CSV agar tidak kosong saat awal muat
+  if (kelasSet.size === 0) {
+    rawCsvData.trim().split('\n').forEach(line => {
+      const parts = line.split(',');
+      if (parts[0] && parts[0].trim() !== "") {
+        kelasSet.add(parts[0].trim());
+      }
     });
+  }
+  
+  return Array.from(kelasSet).sort((a, b) => a.localeCompare(b, undefined, {numeric: true, sensitivity: 'base'}));
+}
 
-    function loadStorageData() {
-      const storedJadwal = localStorage.getItem('db_jadwal_smkn1ktg');
-      const storedAbsensi = localStorage.getItem('db_absensi_smkn1ktg');
-      
-      if(storedJadwal) {
-        dbJadwal = JSON.parse(storedJadwal);
-        // Mengambil daftar unik kelas
-        daftarKelas = [...new Set(dbJadwal.map(item => item.kelas))].sort();
-      }
-      if(storedAbsensi) {
-        dbAbsensi = JSON.parse(storedAbsensi);
-      }
-    }
+function initData() {
+  const saved = localStorage.getItem('e_absensi_v2_data');
+  if (saved) {
+    allRecords = JSON.parse(saved);
+  } else {
+    parseRawCsvData();
+  }
+  refreshKelasDropdowns();
+}
 
-    function initEventListeners() {
-      // Login Admin Toggle Button
-      document.getElementById('login-btn').addEventListener('click', () => {
-        if(!isAdminLoggedIn) {
-          const pass = prompt("Masukkan Password Admin:");
-          if(pass === "admin123") { // Ganti password default sesuai kebutuhan
-            isAdminLoggedIn = true;
-            document.getElementById('admin-status').innerText = "⚡ Login sebagai Admin";
-            document.getElementById('login-btn').innerHTML = '<i data-lucide="log-out" class="w-4 h-4 inline mr-1"></i> Keluar Admin';
-            document.getElementById('admin-view').classList.remove('hidden');
-            document.getElementById('guru-view').classList.add('hidden');
-            showToast("Berhasil masuk mode admin!");
-          } else {
-            alert("Password salah!");
+// MEMPERBARUI SELURUH DROPDOWN DAN LIST KELAS BERDASARKAN JADWAL
+function refreshKelasDropdowns() {
+  const daftarKelas = getDaftarKelasDariJadwal();
+  
+  // 1. Update dropdown Pilih Kelas di Halaman Utama Guru
+  const selectKelas = document.getElementById('kelas-select');
+  selectKelas.innerHTML = '<option value="">-- Pilih Kelas --</option>' + 
+    daftarKelas.map(k => `<option value="${k}" ${k === selectedKelas ? 'selected' : ''}>${k}</option>`).join('');
+
+  // 2. Update dropdown Pilih Kelas di Form Tambah Jadwal Admin
+  const selectJadwalKelas = document.getElementById('jadwal-kelas');
+  if (selectJadwalKelas) {
+    selectJadwalKelas.innerHTML = daftarKelas.map(k => `<option value="${k}">${k}</option>`).join('');
+  }
+
+  // 3. Render List Kelola Kelas di Tab Admin
+  renderKelasList(daftarKelas);
+}
+
+function parseRawCsvData() {
+  allRecords = [];
+  const lines = rawCsvData.trim().split('\n');
+  const hariList = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat"];
+  
+  // Tambah default guru dari data kode numerik
+  const guruMap = {
+    "113": "Siti Afdianti Domu, S.Pd.", "42": "Stevani Paputungan, S.Pd.", "119": "Grand T. G. Tumipa, S.Kom",
+    "16": "Luli T. S Andu S.PD", "6": "Hj. Pannece", "81": "Sigit Supriyanto, S.Pd", "101": "Alifky Bakung, S.Pd",
+    "83": "Rawisma Agow, S.Pd.", "46": "Ray Damo, S.Pd.", "28": "BING 28", "45": "Heru Pratama", "71": "PAG 71",
+    "102": "Pratiwi W.Mamonto, S.Pd", "32": "PKN32 / EKO 32", "97": "BIND 97", "118": "DDAK 118", "77": "MAT 77",
+    "111": "IPAS 111", "5": "BING 5", "74": "SNB 74", "82": "PAG 82"
+  };
+
+  Object.entries(guruMap).forEach(([kode, nama]) => {
+    allRecords.push({ id: `guru-${kode}`, type: 'guru', kode: kode, nama: nama });
+  });
+
+  lines.forEach((line, index) => {
+    const tokens = line.split(',');
+    const namaKelas = tokens[0]?.trim();
+    if (!namaKelas) return;
+
+    let tokenIdx = 1; 
+    hariList.forEach(hari => {
+      let maxJam = (hari === "Senin") ? 12 : 11;
+      for (let jam = 1; jam <= maxJam; jam++) {
+        let val = tokens[tokenIdx];
+        tokenIdx++;
+        if (val === undefined) break;
+        val = val.trim();
+        if (!val || val === "" || val.toUpperCase() === "UPACARA BENDERA") continue;
+
+        let mapel = val;
+        let kodeGuru = "";
+        const parts = val.split(' ');
+        if (parts.length > 1) {
+          const possibleKode = parts[parts.length - 1];
+          if (!isNaN(possibleKode)) {
+            kodeGuru = possibleKode;
+            mapel = parts.slice(0, parts.length - 1).join(' ');
           }
         } else {
-          isAdminLoggedIn = false;
-          document.getElementById('admin-status').innerText = "📌 Belum login";
-          document.getElementById('login-btn').innerHTML = '<i data-lucide="log-in" class="w-4 h-4 inline mr-1"></i> Login Admin';
-          document.getElementById('admin-view').classList.add('hidden');
-          document.getElementById('guru-view').classList.remove('hidden');
-          showToast("Keluar dari mode admin.");
-        }
-        lucide.createIcons();
-      });
-
-      // Tab Navigasi Admin
-      document.getElementById('btn-tab-jadwal').addEventListener('click', () => {
-        document.getElementById('jadwal-tab').classList.remove('hidden');
-        document.getElementById('absensi-tab').classList.add('hidden');
-      });
-      document.getElementById('btn-tab-absensi').addEventListener('click', () => {
-        document.getElementById('jadwal-tab').classList.add('hidden');
-        document.getElementById('absensi-tab').classList.remove('hidden');
-        renderRekapAbsensiAdmin();
-      });
-
-      // Filter User Controls
-      document.getElementById('kelas-select').addEventListener('change', handleFilterJadwalUser);
-      document.getElementById('date-picker').addEventListener('change', handleFilterJadwalUser);
-
-      // Impor CSV File handler
-      document.getElementById('csv-file-input').addEventListener('change', handleCSVUpload);
-    }
-
-    function showToast(message) {
-      const toast = document.getElementById('toast');
-      toast.innerText = message;
-      toast.style.opacity = '1';
-      setTimeout(() => { toast.style.opacity = '0'; }, 3000);
-    }
-
-    function updateKelasDropdown() {
-      const select = document.getElementById('kelas-select');
-      select.innerHTML = '<option value="">-- Pilih Kelas --</option>';
-      daftarKelas.forEach(kls => {
-        select.innerHTML += `<option value="${kls}">${kls}</option>`;
-      });
-    }
-
-    // HANDLER PARSING FILE CSV JADWAL SESUAI DATABASE ANDA
-    function handleCSVUpload(e) {
-      const file = e.target.files[0];
-      if(!file) return;
-
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        const text = evt.target.result;
-        const lines = text.split(/\r?\n/);
-        
-        if (lines.length < 2) {
-          alert("File CSV kosong atau tidak valid.");
-          return;
-        }
-
-        let parsedJadwal = [];
-        // Mengidentifikasi index header: ID,Kelas,Hari,Jam Ke,Kode Mapel,Kode Guru,Nama Guru
-        const headers = lines[0].split(',');
-        
-        for(let i = 1; i < lines.length; i++) {
-          if(!lines[i].trim()) continue;
-          
-          // Parsing dengan regex untuk menangani koma di dalam tanda kutip nama guru
-          const row = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || lines[i].split(',');
-          
-          if(row.length >= 6) {
-            const clean = val => val ? val.replace(/^"|"$/g, '').trim() : '';
-            
-            // Struktur data dipetakan dari kolom file CSV anda
-            const itemJadwal = {
-              id: clean(row[0]),
-              kelas: clean(row[1]),
-              hari: clean(row[2]).toUpperCase(),
-              jamKe: clean(row[3]),
-              kodeMapel: clean(row[4]),
-              kodeGuru: clean(row[5]),
-              namaGuru: row[6] ? clean(row[6]) : `Guru Kode ${clean(row[5])}`
-            };
-            
-            if(itemJadwal.kelas && itemJadwal.hari) {
-              parsedJadwal.push(itemJadwal);
-            }
+          const match = val.match(/\d+/);
+          if (match) {
+            kodeGuru = match[0];
+            mapel = val.replace(kodeGuru, '').trim();
           }
         }
 
-        if(parsedJadwal.length > 0) {
-          dbJadwal = parsedJadwal;
-          daftarKelas = [...new Set(dbJadwal.map(item => item.kelas))].sort();
-          
-          localStorage.setItem('db_jadwal_smkn1ktg', JSON.stringify(dbJadwal));
-          
-          updateKelasDropdown();
-          renderAdminKelas();
-          
-          // Tampilkan panel informasi statistik file csv
-          const stats = document.getElementById('csv-stats');
-          stats.classList.remove('hidden');
-          stats.innerHTML = `✅ <strong>Berhasil sinkronisasi!</strong> Berhasil memuat total <strong>${dbJadwal.length}</strong> baris jadwal untuk <strong>${daftarKelas.length}</strong> kelas terdaftar dari data KBM resmi.`;
-          showToast("Database jadwal berhasil diperbarui!");
-        } else {
-          alert("Gagal membaca baris data CSV. Pastikan struktur kolom telah sesuai.");
-        }
-      };
-      reader.readAsText(file);
-    }
-
-    // TAMPILAN GURU / USER RENDER JADWAL BERDASARKAN FILTER HARI & KELAS
-    function handleFilterJadwalUser() {
-      const selectedKelas = document.getElementById('kelas-select').value;
-      const selectedDateStr = document.getElementById('date-picker').value;
-      const tableBody = document.getElementById('table-body');
-      const hariInfo = document.getElementById('hari-info');
-      const namaHariAktif = document.getElementById('nama-hari-aktif');
-
-      if(!selectedKelas || !selectedDateStr) {
-        tableBody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400">Silahkan pilih kelas dan tanggal terlebih dahulu untuk menampilkan jadwal hari itu.</td></tr>`;
-        hariInfo.classList.add('hidden');
-        return;
+        let namaGuru = guruMap[kodeGuru] || `Guru Kode ${kodeGuru || '?'}`;
+        allRecords.push({
+          id: `jadwal-${index}-${hari}-${jam}`,
+          type: 'jadwal',
+          kelas: namaKelas,
+          hari: hari,
+          jamKe: jam,
+          mapel: mapel || val,
+          guru: namaGuru
+        });
       }
+      tokenIdx++; 
+    });
+  });
+  saveData();
+}
 
-      const dateObj = new Date(selectedDateStr);
-      const namaHari = HARI_MAP[dateObj.getDay()];
-      namaHariAktif.innerText = namaHari;
-      hariInfo.classList.remove('hidden');
+function saveData() {
+  localStorage.setItem('e_absensi_v2_data', JSON.stringify(allRecords));
+  showIndicator();
+}
 
-      // Filter jadwal dari database berdasarkan kelas dan hari
-      const filteredJadwal = dbJadwal.filter(j => j.kelas === selectedKelas && j.hari === namaHari);
+function showIndicator() {
+  const el = document.getElementById('save-indicator');
+  el.style.opacity = '1';
+  setTimeout(() => el.style.opacity = '0', 1500);
+}
 
-      // Urutkan jadwal berdasarkan urutan jam mengajar
-      filteredJadwal.sort((a, b) => parseInt(a.jamKe) - parseInt(b.jamKe));
+// TAMPILAN GURU / UTAMA
+function getNamaHariDariTanggal(dateStr) {
+  if (!dateStr) return "";
+  const d = new Date(dateStr);
+  return namaHariIndo[d.getDay()];
+}
 
-      if(filteredJadwal.length === 0) {
-        tableBody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-500 bg-amber-50/50 border border-amber-100 rounded-lg">Tidak ada jadwal KBM resmi untuk kelas <strong>${selectedKelas}</strong> pada hari <strong>${namaHari}</strong>.</td></tr>`;
-        return;
-      }
+function renderGuruTable() {
+  const tbody = document.getElementById('table-body');
+  const hariInfo = document.getElementById('hari-info');
+  const namaHariAktif = document.getElementById('nama-hari-aktif');
 
-      tableBody.innerHTML = '';
-      filteredJadwal.forEach(j => {
-        // Cek status absensi tersimpan lokal perangkat
-        const absensiKey = `${selectedDateStr}_${j.kelas}_${j.hari}_${j.jamKe}_${j.kodeMapel}`;
-        const recordAbsen = dbAbsensi.find(a => a.key === absensiKey);
-        
-        const statusHadir = recordAbsen ? recordAbsen.status : '';
-        const ketText = recordAbsen ? recordAbsen.keterangan : '';
+  if (!selectedKelas) {
+    hariInfo.classList.add('hidden');
+    tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400"><p>Silahkan pilih kelas terlebih dahulu untuk menampilkan jadwal.</p></td></tr>`;
+    return;
+  }
 
-        const row = document.createElement('tr');
-        row.className = "border-b border-slate-100 hover:bg-slate-50/80 transition";
-        row.innerHTML = `
-          <td class="px-4 py-3.5 font-medium text-slate-700">Jam Ke-${j.jamKe}</td>
-          <td class="px-4 py-3.5"><span class="px-2 py-1 bg-slate-100 font-semibold rounded text-slate-800 text-xs border border-slate-200">${j.kodeMapel}</span></td>
-          <td class="px-4 py-3.5 text-slate-800 font-medium">${j.namaGuru} <span class="text-xs text-slate-400 block font-normal">NIP/Kode: ${j.kodeGuru}</span></td>
-          <td class="px-4 py-3.5 text-center">
-            <select onchange="simpanKehadiran('${absensiKey}', '${selectedDateStr}', '${j.kelas}', '${j.hari}', '${j.jamKe}', '${j.kodeMapel}', '${j.namaGuru}', this.value)" class="border rounded-md px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500 bg-white">
-              <option value="">-- Cek Status --</option>
-              <option value="HADIR" ${statusHadir === 'HADIR' ? 'selected' : ''}>✅ HADIR</option>
-              <option value="IZIN" ${statusHadir === 'IZIN' ? 'selected' : ''}>⚠️ IZIN</option>
-              <option value="SAKIT" ${statusHadir === 'SAKIT' ? 'selected' : ''}>🤒 SAKIT</option>
-              <option value="ALFA" ${statusHadir === 'ALFA' ? 'selected' : ''}>❌ ALFA / TANPA KET</option>
+  const hariIni = getNamaHariDariTanggal(selectedDate);
+  namaHariAktif.textContent = hariIni;
+  hariInfo.classList.remove('hidden');
+
+  if (!["Senin", "Selasa", "Rabu", "Kamis", "Jumat"].includes(hariIni)) {
+    tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-amber-600 font-medium bg-amber-50">📅 Hari ${hariIni} tidak ada jadwal Kegiatan Belajar Mengajar (KBM).</td></tr>`;
+    return;
+  }
+
+  const jadwalKelasHariIni = allRecords.filter(r => r.type === 'jadwal' && r.kelas === selectedKelas && r.hari === hariIni);
+  
+  if (jadwalKelasHariIni.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400">Tidak ada jadwal mengajar untuk kelas ${selectedKelas} pada hari ${hariIni}.</td></tr>`;
+    return;
+  }
+
+  jadwalKelasHariIni.sort((a, b) => parseInt(a.jamKe) - parseInt(b.jamKe));
+
+  tbody.innerHTML = jadwalKelasHariIni.map(j => {
+    const absensiKey = `absensiresi_${selectedDate}_${selectedKelas}_${j.jamKe}`;
+    const savedAbsen = allRecords.find(r => r.type === 'absensi' && r.key === absensiKey) || { status: 'Belum Diisi', ket: '' };
+    
+    let statusClass = "bg-slate-100 text-slate-700";
+    if (savedAbsen.status === "Hadir") statusClass = "bg-green-100 text-green-700 font-semibold";
+    if (savedAbsen.status === "Izin" || savedAbsen.status === "Sakit") statusClass = "bg-amber-100 text-amber-700 font-semibold";
+    if (savedAbsen.status === "Alfa") statusClass = "bg-red-100 text-red-700 font-semibold";
+
+    if (isAdminLoggedIn) {
+      return `
+        <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+          <td class="px-4 py-3 font-medium text-slate-700">Jam Ke-${j.jamKe}</td>
+          <td class="px-4 py-3 text-slate-600 font-semibold">${j.mapel}</td>
+          <td class="px-4 py-3 text-slate-600">${j.guru}</td>
+          <td class="px-4 py-3 text-center">
+            <select onchange="updateAbsensiDirect('${absensiKey}', this.value)" class="border border-slate-200 rounded px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500">
+              <option value="Belum Diisi" ${savedAbsen.status === 'Belum Diisi' ? 'selected' : ''}>- Pilih -</option>
+              <option value="Hadir" ${savedAbsen.status === 'Hadir' ? 'selected' : ''}>🟢 Hadir</option>
+              <option value="Izin" ${savedAbsen.status === 'Izin' ? 'selected' : ''}>🟡 Izin</option>
+              <option value="Sakit" ${savedAbsen.status === 'Sakit' ? 'selected' : ''}>🔵 Sakit</option>
+              <option value="Alfa" ${savedAbsen.status === 'Alfa' ? 'selected' : ''}>🔴 Alfa</option>
             </select>
           </td>
-          <td class="px-4 py-3.5">
-            <input type="text" value="${ketText}" placeholder="Catatan opsional..." onchange="simpanKeterangan('${absensiKey}', this.value)" class="w-full border border-slate-200 rounded px-2 py-1 text-xs focus:outline-none focus:border-blue-500">
+          <td class="px-4 py-3">
+            <input type="text" placeholder="Catatan..." value="${savedAbsen.ket || ''}" onchange="updateKeteranganDirect('${absensiKey}', this.value)" class="w-full border border-slate-200 rounded px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500">
           </td>
-        `;
-        tableBody.appendChild(row);
-      });
+        </tr>
+      `;
+    } else {
+      return `
+        <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+          <td class="px-4 py-3 font-medium text-slate-700">Jam Ke-${j.jamKe}</td>
+          <td class="px-4 py-3 text-slate-600 font-semibold">${j.mapel}</td>
+          <td class="px-4 py-3 text-slate-600">${j.guru}</td>
+          <td class="px-4 py-3 text-center">
+            <span class="px-2.5 py-1 rounded-full text-xs ${statusClass}">${savedAbsen.status}</span>
+          </td>
+          <td class="px-4 py-3 text-xs text-slate-500 italic">${savedAbsen.ket || '-'}</td>
+        </tr>
+      `;
     }
+  }).join('');
+  
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+}
 
-    // SIMPAN STATUS ABSENSI KE LOCALSTORAGE
-    function simpanKehadiran(key, tanggal, kelas, hari, jamKe, kodeMapel, namaGuru, status) {
-      const idx = dbAbsensi.findIndex(a => a.key === key);
-      
-      if(status === "") {
-        if(idx !== -1) dbAbsensi.splice(idx, 1);
-      } else {
-        if(idx !== -1) {
-          dbAbsensi[idx].status = status;
-          dbAbsensi[idx].timestamp = new Date().toLocaleString('id-ID');
-        } else {
-          dbAbsensi.push({
-            key, tanggal, kelas, hari, jamKe, kodeMapel, namaGuru, status, keterangan: '', timestamp: new Date().toLocaleString('id-ID')
-          });
-        }
-      }
-      localStorage.setItem('db_absensi_smkn1ktg', JSON.stringify(dbAbsensi));
-      showToast("Kehadiran diperbarui.");
-    }
+function updateAbsensiDirect(key, val) {
+  let record = allRecords.find(r => r.type === 'absensi' && r.key === key);
+  if (record) {
+    record.status = val;
+  } else {
+    allRecords.push({ id: 'absen-' + Date.now() + Math.random(), type: 'absensi', key: key, status: val, ket: '' });
+  }
+  saveData();
+  renderGuruTable();
+}
 
-    function simpanKeterangan(key, keteranganText) {
-      const idx = dbAbsensi.findIndex(a => a.key === key);
-      if(idx !== -1) {
-        dbAbsensi[idx].keterangan = keteranganText;
-        localStorage.setItem('db_absensi_smkn1ktg', JSON.stringify(dbAbsensi));
-        showToast("Catatan keterangan disimpan.");
-      }
-    }
+function updateKeteranganDirect(key, val) {
+  let record = allRecords.find(r => r.type === 'absensi' && r.key === key);
+  if (record) {
+    record.ket = val;
+  } else {
+    allRecords.push({ id: 'absen-' + Date.now() + Math.random(), type: 'absensi', key: key, status: 'Belum Diisi', ket: val });
+  }
+  saveData();
+}
 
-    // ADMIN INTERFACE FUNCTIONS
-    function renderAdminKelas() {
-      const listElement = document.getElementById('admin-kelas-list');
-      if(daftarKelas.length === 0) {
-        listElement.innerHTML = `<li class="p-4 text-center text-slate-400">Belum ada data kelas. Silahkan unggah database CSV.</li>`;
-        return;
-      }
+// ADMIN VIEW - MANAGEMENT KELAS BERDASARKAN JADWAL
+function renderKelasList(daftarKelas) {
+  const list = document.getElementById('kelas-list');
+  if (!list) return;
+  
+  const kelasAktif = daftarKelas || getDaftarKelasDariJadwal();
 
-      listElement.innerHTML = '';
-      daftarKelas.forEach(kls => {
-        const li = document.createElement('li');
-        li.className = `p-3 px-4 hover:bg-slate-50 cursor-pointer flex justify-between items-center transition ${selectedKelasAdmin === kls ? 'bg-blue-50/80 hover:bg-blue-50' : ''}`;
-        li.onclick = () => viewDetailJadwalKelasAdmin(kls);
-        li.innerHTML = `
-          <span class="font-medium text-slate-700"><i data-lucide="folder" class="w-3.5 h-3.5 inline mr-1 text-slate-400"></i> ${kls}</span>
-          <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
-        `;
-        listElement.appendChild(li);
-      });
-      lucide.createIcons();
-    }
+  if (kelasAktif.length === 0) {
+    list.innerHTML = `<tr><td class="p-4 text-center text-slate-400">Belum ada data kelas di jadwal.</td></tr>`;
+    return;
+  }
 
-    function viewDetailJadwalKelasAdmin(kelas) {
-      selectedKelasAdmin = kelas;
-      renderAdminKelas(); // refresh active highlight
-      
-      document.getElementById('admin-selected-kelas').innerText = kelas;
-      document.getElementById('admin-detail-panel').classList.remove('hidden');
+  list.innerHTML = kelasAktif.map(k => `
+    <tr class="border-b border-slate-100 hover:bg-blue-50/50 cursor-pointer transition ${adminSelectedDetailKelas === k ? 'bg-blue-50 font-semibold' : ''}" onclick="lihatDetailJadwalKelas('${k}')">
+      <td class="px-4 py-3 text-slate-700 flex justify-between items-center">
+        <span>📚 ${k}</span>
+        <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+      </td>
+    </tr>
+  `).join('');
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+}
 
-      const tbody = document.getElementById('admin-jadwal-body');
-      const filtered = dbJadwal.filter(j => j.kelas === kelas);
+function lihatDetailJadwalKelas(namaKelas) {
+  adminSelectedDetailKelas = namaKelas;
+  document.getElementById('kelas-blank-panel').classList.add('hidden');
+  const panel = document.getElementById('kelas-detail-panel');
+  panel.classList.remove('hidden');
+  document.getElementById('detail-nama-kelas').textContent = namaKelas;
+  renderDetailJadwalList();
+  renderKelasList();
+}
 
-      // Urutan Hari KBM & Jam Mengajar
-      const orderHari = {"SENIN":1, "SELASA":2, "RABU":3, "KAMIS":4, "JUMAT":5, "SABTU":6, "MINGGU":7};
-      filtered.sort((a,b) => (orderHari[a.hari] || 99) - (orderHari[b.hari] || 99) || parseInt(a.jamKe) - parseInt(b.jamKe));
+function tutupDetailKelas() {
+  adminSelectedDetailKelas = "";
+  document.getElementById('kelas-detail-panel').classList.add('hidden');
+  document.getElementById('kelas-blank-panel').classList.remove('hidden');
+  renderKelasList();
+}
 
-      if(filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">Tidak ada rincian data KBM.</td></tr>`;
-        return;
-      }
+function renderDetailJadwalList() {
+  const tbody = document.getElementById('detail-jadwal-list');
+  if (!tbody || !adminSelectedDetailKelas) return;
 
-      tbody.innerHTML = '';
-      filtered.forEach(j => {
-        tbody.innerHTML += `
-          <tr class="hover:bg-slate-50">
-            <td class="p-2.5 font-semibold text-xs text-slate-600">${j.hari}</td>
-            <td class="p-2.5 text-xs text-slate-700">Jam Ke-${j.jamKe}</td>
-            <td class="p-2.5 text-xs"><span class="px-1.5 py-0.5 bg-slate-100 border text-slate-700 font-mono font-bold rounded">${j.kodeMapel}</span></td>
-            <td class="p-2.5 text-xs text-slate-800 font-medium">${j.namaGuru} <span class="text-slate-400 font-normal">(${j.kodeGuru})</span></td>
-          </tr>
-        `;
-      });
-    }
+  const jadwalKelas = allRecords.filter(r => r.type === 'jadwal' && r.kelas === adminSelectedDetailKelas);
+  jadwalKelas.sort((a,b) => {
+    if(urutanHari[a.hari] !== urutanHari[b.hari]) return urutanHari[a.hari] - urutanHari[b.hari];
+    return parseInt(a.jamKe) - parseInt(b.jamKe);
+  });
 
-    function renderRekapAbsensiAdmin() {
-      const tbody = document.getElementById('rekap-absensi-body');
-      if(dbAbsensi.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400">Belum ada rekaman absensi yang tersimpan di perangkat ini.</td></tr>`;
-        return;
-      }
+  if (jadwalKelas.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">Belum ada jadwal mengajar terdaftar untuk kelas ini.</td></tr>`;
+    return;
+  }
 
-      // Urutkan rekap berdasarkan input teranyar
-      dbAbsensi.sort((a,b) => b.tanggal.localeCompare(a.tanggal));
+  tbody.innerHTML = jadwalKelas.map(j => `
+    <tr class="border-b border-slate-100 hover:bg-slate-50">
+      <td class="px-3 py-2 font-medium text-slate-800">${j.hari}</td>
+      <td class="px-3 py-2 text-slate-600">Jam Ke-${j.jamKe}</td>
+      <td class="px-3 py-2 text-slate-700 font-semibold">${j.mapel}</td>
+      <td class="px-3 py-2 text-slate-600">${j.guru}</td>
+      <td class="px-3 py-2 text-center">
+        <button onclick="deleteJadwalRecord('${j.id}')" class="text-red-500 hover:text-red-700 font-medium text-xs bg-red-50 hover:bg-red-100 px-2 py-1 rounded">Hapus</button>
+      </td>
+    </tr>
+  `).join('');
+}
 
-      tbody.innerHTML = '';
-      dbAbsensi.forEach(a => {
-        let badgeColor = 'bg-slate-100 text-slate-700';
-        if(a.status === 'HADIR') badgeColor = 'bg-green-100 text-green-800 font-bold';
-        if(a.status === 'IZIN') badgeColor = 'bg-amber-100 text-amber-800 font-bold';
-        if(a.status === 'SAKIT') badgeColor = 'bg-blue-100 text-blue-800 font-bold';
-        if(a.status === 'ALFA') badgeColor = 'bg-red-100 text-red-800 font-bold';
+function deleteJadwalRecord(id) {
+  if (confirm("Hapus baris jadwal ini?")) {
+    allRecords = allRecords.filter(r => r.id !== id);
+    saveData();
+    refreshKelasDropdowns();
+    if (adminSelectedDetailKelas) renderDetailJadwalList();
+    renderJadwalList();
+  }
+}
 
-        tbody.innerHTML += `
-          <tr class="border-b hover:bg-slate-50/50">
-            <td class="px-4 py-2 text-xs text-slate-600">${a.tanggal}</td>
-            <td class="px-4 py-2 text-xs font-semibold text-slate-700">${a.kelas}</td>
-            <td class="px-4 py-2 text-xs text-slate-600">Jam ${a.jamKe}</td>
-            <td class="px-4 py-2 text-xs font-mono font-bold text-slate-600">${a.kodeMapel}</td>
-            <td class="px-4 py-2 text-xs text-slate-800 font-medium">${a.namaGuru}</td>
-            <td class="px-4 py-2 text-center text-xs"><span class="px-2 py-0.5 rounded-full ${badgeColor}">${a.status}</span></td>
-            <td class="px-4 py-2 text-xs text-slate-500">${a.keterangan || '-'}</td>
-          </tr>
-        `;
-      });
-    }
-  </script>
- </body>
-</html>
+// MANAGEMENT GURU
+function renderGuruList() {
+  const list = document.getElementById('guru-list');
+  const guru = allRecords.filter(r => r.type === 'guru').sort((a,b) => a.nama.localeCompare(b.nama));
+  
+  if (guru.length === 0) {
+    list.innerHTML = `<tr><td class="p-4 text-center text-slate-400">Belum ada data guru.</td></tr>`;
+    return;
+  }
+
+  list.innerHTML = guru.map(g => `
+    <tr class
