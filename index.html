@@ -52,17 +52,17 @@
        <table class="w-full text-sm">
         <thead class="bg-slate-50 border-b border-slate-200">
          <tr>
-          <th class="px-4 py-3 text-left font-semibold text-slate-600">Jam</th>
+          <th class="px-4 py-3 text-left font-semibold text-slate-600">Jam Ke</th>
           <th class="px-4 py-3 text-left font-semibold text-slate-600">Mapel</th>
-          <th class="px-4 py-3 text-left font-semibold text-slate-600">Guru</th>
-          <th class="px-4 py-3 text-center font-semibold text-slate-600">Cek Hadir</th>
+          <th class="px-4 py-3 text-left font-semibold text-slate-600">Guru Pengajar</th>
+          <th class="px-4 py-3 text-center font-semibold text-slate-600">Status Kehadiran</th>
           <th class="px-4 py-3 text-left font-semibold text-slate-600">Keterangan</th>
          </tr>
         </thead>
         <tbody id="table-body">
          <tr>
           <td colspan="5" class="p-8 text-center text-slate-400">
-           <p>Silahkan pilih kelas terlebih dahulu untuk menampilkan jadwal.</p>
+           <p>Silahkan pilih kelas dan tanggal terlebih dahulu untuk menampilkan jadwal.</p>
           </td>
          </tr>
         </tbody>
@@ -72,741 +72,435 @@
     </div>
 
     <div id="admin-view" class="hidden">
-     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-      <button id="btn-kelas" class="p-4 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl font-medium hover:shadow-lg transition"><i data-lucide="book" class="w-5 h-5 inline mr-2"></i>Kelola Kelas</button> 
-      <button id="btn-guru" class="p-4 bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl font-medium hover:shadow-lg transition"><i data-lucide="users" class="w-5 h-5 inline mr-2"></i>Kelola Guru</button> 
-      <button id="btn-jadwal" class="p-4 bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl font-medium hover:shadow-lg transition"><i data-lucide="calendar" class="w-5 h-5 inline mr-2"></i>Kelola Jadwal</button>
+     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+      <button id="btn-tab-jadwal" class="p-4 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl font-medium hover:shadow-lg transition flex items-center justify-center gap-2">
+        <i data-lucide="calendar" class="w-5 h-5"></i> Kelola & Sinkronisasi Jadwal KBM
+      </button> 
+      <button id="btn-tab-absensi" class="p-4 bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl font-medium hover:shadow-lg transition flex items-center justify-center gap-2">
+        <i data-lucide="clipboard-check" class="w-5 h-5"></i> Rekap Kehadiran Guru
+      </button>
      </div>
 
-     <div id="kelas-tab" class="hidden mb-6">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-bold text-slate-800">📚 Daftar Kelas</h2>
-        <button id="btn-sync-csv" class="px-3 py-1.5 bg-amber-600 text-white rounded-lg text-xs font-semibold hover:bg-amber-700 transition flex items-center gap-1 shadow">
-          <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Sinkronkan Jadwal Resmi KBM (CSV)
-        </button>
-      </div>
-      <p class="text-xs text-slate-500 mb-3">💡 Tip: Klik pada nama kelas untuk melihat dan mengedit seluruh jadwal mengajar kelas tersebut.</p>
-      
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="lg:col-span-1">
-          <div class="flex gap-2 mb-4">
-           <input type="text" id="kelas-input" placeholder="Nama kelas baru" class="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"> 
-           <button id="btn-add-kelas" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 flex items-center"><i data-lucide="plus" class="w-4 h-4 mr-1"></i>Tambah</button>
+     <div id="jadwal-tab" class="block mb-6">
+      <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm mb-6">
+        <div class="sm:flex justify-between items-center border-b border-slate-100 pb-4 mb-4">
+          <div>
+            <h2 class="text-lg font-bold text-slate-800">🔄 Sinkronisasi Database CSV</h2>
+            <p class="text-xs text-slate-500 mt-1">Impor file database CSV jadwal mengajar resmi semester genap.</p>
           </div>
-          <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm max-h-[500px] overflow-y-auto">
-           <table class="w-full text-sm">
-            <tbody id="kelas-list"></tbody>
-           </table>
+          <div class="mt-3 sm:mt-0">
+            <label class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-sm font-semibold rounded-lg shadow transition">
+              <i data-lucide="upload-cloud" class="w-4 h-4"></i> Unggah File CSV Jadwal
+              <input type="file" id="csv-file-input" accept=".csv" class="hidden">
+            </label>
           </div>
         </div>
+        <div id="csv-stats" class="text-xs text-slate-600 bg-slate-50 p-3 rounded-lg border border-slate-200 hidden"></div>
+      </div>
 
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-1">
+          <h3 class="text-sm font-bold text-slate-700 mb-3">Daftar Kelas Terdeteksi</h3>
+          <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm max-h-[400px] overflow-y-auto">
+            <ul id="admin-kelas-list" class="divide-y divide-slate-100 text-sm">
+              <li class="p-4 text-center text-slate-400">Belum ada data kelas. Silahkan unggah database CSV.</li>
+            </ul>
+          </div>
+        </div>
         <div class="lg:col-span-2">
-          <div id="kelas-detail-panel" class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hidden">
-            <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
-              <h3 class="text-lg font-bold text-slate-800">📅 Jadwal Kelas: <span id="detail-nama-kelas" class="text-blue-600"></span></h3>
-              <button onclick="tutupDetailKelas()" class="text-slate-400 hover:text-slate-600 text-sm font-medium">Tutup ✕</button>
-            </div>
-            <div class="overflow-x-auto">
+          <div id="admin-detail-panel" class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hidden">
+            <h3 class="text-base font-bold text-slate-800 mb-3 pb-2 border-b">Detail Jadwal Kelas: <span id="admin-selected-kelas" class="text-blue-600"></span></h3>
+            <div class="overflow-x-auto max-h-[400px] overflow-y-auto">
               <table class="w-full text-sm">
-                <thead class="bg-slate-50 border-b border-slate-200">
+                <thead class="bg-slate-50 sticky top-0 border-b">
                   <tr>
-                    <th class="px-3 py-2 text-left font-semibold">Hari</th>
-                    <th class="px-3 py-2 text-left font-semibold">Jam Ke</th>
-                    <th class="px-3 py-2 text-left font-semibold">Mata Pelajaran</th>
-                    <th class="px-3 py-2 text-left font-semibold">Guru Pengajar</th>
-                    <th class="px-3 py-2 text-center font-semibold">Aksi</th>
+                    <th class="p-2 text-left text-xs font-semibold text-slate-600">Hari</th>
+                    <th class="p-2 text-left text-xs font-semibold text-slate-600">Jam Ke</th>
+                    <th class="p-2 text-left text-xs font-semibold text-slate-600">Mapel</th>
+                    <th class="p-2 text-left text-xs font-semibold text-slate-600">Guru</th>
                   </tr>
                 </thead>
-                <tbody id="detail-jadwal-list"></tbody>
+                <tbody id="admin-jadwal-body" class="divide-y"></tbody>
               </table>
             </div>
           </div>
-          <div id="kelas-blank-panel" class="bg-slate-100 border border-dashed border-slate-300 rounded-xl p-12 text-center text-slate-400 text-sm">
-            Silahkan pilih salah satu kelas di sebelah kiri untuk mengelola dan mengedit jadwal kelas.
-          </div>
         </div>
       </div>
      </div>
 
-     <div id="guru-tab" class="hidden mb-6">
-      <h2 class="text-xl font-bold text-slate-800 mb-4">👨‍🏫 Daftar Guru</h2>
-      <div class="flex gap-2 mb-4">
-       <input type="text" id="guru-input" placeholder="Nama guru / Kode guru" class="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"> 
-       <button id="btn-add-guru" class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700"><i data-lucide="plus" class="w-4 h-4 inline mr-1"></i>Tambah</button>
-      </div>
-      <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
-       <table class="w-full text-sm">
-        <tbody id="guru-list"></tbody>
-       </table>
-      </div>
+     <div id="absensi-tab" class="hidden mb-6 bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+       <h2 class="text-lg font-bold text-slate-800 mb-4">📋 Rekap Kehadiran Guru Semuanya</h2>
+       <div class="overflow-x-auto">
+         <table class="w-full text-sm">
+           <thead class="bg-slate-50 border-b">
+             <tr>
+               <th class="px-4 py-2 text-left font-semibold text-slate-600">Tanggal</th>
+               <th class="px-4 py-2 text-left font-semibold text-slate-600">Kelas</th>
+               <th class="px-4 py-2 text-left font-semibold text-slate-600">Jam</th>
+               <th class="px-4 py-2 text-left font-semibold text-slate-600">Mapel</th>
+               <th class="px-4 py-2 text-left font-semibold text-slate-600">Guru</th>
+               <th class="px-4 py-2 text-center font-semibold text-slate-600">Status</th>
+               <th class="px-4 py-2 text-left font-semibold text-slate-600">Keterangan</th>
+             </tr>
+           </thead>
+           <tbody id="rekap-absensi-body">
+             <tr>
+               <td colspan="7" class="p-6 text-center text-slate-400">Belum ada rekaman absensi yang tersimpan di perangkat ini.</td>
+             </tr>
+           </tbody>
+         </table>
+       </div>
      </div>
 
-     <div id="jadwal-tab" class="hidden mb-6">
-      <h2 class="text-xl font-bold text-slate-800 mb-4">📅 Daftar Jadwal Mengajar (Semua Kelas)</h2>
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-2 mb-4">
-       <select id="jadwal-hari" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold text-blue-600 bg-blue-50">
-        <option value="Senin">Senin</option>
-        <option value="Selasa">Selasa</option>
-        <option value="Rabu">Rabu</option>
-        <option value="Kamis">Kamis</option>
-        <option value="Jumat">Jumat</option>
-       </select>
-       <select id="jadwal-kelas" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"></select> 
-       <input type="text" id="jadwal-mapel" placeholder="Mapel" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"> 
-       <input type="text" id="jadwal-guru" placeholder="Nama/Kode Guru" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"> 
-       <input type="number" id="jadwal-jam" placeholder="Jam ke-" min="1" max="12" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"> 
-       <button id="btn-add-jadwal" class="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700"><i data-lucide="plus" class="w-4 h-4 inline mr-1"></i>Tambah</button>
-      </div>
-      <div class="bg-white rounded-xl border border-slate-200 overflow-hidden max-h-[600px] overflow-y-auto">
-       <table class="w-full text-sm">
-        <thead class="bg-slate-50 border-b border-slate-200 sticky top-0">
-         <tr>
-          <th class="px-4 py-3 text-left font-semibold">Hari</th>
-          <th class="px-4 py-3 text-left font-semibold">Kelas</th>
-          <th class="px-4 py-3 text-left font-semibold">Jam Ke</th>
-          <th class="px-4 py-3 text-left font-semibold">Mapel</th>
-          <th class="px-4 py-3 text-left font-semibold">Guru</th>
-          <th class="px-4 py-3 text-center font-semibold">Aksi</th>
-         </tr>
-        </thead>
-        <tbody id="jadwal-list"></tbody>
-       </table>
-      </div>
-     </div>
     </div>
 
-    <div id="login-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-     <div class="bg-white rounded-xl p-6 w-96 shadow-lg">
-      <h2 class="text-lg font-bold text-slate-800 mb-4">Login Admin</h2>
-      <input type="text" id="admin-name" placeholder="Masukkan nama admin" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
-      <div class="flex gap-3">
-       <button id="login-confirm" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition">Login</button> 
-       <button id="login-cancel" class="flex-1 px-4 py-2 bg-slate-200 text-slate-800 rounded-lg text-sm font-medium hover:bg-slate-300 transition">Batal</button>
-      </div>
-     </div>
-    </div>
-
-    <div id="save-indicator" class="fixed bottom-4 right-4 bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-lg opacity-0 transition-opacity duration-300 z-50">
-     <i data-lucide="check" class="w-4 h-4 inline mr-1"></i> Tersimpan
-    </div>
+    <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-4 py-3 rounded-lg shadow-xl text-sm flex items-center gap-2 opacity-0 transition-opacity duration-300 pointer-events-none z-50"></div>
 
    </div>
   </div>
 
   <script>
-let allRecords = [];
-let isAdminLoggedIn = false;
-let adminName = "";
-let selectedDate = new Date().toISOString().split('T')[0];
-let selectedKelas = "";
-let adminSelectedDetailKelas = ""; 
-const namaHariIndo = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-const urutanHari = {"Senin":1, "Selasa":2, "Rabu":3, "Kamis":4, "Jumat":5};
+    // STATE MANAGEMENTS
+    let dbJadwal = [];
+    let dbAbsensi = [];
+    let daftarKelas = [];
+    let isAdminLoggedIn = false;
+    let selectedKelasAdmin = '';
 
-document.getElementById('date-picker').value = selectedDate;
+    const HARI_MAP = {
+      0: "MINGGU", 1: "SENIN", 2: "SELASA", 3: "RABU", 4: "KAMIS", 5: "JUMAT", 6: "SABTU"
+    };
 
-// DATA STRUKTUR RAW DARI FILE CSV YANG ANDA SERAHKAN
-const rawCsvData = `X MP 1,UPACARA BENDERA,DDMP 81,DDMP 81,DDMP 81,DDMP 81,MLK 113,MLK 113,BIND 42,BIND 42,BIND 42,BIND 42,,KKA 119,KKA 119,KKA 119,MAT 16,MAT 16,MAT 16,MAT 16,IPAS 6,IPAS 6,IPAS 6,,DDMP 81,DDMP 81,DDMP 81,DDMP 81,PENJ101,PENJ101,PENJ101,SEJ 83,SEJ 83,SNB 46,SNB 46,,BING 28,BING 28,BING 28,IPAS 6,IPAS 6,IPAS 6,INFOR 45,INFOR 45,INFOR 45,INFOR 45,,,DDMP 81,DDMP 81,DDMP 81,PKN102,PKN102,PAG 71,PAG 71,PAG 71
-X MP 2,UPACARA BENDERA,DDMP 46,DDMP 46,DDMP 46,DDMP 46,MAT 16,MAT 16,MAT 16,MAT 16,IPAS 6,IPAS 6,,BIND 42,BIND 42,BIND 42,BIND 42,KKA 119,KKA 119,KKA 119,DDMP 46,DDMP 46,DDMP 46,,IPAS 6,IPAS 6,IPAS 6,IPAS 6,SEJ 83,SEJ 83,INFOR 45,INFOR 45,INFOR 45,INFOR 45,MLK 113,,MLK 113,PAG 71,PAG 71,PAG 71,PKN102,PKN102,BING 28,BING 28,BING 28,PENJ101,PENJ101,,,PENJ101,SNB 46,SNB 46,DDMP 46,DDMP 46,DDMP 46,DDMP 46
-X MP 3,UPACARA BENDERA,KKA 119,KKA 119,KKA 119,MAT 16,MAT 16,MAT 16,MAT 16,DDMP 81,DDMP 81,DDMP 81,,IPAS 6,IPAS 6,IPAS 6,BIND 42,BIND 42,BIND 42,BIND 42,MLK 113,MLK 113,DDMP 81,,DDMP 81,DDMP 81,DDMP 81,DDMP 81,BING 28,BING 28,BING 28,SNB 46,SNB 46,SEJ 83,SEJ 83,,INFOR 45,INFOR 45,INFOR 45,INFOR 45,PENJ101,PENJ101,PENJ101,IPAS 6,IPAS 6,IPAS 6,PKN102,,,PKN102,PAG 71,PAG 71,PAG 71,DDMP 81,DDMP 81,DDMP 81,DDMP 81
-X AKL 1,UPACARA BENDERA,EKO 32,EKO 32,EKO 32,BIND 97,BIND 97,DDAK 118,DDAK 118,DDAK 118,DDAK 118,,MAT 77,MAT 77,MAT 77,MAT 77,DDAK 118,DDAK 118,DDAK 118,DDAK 118,IPAS 111,IPAS 111,IPAS 111,,BIND 97,BIND 97,IPAS 111,IPAS 111,IPAS 111,INFOR 45,INFOR 45,INFOR 45,INFOR 45,KKA 119,KKA 119,,KKA 119,BING 5,BING 5,BING 5,SEJ 83,SEJ 83,SNB 74,SNB 74,PAG 82,PAG 82,PAG 82,,,PKN32,PKN32,MLK 113,MLK 113,PENJ101,PENJ101,PENJ101
-X AKL 2,UPACARA BENDERA,BIND 97,BIND 97,BIND 97,BIND 97,EKO 32,EKO 32,EKO 32,MAT 77,MAT 77,MAT 77,,MAT 77,DDAK 118,DDAK 118,DDAK 118,DDAK 118,IPAS 111,IPAS 111,IPAS 111,KKA 119,KKA 119,KKA 119,,INFOR 45,INFOR 45,INFOR 45,INFOR 45,DDAK 118,DDAK 118,DDAK 118,DDAK 118,IPAS 111,IPAS 111,IPAS 111,,SEJ 83,SEJ 83,BING 5,BING 5,BING 5,PKN32,PKN32,SNB 74,SNB 74,MLK 113,MLK 113,,,PAG 82,PAG 82,PAG 82,PENJ101,PENJ101,PENJ101
-X AKL 3,UPACARA BENDERA,DDAK 118,DDAK 118,DDAK 118,DDAK 118,MAT 77,MAT 77,MAT 77,MAT 77,BIND 97,BIND 97,,BIND 97,BIND 97,EKO 32,EKO 32,EKO 32,KKA 119,KKA 119,KKA 119,DDAK 118,DDAK 118,DDAK 118,,DDAK 118,IPAS 111,IPAS 111,IPAS 111,IPAS 111,IPAS 111,IPAS 111,MLK 113,MLK 113,PENJ101,PENJ101,,PENJ101,SNB 74,SNB 74,INFOR 45,INFOR 45,INFOR 45,INFOR 45,BING 5,BING 5,BING 5,,,PKN32,PKN32,SEJ 83,SEJ 83,PAG 82,PAG 82,PAG 82
-X AKL 4,UPACARA BENDERA,MAT 77,MAT 77,MAT 77,MAT 77,BIND 97,BIND 97,BIND 97,BIND 97,EKO 32,EKO 32,,EKO 32,KKA 119,KKA 119,KKA 119,DDAK 118,DDAK 118,DDAK 118,DDAK 118,DDAK 118,DDAK 118,DDAK 118,,DDAK 118,MLK 113,MLK 113,SEJ 83,SEJ 83,IPAS 111,IPAS 111,IPAS 111,IPAS 111,IPAS 111,,IPAS 111,PKN32,PKN32,SNB 74,SNB 74,PENJ101,PENJ101,PENJ101,INFOR 45,INFOR 45,INFOR 45,,,INFOR 45,BING 5,BING 5,BING 5,PAG 82,PAG 82,PAG 82
-X LP,UPACARA BENDERA,DDLP 32,DDLP 32,DDLP 32,DDLP 32,BIND 97,BIND 97,MAT 77,MAT 77,MAT 77,MAT 77,,BIND 97,BIND 97,DDLP 32,DDLP 32,DDLP 32,DDLP 32,KKA 119,KKA 119,KKA 119,IPAS 111,IPAS 111,,IPAS 111,IPAS 111,IPAS 111,IPAS 111,INFOR 45,INFOR 45,INFOR 45,INFOR 45,SEJ 83,SEJ 83,SNB 74,,SNB 74,BING 5,BING 5,BING 5,PAG 82,PAG 82,PAG 82,PKN32,PKN32,MLK 113,,,MLK 113,PENJ101,PENJ101,PENJ101
-X LPKC 1,UPACARA BENDERA,DDLP 51,DDLP 51,DDLP 51,DDLP 51,BIND 42,BIND 42,BIND 42,BIND 42,MAT 16,MAT 16,,MAT 16,MAT 16,IPAS 6,IPAS 6,IPAS 6,IPAS 6,DDLP 51,DDLP 51,DDLP 51,DDLP 51,,KKA 119,KKA 119,KKA 119,INFOR 114,INFOR 114,INFOR 114,INFOR 114,BING 24,BING 24,BING 24,SEJ 102,,SEJ 102,PKN102,PKN102,SNB 46,SNB 46,IPAS 6,IPAS 6,PAG 71,PAG 71,PAG 71,MLK 113,,,MLK 113,PENJ101,PENJ101,PENJ101
-X LPKC 2,UPACARA BENDERA,BIND 42,BIND 42,BIND 42,BIND 42,DDLP 51,DDLP 51,DDLP 51,DDLP 51,IPAS 6,IPAS 6,,IPAS 6,IPAS 6,MAT 16,MAT 16,MAT 16,MAT 16,IPAS 6,IPAS 6,KKA 119,KKA 119,,KKA 119,DDLP 51,DDLP 51,DDLP 51,DDLP 51,SEJ 102,SEJ 102,BING 24,BING 24,BING 24,INFOR 114,,INFOR 114,INFOR 114,INFOR 114,PENJ101,PENJ101,PENJ101,SNB 46,SNB 46,PAG 71,PAG 71,PAG 71,,,PKN102,PKN102,MLK 113,MLK 113
-X LPKC 3,UPACARA BENDERA,MAT 16,MAT 16,MAT 16,MAT 16,IPAS 6,IPAS 6,IPAS 6,IPAS 6,BIND 42,BIND 42,,BIND 42,BIND 42,DDLP 51,DDLP 51,DDLP 51,DDLP 51,IPAS 6,IPAS 6,DDLP 51,DDLP 51,,DDLP 51,DDLP 51,KKA 119,KKA 119,KKA 119,BING 24,BING 24,BING 24,PENJ101,PENJ101,PENJ101,INFOR 114,,INFOR 114,INFOR 114,INFOR 114,SEJ 102,SEJ 102,PKN102,PKN102,SNB 46,SNB 46,PAG 71,,,PAG 71,PAG 71,MLK 113,MLK 113
-X DKV 1,UPACARA BENDERA,DDDK 108,DDDK 108,DDDK 108,DDDK 108,INFOR 114,INFOR 114,INFOR 114,INFOR 114,BIND 68,BIND 68,,BIND 68,BIND 68,MAT 116,MAT 116,MAT 116,MAT 116,DDDK 108,DDDK 108,DDDK 108,DDDK 108,,KKA 119,KKA 119,KKA 119,IPAS 6,IPAS 6,IPAS 6,IPAS 6,BING 27,BING 27,BING 27,SEJ 102,,SEJ 102,PKN78,PKN78,SNB 46,SNB 46,IPAS 6,IPAS 6,PAG 11,PAG 11,PAG 11,MLK 114,,,MLK 114,PENJ101,PENJ101,PENJ101
-X DKV 2,UPACARA BENDERA,INFOR 114,INFOR 114,INFOR 114,INFOR 114,DDDK 108,DDDK 108,DDDK 108,DDDK 108,MAT 116,MAT 116,,MAT 116,MAT 116,BIND 68,BIND 68,BIND 68,BIND 68,IPAS 6,IPAS 6,IPAS 6,IPAS 6,,DDDK 108,DDDK 108,DDDK 108,DDDK 108,KKA 119,KKA 119,KKA 119,IPAS 6,IPAS 6,BING 27,BING 27,,BING 27,SEJ 102,SEJ 102,PENJ101,PENJ101,PENJ101,SNB 46,SNB 46,PAG 11,PAG 11,PAG 11,,,PKN78,PKN78,MLK 114,MLK 114
-X RPL,UPACARA BENDERA,MAT 116,MAT 116,MAT 116,MAT 116,BIND 68,BIND 68,BIND 68,BIND 68,DDRPL 93,DDRPL 93,,DDRPL 93,DDRPL 93,DDRPL 93,DDRPL 93,DDRPL 93,DDRPL 93,INFOR 45,INFOR 45,INFOR 45,INFOR 45,,IPAS 6,IPAS 6,IPAS 6,IPAS 6,BING 49,BING 49,BING 49,KKA 119,KKA 119,KKA 119,SEJ 83,,SEJ 83,PKN56,PKN56,SNB 46,SNB 46,PENJ101,PENJ101,PENJ101,IPAS 6,IPAS 6,PAG 11,,,PAG 11,PAG 11,MLK 114,MLK 114
-X TKJ 1,UPACARA BENDERA,DDTKJ 55,DDTKJ 55,DDTKJ 55,DDTKJ 55,MAT 116,MAT 116,MAT 116,MAT 116,INFOR 114,INFOR 114,,INFOR 114,INFOR 114,BIND 68,BIND 68,BIND 68,BIND 68,DDTKJ 55,DDTKJ 55,DDTKJ 55,DDTKJ 55,,KKA 119,KKA 119,KKA 119,IPAS 6,IPAS 6,IPAS 6,IPAS 6,BING 49,BING 49,BING 49,SEJ 83,,SEJ 83,PKN56,PKN56,SNB 46,SNB 46,IPAS 6,IPAS 6,PAG 82,PAG 82,PAG 82,MLK 114,,,MLK 114,PENJ101,PENJ101,PENJ101
-X TKJ 2,UPACARA BENDERA,MAT 116,MAT 116,MAT 116,MAT 116,BIND 68,BIND 68,BIND 68,BIND 68,DDTKJ 91,DDTKJ 91,,DDTKJ 91,DDTKJ 91,DDTKJ 91,DDTKJ 91,DDTKJ 91,DDTKJ 91,INFOR 114,INFOR 114,INFOR 114,INFOR 114,,IPAS 6,IPAS 6,IPAS 6,IPAS 6,BING 49,BING 49,BING 49,KKA 119,KKA 119,KKA 119,SEJ 83,,SEJ 83,PKN56,PKN56,SNB 46,SNB 46,PENJ101,PENJ101,PENJ101,IPAS 6,IPAS 6,PAG 82,,,PAG 82,PAG 82,MLK 114,MLK 114
-X TKJ 3,UPACARA BENDERA,BIND 68,BIND 68,BIND 68,BIND 68,DDTKJ 94,DDTKJ 94,DDTKJ 94,DDTKJ 94,MAT 116,MAT 116,,MAT 116,MAT 116,INFOR 114,INFOR 114,INFOR 114,INFOR 114,IPAS 6,IPAS 6,IPAS 6,IPAS 6,,DDTKJ 94,DDTKJ 94,DDTKJ 94,DDTKJ 94,KKA 119,KKA 119,KKA 119,IPAS 6,IPAS 6,BING 49,BING 49,,BING 49,SEJ 83,SEJ 83,PENJ101,PENJ101,PENJ101,SNB 46,SNB 46,PAG 82,PAG 82,PAG 82,,,PKN56,PKN56,MLK 114,MLK 114
-X TEB,UPACARA BENDERA,DDTEB 103,DDTEB 103,DDTEB 103,DDTEB 103,BIND 68,BIND 68,BIND 68,BIND 68,MAT 116,MAT 116,,MAT 116,MAT 116,INFOR 45,INFOR 45,INFOR 45,INFOR 45,IPAS 6,IPAS 6,IPAS 6,IPAS 6,,DDTEB 103,DDTEB 103,DDTEB 103,DDTEB 103,KKA 119,KKA 119,KKA 119,IPAS 6,IPAS 6,BING 27,BING 27,,BING 27,SEJ 102,SEJ 102,PENJ101,PENJ101,PENJ101,SNB 46,SNB 46,PAG 11,PAG 11,PAG 11,,,PKN78,PKN78,MLK 114,MLK 114
-XI MP 1,BIND 79,BIND 79,MAT 54,MAT 54,MAT 54,BING 28,BING 28,KK MP 81,KK MP 81,KK MP 81,KK MP 81,,KK MP 81,KK MP 81,KK MP 81,KK MP 81,PKK MP 81,PKK MP 81,PKK MP 81,PAG 71,PAG 71,PAG 71,,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,PKN102,PKN102,,PKN102,PKK MP 81,PKK MP 81,BING 28,BING 28,MLK 113,MLK 113,PENJ101,PENJ101,PENJ101,,,BIND 79,BIND 79,KK MP 81,KK MP 81,KK MP 81,KK MP 81,KK MP 81,KK MP 81
-XI MP 2,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,BIND 79,BIND 79,MAT 54,,MAT 54,MAT 54,BING 28,BING 28,BING 28,BING 28,PKN102,PKN102,PKN102,,KK MP 46,KK MP 46,KK MP 46,KK MP 46,KK MP 46,KK MP 46,KK MP 46,KK MP 46,PKK MP 46,PKK MP 46,,PKK MP 46,PKK MP 46,PKK MP 46,PAG 71,PAG 71,PAG 71,MLK 113,MLK 113,PENJ101,PENJ101,PENJ101,,,BIND 79,BIND 79,KK MP 46,KK MP 46,KK MP 46,KK MP 46,KK MP 46,KK MP 46
-XI MP 3,MAT 54,MAT 54,MAT 54,BIND 79,BIND 79,KK MP 81,KK MP 81,KK MP 81,KK MP 81,KK MP 81,KK MP 81,,KK MP 81,KK MP 81,KK MP 81,KK MP 81,KK MP 81,KK MP 81,BIND 79,BIND 79,PKN102,,PKN102,PKN102,BING 28,BING 28,BING 28,BING 28,PAG 71,PAG 71,PAG 71,MLK 113,MLK 113,,PENJ101,PENJ101,PENJ101,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,,,PKK MP 81,PKK MP 81,PKK MP 81,PKK MP 81,PKK MP 81
-XI AKL 1,BIND 100,BIND 100,MAT 77,MAT 77,MAT 77,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,,KK AKL 118,KK AKL 118,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,,KK AKL 32,PKK AKL 118,PKK AKL 118,PKK AKL 118,PKK AKL 118,PKK AKL 118,BING 5,BING 5,PKN32,PKN32,,PKN32,BIND 100,BIND 100,PAG 82,PAG 82,PAG 82,MLK 113,MLK 113,PENJ101,PENJ101,PENJ101,,,BING 5,BING 5,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118
-XI AKL 2,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,BIND 100,BIND 100,MAT 77,,MAT 77,MAT 77,BING 5,BING 5,BING 5,BING 5,PKN32,PKN32,PKN32,,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,PKK AKL 118,PKK AKL 118,,PKK AKL 118,PKK AKL 118,PKK AKL 118,PAG 82,PAG 82,PAG 82,MLK 113,MLK 113,PENJ101,PENJ101,PENJ101,,,BIND 100,BIND 100,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118
-XI AKL 3,MAT 77,MAT 77,MAT 77,BIND 100,BIND 100,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,BIND 100,BIND 100,PKN32,,PKN32,PKN32,BING 5,BING 5,BING 5,BING 5,PAG 82,PAG 82,PAG 82,MLK 113,MLK 113,,PENJ101,PENJ101,PENJ101,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,,,PKK AKL 118,PKK AKL 118,PKK AKL 118,PKK AKL 118,PKK AKL 118
-XI AKL 4,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,PKK AKL 32,PKK AKL 32,PKK AKL 32,,PKK AKL 32,PKK AKL 32,BIND 100,BIND 100,BIND 100,BIND 100,PAG 82,PAG 82,PAG 82,,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,MAT 77,MAT 77,,MAT 77,BING 5,BING 5,BING 5,BING 5,MLK 113,MLK 113,PKN32,PKN32,PKN32,PENJ101,PENJ101,PENJ101,,,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118
-XI LP,BIND 100,BIND 100,MAT 77,MAT 77,MAT 77,BING 5,BING 5,KK LP 32,KK LP 32,KK LP 32,KK LP 32,,KK LP 32,KK LP 32,KK LP 32,KK LP 32,PKK LP 32,PKK LP 32,PKK LP 32,PAG 82,PAG 82,PAG 82,,KK LP 32,KK LP 32,KK LP 32,KK LP 32,KK LP 32,KK LP 32,KK LP 32,KK LP 32,PKN32,PKN32,,PKN32,PKK LP 32,PKK LP 32,BING 5,BING 5,MLK 113,MLK 113,PENJ101,PENJ101,PENJ101,,,BIND 100,BIND 100,KK LP 32,KK LP 32,KK LP 32,KK LP 32,KK LP 32,KK LP 32
-XI LPKC 1,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,BIND 79,BIND 79,MAT 54,,MAT 54,MAT 54,BING 24,BING 24,BING 24,BING 24,PKN102,PKN102,PKN102,,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,PKK KC 51,PKK KC 51,,PKK KC 51,PKK KC 51,PKK KC 51,PAG 71,PAG 71,PAG 71,MLK 113,MLK 113,PENJ101,PENJ101,PENJ101,,,BIND 79,BIND 79,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51
-XI LPKC 2,MAT 54,MAT 54,MAT 54,BIND 79,BIND 79,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,BIND 79,BIND 79,PKN102,,PKN102,PKN102,BING 24,BING 24,BING 24,BING 24,PAG 71,PAG 71,PAG 71,MLK 113,MLK 113,,PENJ101,PENJ101,PENJ101,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,,,PKK KC 51,PKK KC 51,PKK KC 51,PKK KC 51,PKK KC 51
-XI LPKC 3,BIND 79,BIND 79,MAT 54,MAT 54,MAT 54,BING 24,BING 24,KK KC 51,KK KC 51,KK KC 51,KK KC 51,,KK KC 51,KK KC 51,KK KC 51,KK KC 51,PKK KC 51,PKK KC 51,PKK KC 51,PAG 71,PAG 71,PAG 71,,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,PKN102,PKN102,,PKN102,PKK KC 51,PKK KC 51,BING 24,BING 24,MLK 113,MLK 113,PENJ101,PENJ101,PENJ101,,,BIND 79,BIND 79,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51
-XI DKV 1,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,BIND 68,BIND 68,MAT 116,,MAT 116,MAT 116,BING 27,BING 27,BING 27,BING 27,PKN78,PKN78,PKN78,,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,PKK DKV 108,PKK DKV 108,,PKK DKV 108,PKK DKV 108,PKK DKV 108,PAG 11,PAG 11,PAG 11,MLK 114,MLK 114,PENJ101,PENJ101,PENJ101,,,BIND 68,BIND 68,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108
-XI DKV 2,BIND 68,BIND 68,MAT 116,MAT 116,MAT 116,BING 27,BING 27,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,PKK DKV 108,PKK DKV 108,PKK DKV 108,PAG 11,PAG 11,PAG 11,,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,PKN78,PKN78,,PKN78,PKK DKV 108,PKK DKV 108,BING 27,BING 27,MLK 114,MLK 114,PENJ101,PENJ101,PENJ101,,,BIND 68,BIND 68,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108
-XI RPL 1,MAT 116,MAT 116,MAT 116,BIND 68,BIND 68,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,BIND 68,BIND 68,PKN56,,PKN56,PKN56,BING 49,BING 49,BING 49,BING 49,PAG 11,PAG 11,PAG 11,MLK 114,MLK 114,,PENJ101,PENJ101,PENJ101,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,,,PKK RPL 117,PKK RPL 117,PKK RPL 117,PKK RPL 117,PKK RPL 117
-XI RPL 2,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,BIND 68,BIND 68,MAT 116,,MAT 116,MAT 116,BING 49,BING 49,BING 49,BING 49,PKN56,PKN56,PKN56,,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,PKK RPL 117,PKK RPL 117,,PKK RPL 117,PKK RPL 117,PKK RPL 117,PAG 11,PAG 11,PAG 11,MLK 114,MLK 114,PENJ101,PENJ101,PENJ101,,,BIND 68,BIND 68,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93
-XI TKJ 1,KK TKJ 119,KK TKJ 119,KK TKJ 119,KK TKJ 119,KK TKJ 119,KK TKJ 119,KK TKJ 119,KK TKJ 119,BIND 68,BIND 68,MAT 116,,MAT 116,MAT 116,BING 49,BING 49,BING 49,BING 49,PKN56,PKN56,PKN56,,KK TKJ 55,KK TKJ 55,KK TKJ 55,KK TKJ 55,KK TKJ 55,KK TKJ 55,KK TKJ 55,KK TKJ 55,PKK TKJ 86,PKK TKJ 86,,PKK TKJ 86,PKK TKJ 86,PKK TKJ 86,PAG 82,PAG 82,PAG 82,MLK 114,MLK 114,PENJ101,PENJ101,PENJ101,,,BIND 68,BIND 68,KK TKJ 55,KK TKJ 55,KK TKJ 55,KK TKJ 55,KK TKJ 55,KK TKJ 55
-XI TKJ 2,BIND 68,BIND 68,MAT 116,MAT 116,MAT 116,BING 49,BING 49,KK TKJ 91,KK TKJ 91,KK TKJ 91,KK TKJ 91,,KK TKJ 91,KK TKJ 91,KK TKJ 91,KK TKJ 91,PKK TKJ 96,PKK TKJ 96,PKK TKJ 96,PAG 82,PAG 82,PAG 82,,KK TKJ 69,KK TKJ 69,KK TKJ 69,KK TKJ 69,KK TKJ 69,KK TKJ 69,KK TKJ 69,KK TKJ 69,PKN56,PKN56,,PKN56,PKK TKJ 96,PKK TKJ 96,BING 49,BING 49,MLK 114,MLK 114,PENJ101,PENJ101,PENJ101,,,BIND 68,BIND 68,KK TKJ 69,KK TKJ 69,KK TKJ 69,KK TKJ 69,KK TKJ 69,KK TKJ 69
-XI TKJ 3,MAT 116,MAT 116,MAT 116,BIND 68,BIND 68,KK TKJ 86,KK TKJ 86,KK TKJ 86,KK TKJ 86,KK TKJ 86,KK TKJ 86,,KK TKJ 86,KK TKJ 86,KK TKJ 86,KK TKJ 86,KK TKJ 86,KK TKJ 86,BIND 68,BIND 68,PKN56,,PKN56,PKN56,BING 49,BING 49,BING 49,BING 49,PAG 82,PAG 82,PAG 82,MLK 114,MLK 114,,PENJ101,PENJ101,PENJ101,KK TKJ 94,KK TKJ 94,KK TKJ 94,KK TKJ 94,KK TKJ 94,KK TKJ 94,KK TKJ 94,KK TKJ 94,,,PKK TKJ 91,PKK TKJ 91,PKK TKJ 91,PKK TKJ 91,PKK TKJ 91
-XI TEB,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,BIND 68,BIND 68,MAT 116,,MAT 116,MAT 116,BING 27,BING 27,BING 27,BING 27,PKN78,PKN78,PKN78,,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,PKK TEB 103,PKK TEB 103,,PKK TEB 103,PKK TEB 103,PKK TEB 103,PAG 11,PAG 11,PAG 11,MLK 114,MLK 114,PENJ101,PENJ101,PENJ101,,,BIND 68,BIND 68,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103
-XII MP 1,KK MP 81,KK MP 81,KK MP 81,KK MP 81,KK MP 81,KK MP 81,KK MP 81,KK MP 81,BIND 79,BIND 79,MAT 54,,MAT 54,MAT 54,BING 28,BING 28,BING 28,BING 28,PKN102,PKN102,PKN102,,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,PKK MP 81,PKK MP 81,,PKK MP 81,PKK MP 81,PKK MP 81,PAG 71,PAG 71,PAG 71,MLK 113,MLK 113,PENJ101,PENJ101,PENJ101,,,BIND 79,BIND 79,KK MP 81,KK MP 81,KK MP 81,KK MP 81,KK MP 81,KK MP 81
-XII MP 2,BIND 79,BIND 79,MAT 54,MAT 54,MAT 54,BING 28,BING 28,KK MP 81,KK MP 81,KK MP 81,KK MP 81,,KK MP 81,KK MP 81,KK MP 81,KK MP 81,PKK MP 81,PKK MP 81,PKK MP 81,PAG 71,PAG 71,PAG 71,,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,PKN102,PKN102,,PKN102,PKK MP 81,PKK MP 81,BING 28,BING 28,MLK 113,MLK 113,PENJ101,PENJ101,PENJ101,,,BIND 79,BIND 79,KK MP 81,KK MP 81,KK MP 81,KK MP 81,KK MP 81,KK MP 81
-XII MP 3,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,KK MP 113,BIND 79,BIND 79,MAT 54,,MAT 54,MAT 54,BING 28,BING 28,BING 28,BING 28,PKN102,PKN102,PKN102,,KK MP 46,KK MP 46,KK MP 46,KK MP 46,KK MP 46,KK MP 46,KK MP 46,KK MP 46,PKK MP 46,PKK MP 46,,PKK MP 46,PKK MP 46,PKK MP 46,PAG 71,PAG 71,PAG 71,MLK 113,MLK 113,PENJ101,PENJ101,PENJ101,,,BIND 79,BIND 79,KK MP 46,KK MP 46,KK MP 46,KK MP 46,KK MP 46,KK MP 46
-XII AKL 1,BIND 100,BIND 100,MAT 77,MAT 77,MAT 77,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,,KK AKL 118,KK AKL 118,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,,KK AKL 32,PKK AKL 118,PKK AKL 118,PKK AKL 118,PKK AKL 118,PKK AKL 118,BING 5,BING 5,PKN32,PKN32,,PKN32,BIND 100,BIND 100,PAG 82,PAG 82,PAG 82,MLK 113,MLK 113,PENJ101,PENJ101,PENJ101,,,BING 5,BING 5,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118
-XII AKL 2,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,KK AKL 32,BIND 100,BIND 100,MAT 77,,MAT 77,MAT 77,BING 5,BING 5,BING 5,BING 5,PKN32,PKN32,PKN32,,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,PKK AKL 118,PKK AKL 118,,PKK AKL 118,PKK AKL 118,PKK AKL 118,PAG 82,PAG 82,PAG 82,MLK 113,MLK 113,PENJ101,PENJ101,PENJ101,,,BIND 100,BIND 100,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118,KK AKL 118
-XII LP,BIND 100,BIND 100,MAT 77,MAT 77,MAT 77,BING 5,BING 5,KK LP 32,KK LP 32,KK LP 32,KK LP 32,,KK LP 32,KK LP 32,KK LP 32,KK LP 32,PKK LP 32,PKK LP 32,PKK LP 32,PAG 82,PAG 82,PAG 82,,KK LP 32,KK LP 32,KK LP 32,KK LP 32,KK LP 32,KK LP 32,KK LP 32,KK LP 32,PKN32,PKN32,,PKN32,PKK LP 32,PKK LP 32,BING 5,BING 5,MLK 113,MLK 113,PENJ101,PENJ101,PENJ101,,,BIND 100,BIND 100,KK LP 32,KK LP 32,KK LP 32,KK LP 32,KK LP 32,KK LP 32
-XII LPKC 1,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,BIND 79,BIND 79,MAT 54,,MAT 54,MAT 54,BING 24,BING 24,BING 24,BING 24,PKN102,PKN102,PKN102,,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,PKK KC 51,PKK KC 51,,PKK KC 51,PKK KC 51,PKK KC 51,PAG 71,PAG 71,PAG 71,MLK 113,MLK 113,PENJ101,PENJ101,PENJ101,,,BIND 79,BIND 79,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51
-XII LPKC 2,MAT 54,MAT 54,MAT 54,BIND 79,BIND 79,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,BIND 79,BIND 79,PKN102,,PKN102,PKN102,BING 24,BING 24,BING 24,BING 24,PAG 71,PAG 71,PAG 71,MLK 113,MLK 113,,PENJ101,PENJ101,PENJ101,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,,,PKK KC 51,PKK KC 51,PKK KC 51,PKK KC 51,PKK KC 51
-XII LPKC 3,BIND 79,BIND 79,MAT 54,MAT 54,MAT 54,BING 24,BING 24,KK KC 51,KK KC 51,KK KC 51,KK KC 51,,KK KC 51,KK KC 51,KK KC 51,KK KC 51,PKK KC 51,PKK KC 51,PKK KC 51,PAG 71,PAG 71,PAG 71,,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,PKN102,PKN102,,PKN102,PKK KC 51,PKK KC 51,BING 24,BING 24,MLK 113,MLK 113,PENJ101,PENJ101,PENJ101,,,BIND 79,BIND 79,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51,KK KC 51
-XII DKV 1,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,BIND 68,BIND 68,MAT 116,,MAT 116,MAT 116,BING 27,BING 27,BING 27,BING 27,PKN78,PKN78,PKN78,,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,PKK DKV 108,PKK DKV 108,,PKK DKV 108,PKK DKV 108,PKK DKV 108,PAG 11,PAG 11,PAG 11,MLK 114,MLK 114,PENJ101,PENJ101,PENJ101,,,BIND 68,BIND 68,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108
-XII DKV 2,BIND 68,BIND 68,MAT 116,MAT 116,MAT 116,BING 27,BING 27,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,PKK DKV 108,PKK DKV 108,PKK DKV 108,PAG 11,PAG 11,PAG 11,,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,PKN78,PKN78,,PKN78,PKK DKV 108,PKK DKV 108,BING 27,BING 27,MLK 114,MLK 114,PENJ101,PENJ101,PENJ101,,,BIND 68,BIND 68,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108,KK DKV 108
-XII RPL,MAT 116,MAT 116,MAT 116,BIND 68,BIND 68,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,BIND 68,BIND 68,PKN56,,PKN56,PKN56,BING 49,BING 49,BING 49,BING 49,PAG 11,PAG 11,PAG 11,MLK 114,MLK 114,,PENJ101,PENJ101,PENJ101,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,KK RPL 93,,,PKK RPL 117,PKK RPL 117,PKK RPL 117,PKK RPL 117,PKK RPL 117
-XII TKJ1,KK TKJ 119,KK TKJ 119,KK TKJ 119,KK TKJ 119,KK TKJ 119,KK TKJ 119,KK TKJ 119,KK TKJ 119,BING 49,BING 49,BING 49,,PKN56,PKN56,PKN56,KK TKJ 119,KK TKJ 119,KK TKJ 119,KK TKJ 119,BJPG 104,BJPG 104,BJPG 104,,KK TKJ 91,KK TKJ 91,KK TKJ 91,KK TKJ 91,PAG 82,PAG 82,PAG 82,BIND 68,BIND 68,BIND 68,KK TKJ 55,,KK TKJ 55,KK TKJ 55,MLK 114,MLK 114,MAT 116,MAT 116,MAT 116,MAT 116,KKTKJ 91,KKTKJ 91,KKTKJ 91,,,KK TKJ 55,KK TKJ 55,KK TKJ 55,PKK TKJ  86,PKK TKJ  86,PKK TKJ  86,PKK TKJ  86,PKK TKJ  86
-XII TKJ2,MLK 114,MLK 114,BING 24,BING 24,BING 24,BING 24,BJPG 104,BJPG 104,BJPG 104,BJPG 104,BJPG 104,,BIND 68,BIND 68,BIND 68,PAG 82,PAG 82,PAG 82,KK TKJ 69,KK TKJ 69,KK TKJ 69,KK TKJ 69,,KK TKJ 69,KK TKJ 69,KK TKJ 69,KK TKJ 69,KK TKJ 87,KK TKJ 87,KK TKJ 87,KK TKJ 87,PKN56,PKN56,PKN56,,KK TKJ 87,KK TKJ 87,KK TKJ 87,MAT 116,MAT 116,MAT 116,MAT 116,KK TKJ 69,KK TKJ 69,KK TKJ 69,KK TKJ 69,,,PKK TKJ  96,PKK TKJ  96,PKK TKJ  96,PKK TKJ  96,PKK TKJ  96
-XII TKJ3,BIND 68,BIND 68,BIND 68,PAG 82,PAG 82,PAG 82,KK TKJ 86,KK TKJ 86,KK TKJ 86,KK TKJ 86,KK TKJ 86,,BING 27,BING 27,BING 27,KK TKJ 94,KK TKJ 94,KK TKJ 94,KK TKJ 94,KK TKJ 94,MLK 114,MLK 114,,KK TKJ 86,KK TKJ 86,KK TKJ 86,KK TKJ 86,MAT 116,MAT 116,MAT 116,MAT 116,KK TKJ 94,KK TKJ 94,KK TKJ 94,,PKN78,PKN78,PKN78,BJPG 104,BJPG 104,BJPG 104,KK TKJ 94,KK TKJ 94,KK TKJ 94,KK TKJ 94,KK TKJ 94,,,PKK TKJ  91,PKK TKJ  91,PKK TKJ  91,PKK TKJ  91,PKK TKJ  91
-XII TKJ4,MAT 116,MAT 116,MAT 116,MAT 116,BING 49,BING 49,BING 49,BIND 68,BIND 68,BIND 68,PKK TKJ  91,,PKK TKJ  91,PKK TKJ  91,PKK TKJ  91,PKK TKJ  91,KK TKJ 94,KK TKJ 94,KK TKJ 94,KK TKJ 94,KK TKJ 94,,KK TKJ 94,KK TKJ 94,KK TKJ 94,KK TKJ 55,KK TKJ 55,KK TKJ 55,KK TKJ 55,KK TKJ 55,PAG 82,PAG 82,,PAG 82,PKN78,PKN78,PKN78,BJPG 104,BJPG 104,BJPG 104,MLK 114,MLK 114,KK TKJ 91,KK TKJ 91,KK TKJ 91,KK TKJ 91,,,KK TKJ 91,KK TKJ 91,KK TKJ 91,KK TKJ 91,KK TKJ 91
-XII TEB,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,BIND 68,BIND 68,MAT 116,,MAT 116,MAT 116,BING 27,BING 27,BING 27,BING 27,PKN78,PKN78,PKN78,,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,PKK TEB 103,PKK TEB 103,,PKK TEB 103,PKK TEB 103,PKK TEB 103,PAG 11,PAG 11,PAG 11,MLK 114,MLK 114,PENJ101,PENJ101,PENJ101,,,BIND 68,BIND 68,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103,KK TEB 103`;
-
-// LOCALSTORAGE DATA SDK EMULATION
-const customDataSdk = {
-  init: function(handler) {
-    const localData = localStorage.getItem('e_absensi_data');
-    allRecords = localData ? JSON.parse(localData) : [];
-    this.handler = handler;
-    this.handler.onDataChanged(allRecords);
-  },
-  saveToLocal: function() {
-    localStorage.setItem('e_absensi_data', JSON.stringify(allRecords));
-    this.handler.onDataChanged(allRecords);
-  },
-  create: async function(obj) {
-    obj.__backendId = 'id_' + Date.now() + Math.random().toString(36).substr(2, 5);
-    allRecords.push(obj);
-    this.saveToLocal();
-    return { isOk: true };
-  },
-  update: async function(obj) {
-    const idx = allRecords.findIndex(r => r.__backendId === obj.__backendId);
-    if (idx !== -1) {
-      allRecords[idx] = obj;
-      this.saveToLocal();
-    }
-    return { isOk: true };
-  },
-  delete: async function(obj) {
-    allRecords = allRecords.filter(r => r.__backendId !== obj.__backendId);
-    this.saveToLocal();
-    return { isOk: true };
-  },
-  clearJadwalDanKelas: function() {
-    allRecords = allRecords.filter(r => r.type !== 'kelas' && r.type !== 'jadwal');
-    this.saveToLocal();
-  }
-};
-
-// SINKRONISASI DATABASE JADWAL BERDASARKAN CSV MAPPER BERIKUT:
-function eksekusiSinkronisasiJadwalCSV() {
-  if (!confirm("Apakah Anda yakin ingin menyinkronkan data? Jadwal & Kelas lama akan diganti dengan Jadwal Resmi dari file KBM Genap 2025/2026.")) return;
-
-  // Bersihkan data kelas & jadwal lama agar bersih
-  customDataSdk.clearJadwalDanKelas();
-
-  const barisData = rawCsvData.trim().split('\n');
-  let jumlahJadwalTerbuat = 0;
-
-  barisData.forEach(baris => {
-    const kolom = baris.split(',');
-    let namaKelasRaw = kolom[0].trim();
-    if (!namaKelasRaw) return;
-
-    // Normalisasi penulisan nama kelas XII TKJ1 -> XII TKJ 1
-    if (namaKelasRaw === "XII TKJ1") namaKelasRaw = "XII TKJ 1";
-    if (namaKelasRaw === "XII TKJ2") namaKelasRaw = "XII TKJ 2";
-    if (namaKelasRaw === "XII TKJ3") namaKelasRaw = "XII TKJ 3";
-    if (namaKelasRaw === "XII TKJ4") namaKelasRaw = "XII TKJ 4";
-
-    // 1. Daftarkan Kelas ke Database
-    allRecords.push({
-      type: 'kelas', nama: namaKelasRaw, kelas: '', mapel: '', guru: '', jam_ke: 0, hadir: false, keterangan: '', tanggal: '', hari: '',
-      __backendId: 'id_kls_' + Math.random().toString(36).substr(2, 7)
+    // INIT LOADING DATA
+    window.addEventListener('DOMContentLoaded', () => {
+      loadStorageData();
+      initEventListeners();
+      updateKelasDropdown();
+      renderAdminKelas();
+      lucide.createIcons();
+      
+      // Set default input tanggal ke hari ini
+      const hariIni = new Date().toISOString().split('T')[0];
+      document.getElementById('date-picker').value = hariIni;
+      handleFilterJadwalUser();
     });
 
-    // 2. Pemetaan Blok Kolom Berdasarkan Format Hari di File CSV Anda
-    // Senin: index 1 s/d 12 (12 Jam)
-    // Selasa: index 14 s/d 24 (11 Jam)
-    // Rabu: index 26 s/d 36 (11 Jam)
-    // Kamis: index 38 s/d 48 (11 Jam)
-    // Jumat: index 50 s/d 54 (5 Jam)
-    const petunjukHari = [
-      { namaHari: "Senin", indeksAwal: 1, totalJam: 12 },
-      { namaHari: "Selasa", indeksAwal: 14, totalJam: 11 },
-      { namaHari: "Rabu", indeksAwal: 26, totalJam: 11 },
-      { namaHari: "Kamis", indeksAwal: 38, totalJam: 11 },
-      { namaHari: "Jumat", indeksAwal: 50, totalJam: 5 }
-    ];
+    function loadStorageData() {
+      const storedJadwal = localStorage.getItem('db_jadwal_smkn1ktg');
+      const storedAbsensi = localStorage.getItem('db_absensi_smkn1ktg');
+      
+      if(storedJadwal) {
+        dbJadwal = JSON.parse(storedJadwal);
+        // Mengambil daftar unik kelas
+        daftarKelas = [...new Set(dbJadwal.map(item => item.kelas))].sort();
+      }
+      if(storedAbsensi) {
+        dbAbsensi = JSON.parse(storedAbsensi);
+      }
+    }
 
-    petunjukHari.forEach(h => {
-      for (let jam = 1; jam <= h.totalJam; jam++) {
-        const indeksKolom = h.indeksAwal + (jam - 1);
-        if (indeksKolom >= kolom.length) break;
+    function initEventListeners() {
+      // Login Admin Toggle Button
+      document.getElementById('login-btn').addEventListener('click', () => {
+        if(!isAdminLoggedIn) {
+          const pass = prompt("Masukkan Password Admin:");
+          if(pass === "admin123") { // Ganti password default sesuai kebutuhan
+            isAdminLoggedIn = true;
+            document.getElementById('admin-status').innerText = "⚡ Login sebagai Admin";
+            document.getElementById('login-btn').innerHTML = '<i data-lucide="log-out" class="w-4 h-4 inline mr-1"></i> Keluar Admin';
+            document.getElementById('admin-view').classList.remove('hidden');
+            document.getElementById('guru-view').classList.add('hidden');
+            showToast("Berhasil masuk mode admin!");
+          } else {
+            alert("Password salah!");
+          }
+        } else {
+          isAdminLoggedIn = false;
+          document.getElementById('admin-status').innerText = "📌 Belum login";
+          document.getElementById('login-btn').innerHTML = '<i data-lucide="log-in" class="w-4 h-4 inline mr-1"></i> Login Admin';
+          document.getElementById('admin-view').classList.add('hidden');
+          document.getElementById('guru-view').classList.remove('hidden');
+          showToast("Keluar dari mode admin.");
+        }
+        lucide.createIcons();
+      });
 
-        const teksSel = kolom[indeksKolom] ? kolom[indeksKolom].trim() : "";
+      // Tab Navigasi Admin
+      document.getElementById('btn-tab-jadwal').addEventListener('click', () => {
+        document.getElementById('jadwal-tab').classList.remove('hidden');
+        document.getElementById('absensi-tab').classList.add('hidden');
+      });
+      document.getElementById('btn-tab-absensi').addEventListener('click', () => {
+        document.getElementById('jadwal-tab').classList.add('hidden');
+        document.getElementById('absensi-tab').classList.remove('hidden');
+        renderRekapAbsensiAdmin();
+      });
+
+      // Filter User Controls
+      document.getElementById('kelas-select').addEventListener('change', handleFilterJadwalUser);
+      document.getElementById('date-picker').addEventListener('change', handleFilterJadwalUser);
+
+      // Impor CSV File handler
+      document.getElementById('csv-file-input').addEventListener('change', handleCSVUpload);
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.innerText = message;
+      toast.style.opacity = '1';
+      setTimeout(() => { toast.style.opacity = '0'; }, 3000);
+    }
+
+    function updateKelasDropdown() {
+      const select = document.getElementById('kelas-select');
+      select.innerHTML = '<option value="">-- Pilih Kelas --</option>';
+      daftarKelas.forEach(kls => {
+        select.innerHTML += `<option value="${kls}">${kls}</option>`;
+      });
+    }
+
+    // HANDLER PARSING FILE CSV JADWAL SESUAI DATABASE ANDA
+    function handleCSVUpload(e) {
+      const file = e.target.files[0];
+      if(!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const text = evt.target.result;
+        const lines = text.split(/\r?\n/);
         
-        // Lewati cell jika kosong atau berisi Upacara/Sholat/Kosong
-        if (!teksSel || teksSel === "" || teksSel.toUpperCase().includes("UPACARA")) continue;
-
-        // Pisahkan nama mata pelajaran dan kode angka guru (contoh: "DDMP 81" -> Mapel: DDMP, Guru: Guru 81)
-        const potongan = teksSel.split(' ');
-        let namaMapel = potongan[0];
-        let kodeGuru = potongan[1] ? "Guru " + potongan[1] : "Guru Utama";
-
-        if(potongan.length > 2) {
-          // Kasus khusus untuk token ganda seperti "PKK TKJ  86"
-          const cleanTokens = potongan.filter(t => t.trim() !== "");
-          kodeGuru = "Guru " + cleanTokens[cleanTokens.length - 1];
-          cleanTokens.pop();
-          namaMapel = cleanTokens.join(' ');
+        if (lines.length < 2) {
+          alert("File CSV kosong atau tidak valid.");
+          return;
         }
 
-        // Simpan baris jadwal pelajaran hasil ekstrak CSV
-        allRecords.push({
-          type: 'jadwal',
-          hari: h.namaHari,
-          kelas: namaKelasRaw,
-          jam_ke: jam,
-          mapel: namaMapel,
-          guru: kodeGuru,
-          nama: '', hadir: false, keterangan: '', tanggal: '',
-          __backendId: 'id_jdw_' + Math.random().toString(36).substr(2, 9)
-        });
-        jumlahJadwalTerbuat++;
+        let parsedJadwal = [];
+        // Mengidentifikasi index header: ID,Kelas,Hari,Jam Ke,Kode Mapel,Kode Guru,Nama Guru
+        const headers = lines[0].split(',');
+        
+        for(let i = 1; i < lines.length; i++) {
+          if(!lines[i].trim()) continue;
+          
+          // Parsing dengan regex untuk menangani koma di dalam tanda kutip nama guru
+          const row = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || lines[i].split(',');
+          
+          if(row.length >= 6) {
+            const clean = val => val ? val.replace(/^"|"$/g, '').trim() : '';
+            
+            // Struktur data dipetakan dari kolom file CSV anda
+            const itemJadwal = {
+              id: clean(row[0]),
+              kelas: clean(row[1]),
+              hari: clean(row[2]).toUpperCase(),
+              jamKe: clean(row[3]),
+              kodeMapel: clean(row[4]),
+              kodeGuru: clean(row[5]),
+              namaGuru: row[6] ? clean(row[6]) : `Guru Kode ${clean(row[5])}`
+            };
+            
+            if(itemJadwal.kelas && itemJadwal.hari) {
+              parsedJadwal.push(itemJadwal);
+            }
+          }
+        }
+
+        if(parsedJadwal.length > 0) {
+          dbJadwal = parsedJadwal;
+          daftarKelas = [...new Set(dbJadwal.map(item => item.kelas))].sort();
+          
+          localStorage.setItem('db_jadwal_smkn1ktg', JSON.stringify(dbJadwal));
+          
+          updateKelasDropdown();
+          renderAdminKelas();
+          
+          // Tampilkan panel informasi statistik file csv
+          const stats = document.getElementById('csv-stats');
+          stats.classList.remove('hidden');
+          stats.innerHTML = `✅ <strong>Berhasil sinkronisasi!</strong> Berhasil memuat total <strong>${dbJadwal.length}</strong> baris jadwal untuk <strong>${daftarKelas.length}</strong> kelas terdaftar dari data KBM resmi.`;
+          showToast("Database jadwal berhasil diperbarui!");
+        } else {
+          alert("Gagal membaca baris data CSV. Pastikan struktur kolom telah sesuai.");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // TAMPILAN GURU / USER RENDER JADWAL BERDASARKAN FILTER HARI & KELAS
+    function handleFilterJadwalUser() {
+      const selectedKelas = document.getElementById('kelas-select').value;
+      const selectedDateStr = document.getElementById('date-picker').value;
+      const tableBody = document.getElementById('table-body');
+      const hariInfo = document.getElementById('hari-info');
+      const namaHariAktif = document.getElementById('nama-hari-aktif');
+
+      if(!selectedKelas || !selectedDateStr) {
+        tableBody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400">Silahkan pilih kelas dan tanggal terlebih dahulu untuk menampilkan jadwal hari itu.</td></tr>`;
+        hariInfo.classList.add('hidden');
+        return;
       }
-    });
-  });
 
-  customDataSdk.saveToLocal();
-  alert(`⚡ Sinkronisasi Sukses! \nSemua kelas telah dibuat otomatis dan sebanyak ${jumlahJadwalTerbuat} slot jadwal KBM berhasil di-import.`);
-}
+      const dateObj = new Date(selectedDateStr);
+      const namaHari = HARI_MAP[dateObj.getDay()];
+      namaHariAktif.innerText = namaHari;
+      hariInfo.classList.remove('hidden');
 
-function getNamaHariDariTanggal(dateString) {
-  const d = new Date(dateString);
-  return namaHariIndo[d.getDay()];
-}
+      // Filter jadwal dari database berdasarkan kelas dan hari
+      const filteredJadwal = dbJadwal.filter(j => j.kelas === selectedKelas && j.hari === namaHari);
 
-// LOGIN FUNCTIONS
-document.getElementById('login-btn').addEventListener('click', () => {
-  if (isAdminLoggedIn) {
-    isAdminLoggedIn = false;
-    adminName = "";
-    updateAdminStatus();
-  } else {
-    document.getElementById('login-modal').classList.remove('hidden');
-    document.getElementById('admin-name').focus();
-  }
-});
+      // Urutkan jadwal berdasarkan urutan jam mengajar
+      filteredJadwal.sort((a, b) => parseInt(a.jamKe) - parseInt(b.jamKe));
 
-document.getElementById('login-confirm').addEventListener('click', () => {
-  const name = document.getElementById('admin-name').value.trim();
-  if (name) {
-    isAdminLoggedIn = true;
-    adminName = name;
-    document.getElementById('login-modal').classList.add('hidden');
-    document.getElementById('admin-name').value = '';
-    updateAdminStatus();
-  }
-});
-
-document.getElementById('login-cancel').addEventListener('click', () => {
-  document.getElementById('login-modal').classList.add('hidden');
-  document.getElementById('admin-name').value = '';
-});
-
-function updateAdminStatus() {
-  const statusEl = document.getElementById('admin-status');
-  const loginBtn = document.getElementById('login-btn');
-  const guruView = document.getElementById('guru-view');
-  const adminView = document.getElementById('admin-view');
-
-  if (isAdminLoggedIn) {
-    statusEl.textContent = `✅ Admin: ${adminName}`;
-    statusEl.className = 'text-xs text-green-600 mt-1 font-medium';
-    loginBtn.innerHTML = '<i data-lucide="log-out" class="w-4 h-4 inline mr-1"></i> Logout';
-    loginBtn.className = 'px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition';
-    guruView.classList.replace('block', 'hidden');
-    adminView.classList.remove('hidden');
-    renderAdminView();
-  } else {
-    statusEl.textContent = '📌 Belum login';
-    statusEl.className = 'text-xs text-slate-500 mt-1';
-    loginBtn.innerHTML = '<i data-lucide="log-in" class="w-4 h-4 inline mr-1"></i> Login Admin';
-    loginBtn.className = 'px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition';
-    adminView.classList.add('hidden');
-    guruView.classList.replace('hidden', 'block');
-    tutupDetailKelas();
-    initGuruView();
-    renderGuruTable();
-  }
-  lucide.createIcons();
-}
-
-// BIND TOMBOL SYNC CSV DI PANEL ADMIN
-document.getElementById('btn-sync-csv').addEventListener('click', eksekusiSinkronisasiJadwalCSV);
-
-// ADMIN TAB NAVIGATION
-document.getElementById('btn-kelas').addEventListener('click', () => {
-  document.getElementById('kelas-tab').classList.remove('hidden');
-  document.getElementById('guru-tab').classList.add('hidden');
-  document.getElementById('jadwal-tab').classList.add('hidden');
-  renderKelasList();
-});
-
-document.getElementById('btn-guru').addEventListener('click', () => {
-  document.getElementById('kelas-tab').classList.add('hidden');
-  document.getElementById('guru-tab').classList.remove('hidden');
-  document.getElementById('jadwal-tab').classList.add('hidden');
-  renderGuruList();
-});
-
-document.getElementById('btn-jadwal').addEventListener('click', () => {
-  document.getElementById('kelas-tab').classList.add('hidden');
-  document.getElementById('guru-tab').classList.add('hidden');
-  document.getElementById('jadwal-tab').classList.remove('hidden');
-  updateJadwalSelects();
-  renderJadwalList();
-});
-
-// KELAS FUNCTIONS
-document.getElementById('btn-add-kelas').addEventListener('click', async () => {
-  const nama = document.getElementById('kelas-input').value.trim();
-  if (!nama) return alert('Nama kelas tidak boleh kosong');
-  
-  const result = await customDataSdk.create({ type: 'kelas', nama, kelas: '', mapel: '', guru: '', jam_ke: 0, hadir: false, keterangan: '', tanggal: '', hari: '' });
-  if (result.isOk) {
-    document.getElementById('kelas-input').value = '';
-    showSave("Kelas ditambahkan");
-  }
-});
-
-function renderKelasList() {
-  const list = document.getElementById('kelas-list');
-  const kelas = allRecords.filter(r => r.type === 'kelas').sort((a,b) => a.nama.localeCompare(b.nama));
-  list.innerHTML = kelas.map(k => `
-    <tr class="border-b border-slate-100 hover:bg-blue-50/50 transition duration-150">
-      <td class="px-4 py-3 font-medium text-slate-700 cursor-pointer hover:text-blue-600" onclick="lihatDetailJadwalKelas('${k.nama}')">
-        📁 ${k.nama}
-      </td>
-      <td class="px-4 py-3 text-center">
-        <button class="px-2 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600" onclick="deleteRecord('${k.__backendId}'); event.stopPropagation();">
-          Hapus
-        </button>
-      </td>
-    </tr>
-  `).join('') || '<tr><td class="p-4 text-center text-slate-400">Belum ada kelas. Klik tombol Sinkronkan di atas.</td></tr>';
-}
-
-// PANEL DETAIL JADWAL KELAS & EDIT INLINE
-function lihatDetailJadwalKelas(namaKelas) {
-  adminSelectedDetailKelas = namaKelas;
-  document.getElementById('kelas-blank-panel').classList.add('hidden');
-  const panel = document.getElementById('kelas-detail-panel');
-  panel.classList.remove('hidden');
-  document.getElementById('detail-nama-kelas').textContent = namaKelas;
-  renderDetailJadwalList();
-}
-
-function tutupDetailKelas() {
-  adminSelectedDetailKelas = "";
-  document.getElementById('kelas-detail-panel').classList.add('hidden');
-  document.getElementById('kelas-blank-panel').classList.remove('hidden');
-}
-
-function renderDetailJadwalList() {
-  const tbody = document.getElementById('detail-jadwal-list');
-  if (!adminSelectedDetailKelas) return;
-
-  const listJadwal = allRecords.filter(r => r.type === 'jadwal' && r.kelas === adminSelectedDetailKelas).sort((a, b) => {
-    if(urutanHari[a.hari] !== urutanHari[b.hari]) return urutanHari[a.hari] - urutanHari[b.hari];
-    return a.jam_ke - b.jam_ke;
-  });
-
-  tbody.innerHTML = listJadwal.map(j => `
-    <tr id="row-${j.__backendId}" class="border-b border-slate-100 hover:bg-slate-50/50">
-      <td class="px-3 py-2 font-medium text-blue-600">${j.hari}</td>
-      <td class="px-3 py-2 font-semibold text-slate-500">Jam ke-${j.jam_ke}</td>
-      <td class="px-3 py-2 text-slate-800">${j.mapel}</td>
-      <td class="px-3 py-2 text-slate-600 font-medium">${j.guru}</td>
-      <td class="px-3 py-2 text-center whitespace-nowrap">
-        <button class="px-2 py-1 bg-amber-500 text-white rounded text-xs hover:bg-amber-600 mr-1" onclick="aktifkanModeEditJadwal('${j.__backendId}')">
-          Edit
-        </button>
-        <button class="px-2 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600" onclick="deleteRecord('${j.__backendId}')">
-          Hapus
-        </button>
-      </td>
-    </tr>
-  `).join('') || '<tr><td colspan="5" class="p-4 text-center text-slate-400">Kelas ini belum memiliki jadwal pelajaran.</td></tr>';
-}
-
-function aktifkanModeEditJadwal(id) {
-  const j = allRecords.find(r => r.__backendId === id);
-  if (!j) return;
-
-  const row = document.getElementById(`row-${id}`);
-  row.innerHTML = `
-    <td class="px-3 py-1">
-      <select id="edit-hari-${id}" class="border border-slate-300 rounded px-1 py-1 text-xs w-full">
-        <option value="Senin" ${j.hari==='Senin'?'selected':''}>Senin</option>
-        <option value="Selasa" ${j.hari==='Selasa'?'selected':''}>Selasa</option>
-        <option value="Rabu" ${j.hari==='Rabu'?'selected':''}>Rabu</option>
-        <option value="Kamis" ${j.hari==='Kamis'?'selected':''}>Kamis</option>
-        <option value="Jumat" ${j.hari==='Jumat'?'selected':''}>Jumat</option>
-      </select>
-    </td>
-    <td class="px-3 py-1">
-      <input type="number" id="edit-jam-${id}" value="${j.jam_ke}" min="1" max="12" class="border border-slate-300 rounded px-1 py-1 text-xs w-14">
-    </td>
-    <td class="px-3 py-1">
-      <input type="text" id="edit-mapel-${id}" value="${j.mapel}" class="border border-slate-300 rounded px-1 py-1 text-xs w-full font-bold">
-    </td>
-    <td class="px-3 py-1">
-      <input type="text" id="edit-guru-${id}" value="${j.guru}" class="border border-slate-300 rounded px-1 py-1 text-xs w-full">
-    </td>
-    <td class="px-3 py-1 text-center whitespace-nowrap">
-      <button class="px-2 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700 mr-1" onclick="simpanPerubahanJadwal('${id}')">
-        Simpan
-      </button>
-      <button class="px-2 py-1 bg-slate-400 text-white rounded text-xs hover:bg-slate-500" onclick="renderDetailJadwalList()">
-        Batal
-      </button>
-    </td>
-  `;
-}
-
-async function simpanPerubahanJadwal(id) {
-  const existing = allRecords.find(r => r.__backendId === id);
-  if (!existing) return;
-
-  const hari = document.getElementById(`edit-hari-${id}`).value;
-  const jam_ke = parseInt(document.getElementById(`edit-jam-${id}`).value);
-  const mapel = document.getElementById(`edit-mapel-${id}`).value.trim();
-  const guru = document.getElementById(`edit-guru-${id}`).value.trim();
-
-  if (!mapel || !jam_ke || !guru) return alert('Semua data edit harus diisi!');
-
-  await customDataSdk.update({ ...existing, hari, jam_ke, mapel, guru });
-  showSave("Jadwal Diperbarui");
-}
-
-// GURU FUNCTIONS
-document.getElementById('btn-add-guru').addEventListener('click', async () => {
-  const nama = document.getElementById('guru-input').value.trim();
-  if (!nama) return alert('Nama guru tidak boleh kosong');
-
-  const result = await customDataSdk.create({ type: 'guru', nama, kelas: '', mapel: '', guru: '', jam_ke: 0, hadir: false, keterangan: '', tanggal: '', hari: '' });
-  if (result.isOk) {
-    document.getElementById('guru-input').value = '';
-    showSave("Guru ditambahkan");
-  }
-});
-
-function renderGuruList() {
-  const list = document.getElementById('guru-list');
-  const guru = allRecords.filter(r => r.type === 'guru');
-  list.innerHTML = guru.map(g => `
-    <tr class="border-b border-slate-100">
-      <td class="px-4 py-3">${g.nama}</td>
-      <td class="px-4 py-3 text-center">
-        <button class="px-3 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600" onclick="deleteRecord('${g.__backendId}')">
-          Hapus
-        </button>
-      </td>
-    </tr>
-  `).join('') || '<tr><td class="p-4 text-center text-slate-400">Gunakan Kode Guru Otomatis hasil sinkronisasi CSV di tabel Jadwal.</td></tr>';
-}
-
-// JADWAL FUNCTIONS GLOBAL
-function updateJadwalSelects() {
-  const kelasSel = document.getElementById('jadwal-kelas');
-  const kelas = allRecords.filter(r => r.type === 'kelas').sort((a,b) => a.nama.localeCompare(b.nama));
-  kelasSel.innerHTML = '<option value="">-- Pilih Kelas --</option>' + kelas.map(k => `<option value="${k.nama}">${k.nama}</option>`).join('');
-}
-
-document.getElementById('btn-add-jadwal').addEventListener('click', async () => {
-  const hari = document.getElementById('jadwal-hari').value;
-  const kelas = document.getElementById('jadwal-kelas').value;
-  const mapel = document.getElementById('jadwal-mapel').value.trim();
-  const guru = document.getElementById('jadwal-guru').value.trim();
-  const jam_ke = parseInt(document.getElementById('jadwal-jam').value);
-
-  if (!hari || !kelas || !guru || !mapel || !jam_ke) return alert('Semua field harus diisi');
-  
-  const result = await customDataSdk.create({ type: 'jadwal', hari, kelas, guru, mapel, jam_ke, nama: '', hadir: false, keterangan: '', tanggal: '' });
-  if (result.isOk) {
-    document.getElementById('jadwal-mapel').value = '';
-    document.getElementById('jadwal-guru').value = '';
-    document.getElementById('jadwal-jam').value = '';
-    showSave("Jadwal disimpan");
-  }
-});
-
-function renderJadwalList() {
-  const list = document.getElementById('jadwal-list');
-  const jadwal = allRecords.filter(r => r.type === 'jadwal').sort((a, b) => {
-    if(a.kelas !== b.kelas) return a.kelas.localeCompare(b.kelas);
-    if(urutanHari[a.hari] !== urutanHari[b.hari]) return urutanHari[a.hari] - urutanHari[b.hari];
-    return a.jam_ke - b.jam_ke;
-  });
-  
-  list.innerHTML = jadwal.map(j => `
-    <tr class="border-b border-slate-100 text-xs">
-      <td class="px-4 py-2 font-semibold text-blue-600">${j.hari}</td>
-      <td class="px-4 py-2 font-bold">${j.kelas}</td>
-      <td class="px-4 py-2 text-slate-500">Jam ${j.jam_ke}</td>
-      <td class="px-4 py-2 font-medium">${j.mapel}</td>
-      <td class="px-4 py-2">${j.guru}</td>
-      <td class="px-4 py-2 text-center">
-        <button class="px-2 py-0.5 bg-red-500 text-white rounded text-[10px]" onclick="deleteRecord('${j.__backendId}')">
-          Hapus
-        </button>
-      </td>
-    </tr>
-  `).join('') || '<tr><td colspan="6" class="p-4 text-center text-slate-400">Tidak ada jadwal global.</td></tr>';
-}
-
-// DELETE FUNCTION GENERAL
-async function deleteRecord(id) {
-  const record = allRecords.find(r => r.__backendId === id);
-  if (!record) return;
-  const type = record.type;
-  const result = await customDataSdk.delete(record);
-  if (result.isOk) {
-    showSave("Data dihapus");
-    if (type === 'kelas') {
-      if (adminSelectedDetailKelas === record.nama) tutupDetailKelas();
-      renderKelasList();
-    }
-    if (type === 'guru') renderGuruList();
-    if (type === 'jadwal') {
-      renderJadwalList();
-      if (adminSelectedDetailKelas) renderDetailJadwalList();
-    }
-  }
-}
-
-// GURU VIEW - ABSENSI LOGIC
-document.getElementById('kelas-select').addEventListener('change', (e) => {
-  selectedKelas = e.target.value;
-  renderGuruTable();
-});
-
-document.getElementById('date-picker').addEventListener('change', (e) => {
-  selectedDate = e.target.value;
-  renderGuruTable();
-});
-
-function renderGuruTable() {
-  const tbody = document.getElementById('table-body');
-  const infoHariBox = document.getElementById('hari-info');
-  const namaHariAktif = document.getElementById('nama-hari-aktif');
-  
-  if (!selectedKelas) {
-    tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-slate-400">Silahkan pilih kelas terlebih dahulu untuk menampilkan jadwal resmi.</td></tr>';
-    infoHariBox.classList.add('hidden');
-    return;
-  }
-
-  const namaHariIni = getNamaHariDariTanggal(selectedDate);
-  namaHariAktif.textContent = namaHariIni;
-  infoHariBox.classList.remove('hidden');
-
-  if (namaHariIni === "Sabtu" || namaHariIni === "Minggu") {
-    tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-amber-500 font-medium">Hari ${namaHariIni} adalah hari libur pekanan. Tidak ada jadwal mengajar.</td></tr>`;
-    return;
-  }
-
-  const jadwal = allRecords.filter(r => r.type === 'jadwal' && r.kelas === selectedKelas && r.hari === namaHariIni).sort((a, b) => a.jam_ke - b.jam_ke);
-  
-  tbody.innerHTML = jadwal.map(j => {
-    const record = allRecords.find(r => r.type === 'absensi' && r.guru === j.guru && r.kelas === j.kelas && r.tanggal === selectedDate && r.jam_ke === j.jam_ke);
-    const hadir = record ? record.hadir : false;
-    const keterangan = record ? record.keterangan : "Masuk";
-    
-    return `
-      <tr class="border-b border-slate-100 hover:bg-slate-50">
-        <td class="px-4 py-3 font-semibold text-slate-500">Jam Ke-${j.jam_ke}</td>
-        <td class="px-4 py-3 font-bold text-slate-800">${j.mapel}</td>
-        <td class="px-4 py-3 font-medium text-slate-600">${j.guru}</td>
-        <td class="px-4 py-3 text-center">
-          <input type="checkbox" class="chk-hadir w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer" ${hadir ? 'checked' : ''} data-kelas="${j.kelas}" data-guru="${j.guru}" data-jam="${j.jam_ke}" data-mapel="${j.mapel}" onchange="saveAbsensi(this)">
-        </td>
-        <td class="px-4 py-3">
-          <select class="sel-ket border border-slate-200 rounded-lg px-2 py-1.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" data-kelas="${j.kelas}" data-guru="${j.guru}" data-jam="${j.jam_ke}" onchange="saveAbsensi(this)">
-            <option value="Masuk" ${keterangan==='Masuk'?'selected':''}>Masuk</option>
-            <option value="Sakit" ${keterangan==='Sakit'?'selected':''}>Sakit</option>
-            <option value="Izin" ${keterangan==='Izin'?'selected':''}>Izin</option>
-            <option value="Alpha" ${keterangan==='Alpha'?'selected':''}>Alpha</option>
-            <option value="Terlambat" ${keterangan==='Terlambat'?'selected':''}>Terlambat</option>
-          </select>
-        </td>
-      </tr>
-    `;
-  }).join('') || `<tr><td colspan="5" class="p-8 text-center text-slate-400">Tidak ada jadwal pelajaran resmi untuk kelas ini di hari ${namaHariIni}.</td></tr>`;
-}
-
-async function saveAbsensi(el) {
-  const row = el.closest('tr');
-  const kelas = el.dataset.kelas;
-  const guru = el.dataset.guru;
-  const jam = parseInt(el.dataset.jam);
-  const hadir = row.querySelector('.chk-hadir').checked;
-  const keterangan = row.querySelector('.sel-ket').value;
-  
-  const existing = allRecords.find(r => r.type === 'absensi' && r.kelas === kelas && r.guru === guru && r.jam_ke === jam && r.tanggal === selectedDate);
-  if (existing) {
-    await customDataSdk.update({ ...existing, hadir, keterangan });
-  } else {
-    await customDataSdk.create({
-      type: 'absensi', kelas, guru, jam_ke: jam, mapel: el.dataset.mapel || row.cells[1].textContent, hadir, keterangan, tanggal: selectedDate, nama: '', hari: ''
-    });
-  }
-  showSave("Absensi Disimpan");
-}
-
-function showSave(text) {
-  const el = document.getElementById('save-indicator');
-  el.innerHTML = `<i data-lucide="check" class="w-4 h-4 inline mr-1"></i> ${text}`;
-  el.style.opacity = '1';
-  setTimeout(() => el.style.opacity = '0', 1500);
-}
-
-function renderAdminView() {
-  document.getElementById('kelas-tab').classList.remove('hidden');
-  document.getElementById('guru-tab').classList.add('hidden');
-  document.getElementById('jadwal-tab').classList.add('hidden');
-  renderKelasList();
-}
-
-function initGuruView() {
-  const kelas = allRecords.filter(r => r.type === 'kelas').sort((a,b) => a.nama.localeCompare(b.nama));
-  const select = document.getElementById('kelas-select');
-  select.innerHTML = '<option value="">-- Pilih Kelas --</option>' + kelas.map(k => `<option value="${k.nama}" ${k.nama === selectedKelas ? 'selected' : ''}>${k.nama}</option>`).join('');
-}
-
-// Data Handler Bridge
-const dataHandler = {
-  onDataChanged(data) {
-    allRecords = data;
-    initGuruView(); 
-    if (!isAdminLoggedIn) {
-      renderGuruTable();
-    } else {
-      if (!document.getElementById('kelas-tab').classList.contains('hidden')) {
-        renderKelasList();
-        if (adminSelectedDetailKelas) renderDetailJadwalList();
+      if(filteredJadwal.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-500 bg-amber-50/50 border border-amber-100 rounded-lg">Tidak ada jadwal KBM resmi untuk kelas <strong>${selectedKelas}</strong> pada hari <strong>${namaHari}</strong>.</td></tr>`;
+        return;
       }
-      if (!document.getElementById('guru-tab').classList.contains('hidden')) renderGuruList();
-      if (!document.getElementById('jadwal-tab').classList.contains('hidden')) { renderJadwalList(); updateJadwalSelects(); }
-    }
-  }
-};
 
-// Main Run
-customDataSdk.init(dataHandler);
-lucide.createIcons();
+      tableBody.innerHTML = '';
+      filteredJadwal.forEach(j => {
+        // Cek status absensi tersimpan lokal perangkat
+        const absensiKey = `${selectedDateStr}_${j.kelas}_${j.hari}_${j.jamKe}_${j.kodeMapel}`;
+        const recordAbsen = dbAbsensi.find(a => a.key === absensiKey);
+        
+        const statusHadir = recordAbsen ? recordAbsen.status : '';
+        const ketText = recordAbsen ? recordAbsen.keterangan : '';
+
+        const row = document.createElement('tr');
+        row.className = "border-b border-slate-100 hover:bg-slate-50/80 transition";
+        row.innerHTML = `
+          <td class="px-4 py-3.5 font-medium text-slate-700">Jam Ke-${j.jamKe}</td>
+          <td class="px-4 py-3.5"><span class="px-2 py-1 bg-slate-100 font-semibold rounded text-slate-800 text-xs border border-slate-200">${j.kodeMapel}</span></td>
+          <td class="px-4 py-3.5 text-slate-800 font-medium">${j.namaGuru} <span class="text-xs text-slate-400 block font-normal">NIP/Kode: ${j.kodeGuru}</span></td>
+          <td class="px-4 py-3.5 text-center">
+            <select onchange="simpanKehadiran('${absensiKey}', '${selectedDateStr}', '${j.kelas}', '${j.hari}', '${j.jamKe}', '${j.kodeMapel}', '${j.namaGuru}', this.value)" class="border rounded-md px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500 bg-white">
+              <option value="">-- Cek Status --</option>
+              <option value="HADIR" ${statusHadir === 'HADIR' ? 'selected' : ''}>✅ HADIR</option>
+              <option value="IZIN" ${statusHadir === 'IZIN' ? 'selected' : ''}>⚠️ IZIN</option>
+              <option value="SAKIT" ${statusHadir === 'SAKIT' ? 'selected' : ''}>🤒 SAKIT</option>
+              <option value="ALFA" ${statusHadir === 'ALFA' ? 'selected' : ''}>❌ ALFA / TANPA KET</option>
+            </select>
+          </td>
+          <td class="px-4 py-3.5">
+            <input type="text" value="${ketText}" placeholder="Catatan opsional..." onchange="simpanKeterangan('${absensiKey}', this.value)" class="w-full border border-slate-200 rounded px-2 py-1 text-xs focus:outline-none focus:border-blue-500">
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    // SIMPAN STATUS ABSENSI KE LOCALSTORAGE
+    function simpanKehadiran(key, tanggal, kelas, hari, jamKe, kodeMapel, namaGuru, status) {
+      const idx = dbAbsensi.findIndex(a => a.key === key);
+      
+      if(status === "") {
+        if(idx !== -1) dbAbsensi.splice(idx, 1);
+      } else {
+        if(idx !== -1) {
+          dbAbsensi[idx].status = status;
+          dbAbsensi[idx].timestamp = new Date().toLocaleString('id-ID');
+        } else {
+          dbAbsensi.push({
+            key, tanggal, kelas, hari, jamKe, kodeMapel, namaGuru, status, keterangan: '', timestamp: new Date().toLocaleString('id-ID')
+          });
+        }
+      }
+      localStorage.setItem('db_absensi_smkn1ktg', JSON.stringify(dbAbsensi));
+      showToast("Kehadiran diperbarui.");
+    }
+
+    function simpanKeterangan(key, keteranganText) {
+      const idx = dbAbsensi.findIndex(a => a.key === key);
+      if(idx !== -1) {
+        dbAbsensi[idx].keterangan = keteranganText;
+        localStorage.setItem('db_absensi_smkn1ktg', JSON.stringify(dbAbsensi));
+        showToast("Catatan keterangan disimpan.");
+      }
+    }
+
+    // ADMIN INTERFACE FUNCTIONS
+    function renderAdminKelas() {
+      const listElement = document.getElementById('admin-kelas-list');
+      if(daftarKelas.length === 0) {
+        listElement.innerHTML = `<li class="p-4 text-center text-slate-400">Belum ada data kelas. Silahkan unggah database CSV.</li>`;
+        return;
+      }
+
+      listElement.innerHTML = '';
+      daftarKelas.forEach(kls => {
+        const li = document.createElement('li');
+        li.className = `p-3 px-4 hover:bg-slate-50 cursor-pointer flex justify-between items-center transition ${selectedKelasAdmin === kls ? 'bg-blue-50/80 hover:bg-blue-50' : ''}`;
+        li.onclick = () => viewDetailJadwalKelasAdmin(kls);
+        li.innerHTML = `
+          <span class="font-medium text-slate-700"><i data-lucide="folder" class="w-3.5 h-3.5 inline mr-1 text-slate-400"></i> ${kls}</span>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+        `;
+        listElement.appendChild(li);
+      });
+      lucide.createIcons();
+    }
+
+    function viewDetailJadwalKelasAdmin(kelas) {
+      selectedKelasAdmin = kelas;
+      renderAdminKelas(); // refresh active highlight
+      
+      document.getElementById('admin-selected-kelas').innerText = kelas;
+      document.getElementById('admin-detail-panel').classList.remove('hidden');
+
+      const tbody = document.getElementById('admin-jadwal-body');
+      const filtered = dbJadwal.filter(j => j.kelas === kelas);
+
+      // Urutan Hari KBM & Jam Mengajar
+      const orderHari = {"SENIN":1, "SELASA":2, "RABU":3, "KAMIS":4, "JUMAT":5, "SABTU":6, "MINGGU":7};
+      filtered.sort((a,b) => (orderHari[a.hari] || 99) - (orderHari[b.hari] || 99) || parseInt(a.jamKe) - parseInt(b.jamKe));
+
+      if(filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">Tidak ada rincian data KBM.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = '';
+      filtered.forEach(j => {
+        tbody.innerHTML += `
+          <tr class="hover:bg-slate-50">
+            <td class="p-2.5 font-semibold text-xs text-slate-600">${j.hari}</td>
+            <td class="p-2.5 text-xs text-slate-700">Jam Ke-${j.jamKe}</td>
+            <td class="p-2.5 text-xs"><span class="px-1.5 py-0.5 bg-slate-100 border text-slate-700 font-mono font-bold rounded">${j.kodeMapel}</span></td>
+            <td class="p-2.5 text-xs text-slate-800 font-medium">${j.namaGuru} <span class="text-slate-400 font-normal">(${j.kodeGuru})</span></td>
+          </tr>
+        `;
+      });
+    }
+
+    function renderRekapAbsensiAdmin() {
+      const tbody = document.getElementById('rekap-absensi-body');
+      if(dbAbsensi.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400">Belum ada rekaman absensi yang tersimpan di perangkat ini.</td></tr>`;
+        return;
+      }
+
+      // Urutkan rekap berdasarkan input teranyar
+      dbAbsensi.sort((a,b) => b.tanggal.localeCompare(a.tanggal));
+
+      tbody.innerHTML = '';
+      dbAbsensi.forEach(a => {
+        let badgeColor = 'bg-slate-100 text-slate-700';
+        if(a.status === 'HADIR') badgeColor = 'bg-green-100 text-green-800 font-bold';
+        if(a.status === 'IZIN') badgeColor = 'bg-amber-100 text-amber-800 font-bold';
+        if(a.status === 'SAKIT') badgeColor = 'bg-blue-100 text-blue-800 font-bold';
+        if(a.status === 'ALFA') badgeColor = 'bg-red-100 text-red-800 font-bold';
+
+        tbody.innerHTML += `
+          <tr class="border-b hover:bg-slate-50/50">
+            <td class="px-4 py-2 text-xs text-slate-600">${a.tanggal}</td>
+            <td class="px-4 py-2 text-xs font-semibold text-slate-700">${a.kelas}</td>
+            <td class="px-4 py-2 text-xs text-slate-600">Jam ${a.jamKe}</td>
+            <td class="px-4 py-2 text-xs font-mono font-bold text-slate-600">${a.kodeMapel}</td>
+            <td class="px-4 py-2 text-xs text-slate-800 font-medium">${a.namaGuru}</td>
+            <td class="px-4 py-2 text-center text-xs"><span class="px-2 py-0.5 rounded-full ${badgeColor}">${a.status}</span></td>
+            <td class="px-4 py-2 text-xs text-slate-500">${a.keterangan || '-'}</td>
+          </tr>
+        `;
+      });
+    }
   </script>
  </body>
 </html>
