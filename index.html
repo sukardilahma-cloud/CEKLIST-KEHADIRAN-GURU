@@ -6,17 +6,14 @@
   <title>Cek Kehadiran Guru</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
-  <script src="/_sdk/element_sdk.js"></script>
-  <script src="/_sdk/data_sdk.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
   <style>
     * { font-family: 'Plus Jakarta Sans', sans-serif; }
-    .jam-btn.active { background: var(--primary); color: white; }
     body { box-sizing: border-box; }
   </style>
- <script src="/_sdk/telemetry_sdk.js"></script></head>
+ </head>
  <body class="h-full">
-  <div id="app" class="h-full w-full bg-slate-50 overflow-auto" style="--primary:#2563eb; --surface:#ffffff; --text:#1e293b; --primary-action:#2563eb; --secondary-action:#64748b;">
+  <div id="app" class="h-full w-full bg-slate-50 overflow-auto" style="--primary:#2563eb; --surface:#ffffff; --text:#1e293b;">
    <div class="max-w-6xl mx-auto p-4 sm:p-6">
     
     <div class="flex justify-between items-start mb-6">
@@ -154,17 +151,6 @@
   </div>
 
   <script>
-const defaultConfig = {
-  page_title: "Cek Kehadiran Guru",
-  background_color: "#f8fafc",
-  surface_color: "#ffffff",
-  text_color: "#1e293b",
-  primary_color: "#2563eb",
-  secondary_color: "#64748b",
-  font_family: "Plus Jakarta Sans",
-  font_size: 14
-};
-
 let allRecords = [];
 let isAdminLoggedIn = false;
 let adminName = "";
@@ -173,6 +159,39 @@ let selectedKelas = "";
 
 // Set date picker default value
 document.getElementById('date-picker').value = selectedDate;
+
+// LOCALSTORAGE DATA SDK EMULATION (Solusi Independen GitHub)
+const customDataSdk = {
+  init: function(handler) {
+    const localData = localStorage.getItem('e_absensi_data');
+    allRecords = localData ? JSON.parse(localData) : [];
+    this.handler = handler;
+    this.handler.onDataChanged(allRecords);
+  },
+  saveToLocal: function() {
+    localStorage.setItem('e_absensi_data', JSON.stringify(allRecords));
+    this.handler.onDataChanged(allRecords);
+  },
+  create: async function(obj) {
+    obj.__backendId = 'id_' + Date.now() + Math.random().toString(36).substr(2, 5);
+    allRecords.push(obj);
+    this.saveToLocal();
+    return { isOk: true };
+  },
+  update: async function(obj) {
+    const idx = allRecords.findIndex(r => r.__backendId === obj.__backendId);
+    if (idx !== -1) {
+      allRecords[idx] = obj;
+      this.saveToLocal();
+    }
+    return { isOk: true };
+  },
+  delete: async function(obj) {
+    allRecords = allRecords.filter(r => r.__backendId !== obj.__backendId);
+    this.saveToLocal();
+    return { isOk: true };
+  }
+};
 
 // LOGIN FUNCTIONS
 document.getElementById('login-btn').addEventListener('click', () => {
@@ -262,9 +281,8 @@ document.getElementById('btn-jadwal').addEventListener('click', () => {
 document.getElementById('btn-add-kelas').addEventListener('click', async () => {
   const nama = document.getElementById('kelas-input').value.trim();
   if (!nama) return alert('Nama kelas tidak boleh kosong');
-  if (allRecords.length >= 999) return showSave("Limit tercapai!");
   
-  const result = await window.dataSdk.create({ type: 'kelas', nama, kelas: '', mapel: '', guru: '', jam_ke: 0, hadir: false, keterangan: '', tanggal: '' });
+  const result = await customDataSdk.create({ type: 'kelas', nama, kelas: '', mapel: '', guru: '', jam_ke: 0, hadir: false, keterangan: '', tanggal: '' });
   if (result.isOk) {
     document.getElementById('kelas-input').value = '';
     showSave("Kelas ditambahkan");
@@ -291,9 +309,8 @@ function renderKelasList() {
 document.getElementById('btn-add-guru').addEventListener('click', async () => {
   const nama = document.getElementById('guru-input').value.trim();
   if (!nama) return alert('Nama guru tidak boleh kosong');
-  if (allRecords.length >= 999) return showSave("Limit tercapai!");
 
-  const result = await window.dataSdk.create({ type: 'guru', nama, kelas: '', mapel: '', guru: '', jam_ke: 0, hadir: false, keterangan: '', tanggal: '' });
+  const result = await customDataSdk.create({ type: 'guru', nama, kelas: '', mapel: '', guru: '', jam_ke: 0, hadir: false, keterangan: '', tanggal: '' });
   if (result.isOk) {
     document.getElementById('guru-input').value = '';
     showSave("Guru ditambahkan");
@@ -334,9 +351,8 @@ document.getElementById('btn-add-jadwal').addEventListener('click', async () => 
   const jam_ke = parseInt(document.getElementById('jadwal-jam').value);
 
   if (!kelas || !guru || !mapel || !jam_ke) return alert('Semua field harus diisi');
-  if (allRecords.length >= 999) return showSave("Limit tercapai!");
   
-  const result = await window.dataSdk.create({ 
+  const result = await customDataSdk.create({ 
     type: 'jadwal', 
     kelas, 
     guru, 
@@ -376,10 +392,9 @@ async function deleteRecord(id) {
   const record = allRecords.find(r => r.__backendId === id);
   if (!record) return;
   const type = record.type;
-  const result = await window.dataSdk.delete(record);
+  const result = await customDataSdk.delete(record);
   if (result.isOk) {
     showSave("Data dihapus");
-    // Auto refresh active context list after deletion
     if (type === 'kelas') renderKelasList();
     if (type === 'guru') renderGuruList();
     if (type === 'jadwal') renderJadwalList();
@@ -444,12 +459,10 @@ async function saveAbsensi(el) {
   
   const existing = allRecords.find(r => r.type === 'absensi' && r.kelas === kelas && r.guru === guru && r.jam_ke === jam && r.tanggal === selectedDate);
   
-  let result;
   if (existing) {
-    result = await window.dataSdk.update({ ...existing, hadir, keterangan });
+    await customDataSdk.update({ ...existing, hadir, keterangan });
   } else {
-    if (allRecords.length >= 999) return showSave("Limit tercapai!");
-    result = await window.dataSdk.create({
+    await customDataSdk.create({
       type: 'absensi',
       kelas,
       guru,
@@ -461,7 +474,7 @@ async function saveAbsensi(el) {
       nama: ''
     });
   }
-  if (result.isOk) showSave("Tersimpan");
+  showSave("Tersimpan");
 }
 
 function showSave(text) {
@@ -485,7 +498,7 @@ function initGuruView() {
   select.innerHTML = '<option value="">-- Pilih Kelas --</option>' + kelas.map(k => `<option value="${k.nama}" ${k.nama === selectedKelas ? 'selected' : ''}>${k.nama}</option>`).join('');
 }
 
-// Data SDK Handler
+// Data Handler Bridge
 const dataHandler = {
   onDataChanged(data) {
     allRecords = data;
@@ -493,7 +506,6 @@ const dataHandler = {
       initGuruView();
       renderGuruTable();
     } else {
-      // Re-render current open tab inside admin view
       if (!document.getElementById('kelas-tab').classList.contains('hidden')) renderKelasList();
       if (!document.getElementById('guru-tab').classList.contains('hidden')) renderGuruList();
       if (!document.getElementById('jadwal-tab').classList.contains('hidden')) { renderJadwalList(); updateJadwalSelects(); }
@@ -501,36 +513,8 @@ const dataHandler = {
   }
 };
 
-// Element SDK Config
-window.elementSdk.init({
-  defaultConfig,
-  onConfigChange: async (config) => {
-    document.getElementById('page-title').textContent = config.page_title || defaultConfig.page_title;
-    const app = document.getElementById('app');
-    app.style.backgroundColor = config.background_color || defaultConfig.background_color;
-    const font = config.font_family || defaultConfig.font_family;
-    document.body.style.fontFamily = `${font}, sans-serif`;
-    const size = config.font_size || defaultConfig.font_size;
-    document.body.style.fontSize = size + 'px';
-  },
-  mapToCapabilities: (config) => ({
-    recolorables: [
-      { get: () => config.background_color || defaultConfig.background_color, set: (v) => { config.background_color = v; window.elementSdk.setConfig({ background_color: v }); } },
-      { get: () => config.surface_color || defaultConfig.surface_color, set: (v) => { config.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); } },
-      { get: () => config.text_color || defaultConfig.text_color, set: (v) => { config.text_color = v; window.elementSdk.setConfig({ text_color: v }); } },
-      { get: () => config.primary_color || defaultConfig.primary_color, set: (v) => { config.primary_color = v; window.elementSdk.setConfig({ primary_color: v }); } },
-      { get: () => config.secondary_color || defaultConfig.secondary_color, set: (v) => { config.secondary_color = v; window.elementSdk.setConfig({ secondary_color: v }); } },
-    ],
-    borderables: [],
-    fontEditable: { get: () => config.font_family || defaultConfig.font_family, set: (v) => { config.font_family = v; window.elementSdk.setConfig({ font_family: v }); } },
-    fontSizeable: { get: () => config.font_size || defaultConfig.font_size, set: (v) => { config.font_size = v; window.elementSdk.setConfig({ font_size: v }); } },
-  }),
-  mapToEditPanelValues: (config) => new Map([
-    ["page_title", config.page_title || defaultConfig.page_title],
-  ])
-});
-
-window.dataSdk.init(dataHandler);
+// Main Run
+customDataSdk.init(dataHandler);
 lucide.createIcons();
   </script>
  </body>
